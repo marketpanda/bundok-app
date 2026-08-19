@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        font-family: Inter, sans-serif;
+        padding: 16px;
+        color: #1f2937;
+        background: #f8fafc;
+      }
+      .card {
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+        margin-bottom: 12px;
+      }
+      label {
+        display: block;
+        font-weight: 600;
+        margin: 10px 0 6px;
+      }
+      input, textarea, button {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+      }
+      textarea {
+        min-height: 110px;
+        resize: vertical;
+      }
+      button {
+        cursor: pointer;
+        margin-top: 8px;
+        background: #2563eb;
+        color: white;
+        border: none;
+      }
+      button.secondary {
+        background: #64748b;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+      }
+      .muted {
+        font-size: 12px;
+        color: #64748b;
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h2>MCP for Figma</h2>
+      <p class="muted">Send a request to any MCP endpoint and place the response directly into your Figma canvas.</p>
+
+      <label for="endpoint">Endpoint</label>
+      <input id="endpoint" placeholder="http://127.0.0.1:3000/mcp" />
+
+      <label for="payload">Payload</label>
+      <textarea id="payload">{ "jsonrpc": "2.0", "method": "tools/list", "params": {}, "id": 1 }</textarea>
+
+      <div class="actions">
+        <button id="run">Send to MCP</button>
+        <button id="cancel" class="secondary">Cancel</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Quick shape demo</h3>
+      <label for="count">Number of rectangles</label>
+      <input id="count" type="number" value="5" min="1" max="20" />
+      <button id="create">Create rectangles</button>
+    </div>
+
+    <script>
+      document.getElementById('run').onclick = () => {
+        const endpoint = document.getElementById('endpoint').value;
+        const payload = document.getElementById('payload').value;
+        parent.postMessage({ pluginMessage: { type: 'run-mcp', endpoint, payload } }, '*');
+      };
+
+      document.getElementById('create').onclick = () => {
+        const textbox = document.getElementById('count');
+        const count = parseInt(textbox.value, 10);
+        parent.postMessage({ pluginMessage: { type: 'create-shapes', count } }, '*');
+      };
+
+      document.getElementById('cancel').onclick = () => {
+        parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*');
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "marketpanda-day-coding",
+  "id": "1668443687709693343",
+  "api": "1.0.0",
+  "main": "code.js",
+  "capabilities": [],
+  "enableProposedApi": false,
+  "documentAccess": "dynamic-page",
+  "editorType": [
+    "figma"
+  ],
+  "ui": "ui.html",
+  "build": "npm run build",
+  "networkAccess": {
+    "allowedDomains": [
+      "*"
+    ],
+    "reasoning": "The plugin needs to call local and remote MCP endpoints to send design requests and receive responses."
+  }
+}
