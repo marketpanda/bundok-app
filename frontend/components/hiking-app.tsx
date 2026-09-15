@@ -7,7 +7,6 @@ import {
   ArrowRight,
   Binoculars,
   Clock3,
-  Home,
   MapPin,
   Menu,
   MoreVertical,
@@ -15,7 +14,6 @@ import {
   SlidersHorizontal,
   Sparkles,
   Star,
-  UserRound,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 
@@ -106,36 +104,6 @@ function TripCard({
   );
 }
 
-function BottomNavigation({ active, onChange }: { active: string; onChange: (value: string) => void }) {
-  const items = [
-    { value: "home", label: "Home", icon: Home },
-    { value: "activity", label: "Activity", icon: Activity },
-    { value: "profile", label: "Profile", icon: UserRound },
-  ];
-
-  return (
-    <nav className="fixed bottom-3 left-1/2 z-20 flex h-16 w-[80%] max-w-[310px] -translate-x-1/2 items-center justify-around rounded-[22px] bg-[#3b3b3b]/95 px-4 shadow-2xl backdrop-blur lg:hidden">
-      {items.map(({ value, label, icon: Icon }) => (
-        <Button
-          key={value}
-          type="button"
-          variant="ghost"
-          size="icon"
-          aria-label={label}
-          onClick={() => onChange(value)}
-          className={cn(
-            "relative size-11 rounded-2xl text-zinc-400 hover:bg-transparent hover:text-white",
-            active === value && "text-[#13d5bc]",
-          )}
-        >
-          <Icon className={cn("size-6", active === value && "fill-[#13d5bc]")} />
-          {active === value && <span className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-[#13d5bc]" />}
-        </Button>
-      ))}
-    </nav>
-  );
-}
-
 function HomeScreen({ onOpenTrip }: { onOpenTrip: (trip: (typeof trips)[number]) => void }) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("popular");
@@ -147,7 +115,7 @@ function HomeScreen({ onOpenTrip }: { onOpenTrip: (trip: (typeof trips)[number])
 
   return (
     <div className="flex min-h-full min-w-0 flex-col bg-[#202020] text-white lg:h-full">
-      <main className="mx-auto w-full min-w-0 max-w-[1600px] flex-1 overflow-hidden px-5 pb-24 pt-[max(1.25rem,env(safe-area-inset-top))] lg:overflow-y-auto lg:px-32 lg:pb-10 lg:pt-8 xl:px-40">
+      <main className="mx-auto w-full min-w-0 max-w-[1600px] flex-1 overflow-hidden px-5 pb-10 pt-[max(1.25rem,env(safe-area-inset-top))] lg:overflow-y-auto lg:px-32 lg:pt-8 xl:px-40">
         <header className="mb-5 flex w-full items-center justify-between lg:mb-10">
           <div className="flex items-center gap-3">
             <Image
@@ -249,7 +217,6 @@ function HomeScreen({ onOpenTrip }: { onOpenTrip: (trip: (typeof trips)[number])
           </div>
         </section>
 
-        <BottomNavigation active={activeNav} onChange={setActiveNav} />
       </main>
     </div>
   );

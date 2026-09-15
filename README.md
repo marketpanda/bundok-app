@@ -18,7 +18,7 @@ Ambangeg is a responsive hiking discovery experience for finding scenic trails a
 - Searchable trail cards and category tabs
 - Real hiking photography with proportional image cropping
 - Interactive trip-detail views for each featured trail
-- Mobile bottom navigation and desktop navigation
+- Compact mobile header and desktop navigation
 - Custom Ambangeg branding and favicon
 
 ## Built with
