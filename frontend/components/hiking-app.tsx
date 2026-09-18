@@ -15,11 +15,18 @@ import {
   Sparkles,
   Star,
 } from "lucide-react";
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { Fragment, useMemo, useState, useSyncExternalStore } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
@@ -73,6 +80,29 @@ const trips = [
   { title: "Rocky peaks", location: "Jotunheimen", photo: showcasePhotos.mountainRoad },
 ];
 
+const mountainOptions = [
+  "Mt. Amuyao",
+  "Mt. Apo",
+  "Mt. Arayat",
+  "Mt. Batulao",
+  "Mt. Daraitan",
+  "Mt. Guiting-Guiting",
+  "Mt. Halcon",
+  "Mt. Isarog",
+  "Mt. Kabunian",
+  "Mt. Kanlaon",
+  "Mt. Kitanglad",
+  "Mt. Makiling",
+  "Mt. Mariveles",
+  "Mt. Napulak",
+  "Mt. Pinatubo",
+  "Mt. Pulag",
+  "Mt. Talamitam",
+  "Mt. Tapulao",
+  "Mt. Ulap",
+  "Osmeña Peak",
+];
+
 function TripCard({
   title,
   location,
@@ -101,6 +131,74 @@ function TripCard({
         </CardContent>
       </Card>
     </button>
+  );
+}
+
+function HikerDetailsCard() {
+  return (
+    <Card
+      className="w-[78%] max-w-[78%] basis-[78%] shrink-0 snap-center gap-0 border border-white/70 py-0 text-slate-950 shadow-[0_18px_50px_rgba(74,58,160,0.18)] md:w-[82%] md:max-w-[82%] md:basis-[82%] lg:w-full lg:max-w-none lg:basis-auto"
+      style={{
+        background:
+          "radial-gradient(circle at 8% 8%, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0) 34%), radial-gradient(circle at 92% 5%, rgba(179,220,255,0.95) 0%, rgba(179,220,255,0) 42%), radial-gradient(circle at 88% 92%, rgba(224,190,255,0.9) 0%, rgba(224,190,255,0) 44%), radial-gradient(circle at 8% 96%, rgba(168,241,235,0.9) 0%, rgba(168,241,235,0) 40%), linear-gradient(135deg, #fff5fb 0%, #e9e5ff 48%, #d9efff 100%)",
+      }}
+    >
+      <CardContent className="flex h-full min-h-64 flex-col justify-center gap-4 p-5">
+        <div>
+          <p className="text-lg font-semibold">Flex My Hike</p>
+          <p className="mt-1 text-xs text-slate-600">Choose a mountain and add your name.</p>
+        </div>
+
+        <div>
+          <label className="mb-3 block text-xs font-semibold text-slate-700" htmlFor="mountain-select">
+            Mountain
+          </label>
+          <Select defaultValue={mountainOptions[0]}>
+            <SelectTrigger
+              id="mountain-select"
+              aria-label="Select a mountain"
+              className="h-12 w-full rounded-md border-white/80 bg-white/70 px-3 text-slate-900 shadow-sm backdrop-blur-md hover:bg-white/85 focus-visible:border-indigo-400 focus-visible:ring-indigo-300/40 data-[size=default]:h-12"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent
+              align="start"
+              className="border-0 bg-white/95 text-slate-900 ring-slate-900/10 backdrop-blur-xl"
+            >
+              {mountainOptions.map((mountain) => (
+                <SelectItem
+                  key={mountain}
+                  value={mountain}
+                  className="rounded-none py-2.5 pl-4 text-slate-800 focus:bg-indigo-100 focus:text-indigo-950"
+                >
+                  {mountain}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <label className="mb-3 block text-xs font-semibold text-slate-700" htmlFor="hiker-name">
+            Hiker name
+          </label>
+          <Input
+            id="hiker-name"
+            name="hikerName"
+            autoComplete="name"
+            placeholder="Enter hiker name"
+            className="h-12 rounded-md border-white/80 bg-white/70 px-3 text-base text-slate-900 shadow-sm backdrop-blur-md placeholder:text-slate-500 focus-visible:border-indigo-400 focus-visible:ring-indigo-300/40 md:text-sm"
+          />
+        </div>
+
+        <Button
+          type="button"
+          className="h-12 w-full rounded-md bg-red-600 font-semibold text-white shadow-md shadow-red-900/15 transition-all duration-200 hover:-translate-y-0.5 hover:bg-red-700 hover:shadow-lg hover:shadow-red-900/25 active:translate-y-0 active:scale-[0.98]"
+        >
+          Generate My Card
+        </Button>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -184,8 +282,11 @@ function HomeScreen({ onOpenTrip }: { onOpenTrip: (trip: (typeof trips)[number])
           </TabsList>
           <TabsContent value={category} className="mt-6 w-full min-w-0 lg:mt-8">
             <div className="no-scrollbar -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-1 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-5 lg:overflow-visible lg:px-0">
-              {filteredTrips.length ? filteredTrips.map((trip) => (
-                <TripCard key={trip.title} {...trip} onOpen={() => onOpenTrip(trip)} />
+              {filteredTrips.length ? filteredTrips.map((trip, index) => (
+                <Fragment key={trip.title}>
+                  <TripCard {...trip} onOpen={() => onOpenTrip(trip)} />
+                  {category === "popular" && index === 0 ? <HikerDetailsCard /> : null}
+                </Fragment>
               )) : (
                 <div className="flex h-64 w-full items-center justify-center rounded-3xl bg-[#303030] text-zinc-400">No trails found</div>
               )}
