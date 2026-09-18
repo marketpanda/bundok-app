@@ -15,7 +15,7 @@ import {
   Sparkles,
   Star,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -115,7 +115,7 @@ function HomeScreen({ onOpenTrip }: { onOpenTrip: (trip: (typeof trips)[number])
 
   return (
     <div className="flex min-h-full min-w-0 flex-col bg-[#202020] text-white lg:h-full">
-      <main className="mx-auto w-full min-w-0 max-w-[1600px] flex-1 overflow-hidden px-5 pb-10 pt-[max(1.25rem,env(safe-area-inset-top))] lg:overflow-y-auto lg:px-32 lg:pt-8 xl:px-40">
+      <main className="no-scrollbar mx-auto w-full min-w-0 max-w-[1600px] flex-1 overflow-hidden px-5 pb-10 pt-[max(1.25rem,env(safe-area-inset-top))] lg:overflow-y-auto lg:px-32 lg:pt-8 xl:px-40">
         <header className="mb-5 flex w-full items-center justify-between lg:mb-10">
           <div className="flex items-center gap-3">
             <Image
@@ -239,7 +239,7 @@ function TripDetail({ trip, onBack }: { trip: (typeof trips)[number]; onBack: ()
 
   return (
     <div className="relative flex min-h-full min-w-0 flex-col bg-[#202020] text-white lg:h-full">
-      <main className="mx-auto w-full min-w-0 max-w-[1600px] flex-1 px-5 pb-24 pt-[max(1.25rem,env(safe-area-inset-top))] lg:grid lg:grid-cols-[minmax(0,1.12fr)_minmax(320px,.88fr)] lg:content-start lg:gap-x-10 lg:overflow-y-auto lg:px-32 lg:pb-28 lg:pt-8 xl:px-40">
+      <main className="no-scrollbar mx-auto w-full min-w-0 max-w-[1600px] flex-1 px-5 pb-24 pt-[max(1.25rem,env(safe-area-inset-top))] lg:grid lg:grid-cols-[minmax(0,1.12fr)_minmax(320px,.88fr)] lg:content-start lg:gap-x-10 lg:overflow-y-auto lg:px-32 lg:pb-28 lg:pt-8 xl:px-40">
         <header className="mb-5 flex items-center justify-between lg:col-span-2 lg:mb-8">
           <IconButton label="Back to trips" onClick={onBack}><ArrowLeft className="size-6" /></IconButton>
           <IconButton label="More options"><MoreVertical className="size-6" /></IconButton>
@@ -306,13 +306,24 @@ function TripDetail({ trip, onBack }: { trip: (typeof trips)[number]; onBack: ()
   );
 }
 
-export function HikingApp({ initialScreen = "home" }: { initialScreen?: "home" | "detail" }) {
-  const [screen, setScreen] = useState<"home" | "detail">(initialScreen);
+function subscribeToHistory(onStoreChange: () => void) {
+  window.addEventListener("popstate", onStoreChange);
+  return () => window.removeEventListener("popstate", onStoreChange);
+}
+
+function getScreenFromUrl(): "home" | "detail" {
+  return new URLSearchParams(window.location.search).get("screen") === "detail" ? "detail" : "home";
+}
+
+export function HikingApp({ initialScreen }: { initialScreen?: "home" | "detail" }) {
+  const urlScreen = useSyncExternalStore(subscribeToHistory, getScreenFromUrl, () => "home");
+  const [screenOverride, setScreenOverride] = useState<"home" | "detail" | null>(null);
+  const screen = screenOverride ?? initialScreen ?? urlScreen;
   const [selectedTrip, setSelectedTrip] = useState(trips[0]);
 
   const openTrip = (trip: (typeof trips)[number]) => {
     setSelectedTrip(trip);
-    setScreen("detail");
+    setScreenOverride("detail");
   };
 
   return (
@@ -322,7 +333,7 @@ export function HikingApp({ initialScreen = "home" }: { initialScreen?: "home" |
           {screen === "home" ? (
             <HomeScreen onOpenTrip={openTrip} />
           ) : (
-            <TripDetail trip={selectedTrip} onBack={() => setScreen("home")} />
+            <TripDetail trip={selectedTrip} onBack={() => setScreenOverride("home")} />
           )}
         </div>
       </section>
