@@ -8,11 +8,11 @@ The home screen keeps the full-width **Flex My Hike** creator above the trail ca
 
 ### Desktop
 
-![Ambangeg desktop homepage](docs/screenshots/desktop-home.png)
+![Ambangeg desktop homepage](docs/screenshots/desktop-home-flex.png)
 
 ### Mobile
 
-<img src="docs/screenshots/mobile-home.png" alt="Ambangeg mobile homepage" width="390" />
+<img src="docs/screenshots/mobile-home-flex.png" alt="Ambangeg mobile homepage" width="390" />
 
 ## Features
 
