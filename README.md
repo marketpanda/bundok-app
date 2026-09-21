@@ -1,8 +1,10 @@
 # Ambangeg
 
-Ambangeg is a responsive hiking discovery experience for finding scenic trails and planning the next outdoor trip. It pairs a focused dark interface with real trail photography, searchable trip cards, category browsing, and an expanded trip-detail view.
+Ambangeg is a responsive hiking discovery experience for finding scenic trails and planning the next outdoor trip. It pairs a focused dark interface with real trail photography, category browsing, personalized bag-tag creation, and expanded trip-detail views.
 
 ## Preview
+
+The home screen keeps the full-width **Flex My Hike** creator above the trail cards. Its live bag-tag preview sits beside the form on larger screens and stacks below it on mobile.
 
 ### Desktop
 
@@ -15,7 +17,8 @@ Ambangeg is a responsive hiking discovery experience for finding scenic trails a
 ## Features
 
 - Responsive layouts for desktop and mobile
-- Searchable trail cards and category tabs
+- Personalized mountain bag tags with a downloadable PNG
+- Browseable trail cards and category tabs
 - Real hiking photography with proportional image cropping
 - Interactive trip-detail views for each featured trail
 - Compact mobile header and desktop navigation

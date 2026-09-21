@@ -237,7 +237,7 @@ function BagTagPreview({ mountain, hikerName }: { mountain: string; hikerName: s
   };
 
   return (
-    <div className="flex h-full min-w-0 flex-col">
+    <div className="flex h-full min-w-0 flex-col md:col-start-2">
       <div className="mb-3 flex items-center justify-between gap-3">
         <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-600">
           Bag tag preview
@@ -293,13 +293,13 @@ function HikerDetailsCard() {
 
   return (
     <Card
-      className="w-[92%] max-w-[92%] basis-[92%] shrink-0 snap-center gap-0 border border-white/70 py-0 text-slate-950 shadow-[0_18px_50px_rgba(74,58,160,0.18)] md:w-[82%] md:max-w-[82%] md:basis-[82%] lg:col-span-2 lg:w-full lg:max-w-none lg:basis-auto"
+      className="w-full gap-0 border border-white/70 py-0 text-slate-950 shadow-[0_18px_50px_rgba(74,58,160,0.18)]"
       style={{
         background:
           "radial-gradient(circle at 8% 8%, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0) 34%), radial-gradient(circle at 92% 5%, rgba(34,199,214,0.72) 0%, rgba(34,199,214,0) 42%), radial-gradient(circle at 88% 92%, rgba(85,201,90,0.62) 0%, rgba(85,201,90,0) 44%), radial-gradient(circle at 8% 96%, rgba(184,245,225,0.9) 0%, rgba(184,245,225,0) 40%), linear-gradient(135deg, #f5fffa 0%, #dff7f2 48%, #d9f6fb 100%)",
       }}
     >
-      <CardContent className="grid h-full gap-8 p-5 lg:grid-cols-2 lg:p-6">
+      <CardContent className="grid h-full gap-8 p-5 md:grid-cols-2 lg:p-6">
         <div className="flex flex-col justify-center gap-4">
           <div>
             <p className="text-lg font-semibold">Flex My Hike</p>
@@ -420,8 +420,10 @@ function HomeScreen({ onOpenTrip }: { onOpenTrip: (trip: (typeof trips)[number])
 
         <div className="mb-7 w-full min-w-0 max-w-full overflow-hidden">
           <ExploreMenu active="popular" />
-          <div className="no-scrollbar -mx-5 mt-6 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-1 lg:mx-0 lg:mt-8 lg:grid lg:grid-cols-3 lg:gap-5 lg:overflow-visible lg:px-0">
+          <div className="mt-6 lg:mt-8">
             <HikerDetailsCard />
+          </div>
+          <div className="no-scrollbar -mx-5 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-1 lg:mx-0 lg:mt-5 lg:grid lg:grid-cols-3 lg:gap-5 lg:overflow-visible lg:px-0">
             {trips.map((trip) => (
               <Fragment key={trip.title}>
                 <TripCard {...trip} onOpen={() => onOpenTrip(trip)} />
