@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import {
   Activity,
   ArrowLeft,
@@ -16,6 +17,7 @@ import {
 } from "lucide-react";
 import { Fragment, useState, useSyncExternalStore } from "react";
 
+import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ExploreMenu } from "@/components/explore-menu";
@@ -365,8 +367,13 @@ function HikerDetailsCard() {
   );
 }
 
-function HomeScreen({ onOpenTrip }: { onOpenTrip: (trip: (typeof trips)[number]) => void }) {
+function HomeScreen({
+  onOpenTrip,
+}: {
+  onOpenTrip: (trip: (typeof trips)[number]) => void;
+}) {
   const [activeNav, setActiveNav] = useState("home");
+  const { authError, loading, user, signOutUser } = useAuth();
 
   return (
     <div className="flex min-h-full min-w-0 flex-col bg-[#202020] text-white lg:h-full">
@@ -386,7 +393,7 @@ function HomeScreen({ onOpenTrip }: { onOpenTrip: (trip: (typeof trips)[number])
               <p className="text-xs text-zinc-500">Let&apos;s hike!</p>
             </div>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <nav className="hidden items-center gap-1 lg:flex" aria-label="Desktop navigation">
               {[
                 ["home", "Discover"],
@@ -407,11 +414,53 @@ function HomeScreen({ onOpenTrip }: { onOpenTrip: (trip: (typeof trips)[number])
                 </Button>
               ))}
             </nav>
+            {loading ? (
+              <Button
+                type="button"
+                variant="ghost"
+                disabled
+                className="h-10 rounded-full border border-white/15 bg-white/5 px-4 text-zinc-400"
+              >
+                Checking session…
+              </Button>
+            ) : user ? (
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  void signOutUser();
+                }}
+              >
+                <Button
+                  type="submit"
+                  variant="ghost"
+                  title={`Signed in as ${user.email ?? user.name ?? "a hiker"}`}
+                  className="h-10 rounded-full border border-white/15 bg-white/5 px-3 text-zinc-200 hover:bg-white/10 hover:text-white lg:px-4"
+                >
+                  <span className="flex size-6 items-center justify-center rounded-full bg-grass text-xs font-bold text-white">
+                    {(user.name ?? user.email ?? "H").charAt(0).toUpperCase()}
+                  </span>
+                  <span className="hidden sm:inline">Sign out</span>
+                </Button>
+              </form>
+            ) : (
+              <Link
+                href="/login"
+                className="inline-flex h-10 items-center justify-center rounded-full bg-grass px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-grass-hover"
+              >
+                Log in or sign up
+              </Link>
+            )}
             <div className="lg:hidden">
               <IconButton label="Open menu"><Menu className="size-6" /></IconButton>
             </div>
           </div>
         </header>
+
+        {authError && (
+          <p role="alert" className="mb-5 rounded-xl border border-red-400/25 bg-red-400/10 px-4 py-3 text-sm text-red-200">
+            Google sign-in failed: {authError}
+          </p>
+        )}
 
         <div className="mb-4">
           <p className="mb-2 hidden text-sm font-medium uppercase tracking-[0.2em] text-turquoise lg:block">Akyat na akyat ka na beh?</p>
@@ -554,7 +603,11 @@ function getScreenFromUrl(): "home" | "detail" {
   return new URLSearchParams(window.location.search).get("screen") === "detail" ? "detail" : "home";
 }
 
-export function HikingApp({ initialScreen }: { initialScreen?: "home" | "detail" }) {
+export function HikingApp({
+  initialScreen,
+}: {
+  initialScreen?: "home" | "detail";
+}) {
   const urlScreen = useSyncExternalStore(subscribeToHistory, getScreenFromUrl, () => "home");
   const [screenOverride, setScreenOverride] = useState<"home" | "detail" | null>(null);
   const screen = screenOverride ?? initialScreen ?? urlScreen;

@@ -1,4 +1,20 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ambangeg frontend
+
+This is a statically exported Next.js application. Authentication stays on AWS through Amazon Cognito; Google is used only as the federated identity provider.
+
+## Google sign-in setup
+
+1. In Amazon Cognito, create a user pool and an app client **without a client secret** (this is a browser app).
+2. Add a Cognito managed-login domain and configure the app client with authorization-code grant, `openid`, `email`, and `profile` scopes.
+3. Add the local and production app origins as both callback and sign-out URLs, including the trailing slash (for example `http://localhost:3000/`).
+4. In Google Cloud Console, configure the OAuth consent screen (Google Auth Platform > Branding, Audience, and Data Access). Request only `openid`, `email`, and `profile`.
+5. Create an OAuth 2.0 Client ID with application type **Web application**.
+6. In that Google client, add the Cognito domain as an authorized JavaScript origin: `https://YOUR_COGNITO_DOMAIN`.
+7. Add `https://YOUR_COGNITO_DOMAIN/oauth2/idpresponse` as the authorized redirect URI.
+8. Back in Cognito, add Google as a social identity provider using Google's client ID and client secret, map `email` and `name`, and enable Google on the app client's managed-login configuration.
+9. Copy `.env.example` to `.env.local` and add the Cognito pool ID, public app-client ID, domain, and local app URL. Add the same variables to the AWS hosting build environment with the production app URL.
+
+The Google client secret belongs only in Cognito's identity-provider configuration. Never place it in a `NEXT_PUBLIC_` variable or commit it to this repository.
 
 ## Getting Started
 
