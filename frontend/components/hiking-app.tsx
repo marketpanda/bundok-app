@@ -185,10 +185,6 @@ function BagTagPreview({ mountain, hikerName }: { mountain: string; hikerName: s
       const context = canvas.getContext("2d");
       if (!context) return;
 
-      context.beginPath();
-      context.roundRect(0, 0, width, height, 58);
-      context.clip();
-
       const scale = Math.max(width / photo.naturalWidth, height / photo.naturalHeight);
       const imageWidth = photo.naturalWidth * scale;
       const imageHeight = photo.naturalHeight * scale;
@@ -295,14 +291,14 @@ function HikerDetailsCard() {
 
   return (
     <Card
-      className="w-full gap-0 border border-white/70 py-0 text-slate-950 shadow-[0_18px_50px_rgba(74,58,160,0.18)]"
+      className="w-full max-w-full gap-0 overflow-hidden border border-white/70 py-0 text-slate-950 shadow-[0_18px_50px_rgba(74,58,160,0.18)]"
       style={{
         background:
           "radial-gradient(circle at 8% 8%, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0) 34%), radial-gradient(circle at 92% 5%, rgba(34,199,214,0.72) 0%, rgba(34,199,214,0) 42%), radial-gradient(circle at 88% 92%, rgba(85,201,90,0.62) 0%, rgba(85,201,90,0) 44%), radial-gradient(circle at 8% 96%, rgba(184,245,225,0.9) 0%, rgba(184,245,225,0) 40%), linear-gradient(135deg, #f5fffa 0%, #dff7f2 48%, #d9f6fb 100%)",
       }}
     >
-      <CardContent className="grid h-full gap-8 p-5 md:grid-cols-2 lg:p-6">
-        <div className="flex flex-col justify-center gap-4">
+      <CardContent className="grid h-full min-w-0 max-w-full gap-8 p-5 md:grid-cols-2 lg:p-6">
+        <div className="flex min-w-0 max-w-full flex-col justify-center gap-4">
           <div>
             <p className="text-lg font-semibold">Flex My Hike</p>
             <p className="mt-1 text-xs text-slate-600">Choose a mountain and add your name.</p>
@@ -316,7 +312,7 @@ function HikerDetailsCard() {
               <SelectTrigger
                 id="mountain-select"
                 aria-label="Select a mountain"
-                className="h-12 w-full rounded-md border-white/80 bg-white/70 px-3 text-slate-900 shadow-sm backdrop-blur-md hover:bg-white/85 focus-visible:border-turquoise focus-visible:ring-turquoise/30 data-[size=default]:h-12"
+                className="h-12 w-full min-w-0 max-w-full rounded-md border-white/80 bg-white/70 px-3 text-slate-900 shadow-sm backdrop-blur-md hover:bg-white/85 focus-visible:border-turquoise focus-visible:ring-turquoise/30 data-[size=default]:h-12"
               >
                 <SelectValue placeholder="Choose a mountain" />
               </SelectTrigger>
@@ -348,7 +344,7 @@ function HikerDetailsCard() {
               value={hikerName}
               onChange={(event) => { setHikerName(event.target.value); setGenerated(false); }}
               placeholder="Enter hiker name"
-              className="h-12 rounded-md border-white/80 bg-white/70 px-3 text-base text-slate-900 shadow-sm backdrop-blur-md placeholder:text-slate-500 focus-visible:border-turquoise focus-visible:ring-turquoise/30 md:text-sm"
+              className="h-12 w-full min-w-0 max-w-full rounded-md border-white/80 bg-white/70 px-3 text-base text-slate-900 shadow-sm backdrop-blur-md placeholder:text-slate-500 focus-visible:border-turquoise focus-visible:ring-turquoise/30 md:text-sm"
             />
           </div>
 

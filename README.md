@@ -14,6 +14,18 @@ The home screen keeps the full-width **Flex My Hike** creator above the trail ca
 
 <img src="docs/screenshots/mobile-home-flex.png" alt="Ambangeg mobile homepage" width="390" />
 
+### My Climbs
+
+The My Climbs collection keeps up to three pinned mountains at the front of the same responsive grid. Pin choices are stored locally in the browser until a database-backed profile is connected.
+
+#### Desktop
+
+![Ambangeg My Climbs page with pinned mountains](docs/screenshots/desktop-my-climbs.png)
+
+#### Mobile
+
+<img src="docs/screenshots/mobile-my-climbs.png" alt="Ambangeg mobile My Climbs page with three pinned mountains" width="390" />
+
 ## Features
 
 - Responsive layouts for desktop and mobile
@@ -21,6 +33,7 @@ The home screen keeps the full-width **Flex My Hike** creator above the trail ca
 - Browseable trail cards and category tabs
 - Real hiking photography with proportional image cropping
 - Interactive trip-detail views for each featured trail
+- Sortable My Climbs gallery with up to three locally persisted pinned mountains
 - Compact mobile header and desktop navigation
 - Custom Ambangeg branding and favicon
 
