@@ -245,14 +245,20 @@ export function MyClimbsGallery() {
       </div>
 
       <div className="grid grid-cols-3 gap-x-2 gap-y-8 sm:gap-x-6 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-12 xl:grid-cols-5">
-        {orderedClimbs.map((climb, index) => {
+        {orderedClimbs.map((climb) => {
           const isPinned = pinnedClimbNames.includes(climb.name);
           const pinLimitReached = pinnedClimbNames.length >= MAX_PINNED_CLIMBS && !isPinned;
 
           return (
           <article key={climb.name} className="group min-w-0 text-center">
             <div className="relative mx-auto aspect-square w-full max-w-[180px] rounded-full bg-[#303030] p-1.5 shadow-[0_18px_36px_rgba(0,0,0,0.2)] ring-1 ring-white/10 transition duration-300 group-hover:-translate-y-1 group-hover:ring-turquoise/60 sm:max-w-[205px]">
-              <div className="relative size-full overflow-hidden rounded-full">
+              <div
+                className="relative size-full overflow-hidden rounded-full bg-cover bg-center"
+                style={{
+                  backgroundImage: `url(${climb.photo})`,
+                  backgroundPosition: climb.photoPosition,
+                }}
+              >
                 <Image
                   src={climb.photo}
                   alt={`View from ${climb.name}`}
@@ -260,7 +266,7 @@ export function MyClimbsGallery() {
                   sizes="(min-width: 1280px) 190px, (min-width: 1024px) 21vw, (min-width: 640px) 29vw, 43vw"
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                   style={{ objectPosition: climb.photoPosition }}
-                  priority={index < 3}
+                  loading="eager"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-white/5" />
                 <div className="absolute inset-x-0 bottom-3 flex justify-center sm:bottom-6">

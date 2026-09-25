@@ -12,7 +12,7 @@ The home screen keeps the full-width **Flex My Hike** creator above the trail ca
 
 ### Mobile
 
-<img src="docs/screenshots/mobile-home-flex.png" alt="Ambangeg mobile homepage" width="390" />
+<img src="docs/screenshots/mobile-home-flex-contained.png" alt="Ambangeg mobile homepage with the Flex My Hike card fully contained" width="390" />
 
 ### My Climbs
 
@@ -20,11 +20,11 @@ The My Climbs collection keeps up to three pinned mountains at the front of the 
 
 #### Desktop
 
-![Ambangeg My Climbs page with pinned mountains](docs/screenshots/desktop-my-climbs.png)
+![Ambangeg My Climbs page with every mountain photo loaded](docs/screenshots/desktop-my-climbs-complete.png)
 
 #### Mobile
 
-<img src="docs/screenshots/mobile-my-climbs.png" alt="Ambangeg mobile My Climbs page with three pinned mountains" width="390" />
+<img src="docs/screenshots/mobile-my-climbs-complete.png" alt="Ambangeg mobile My Climbs page with every mountain photo loaded" width="390" />
 
 ## Features
 
