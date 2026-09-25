@@ -409,6 +409,12 @@ function HomeScreen({
                   {label}
                 </Button>
               ))}
+              <Link
+                href="/contact-us"
+                className="inline-flex h-9 items-center justify-center rounded-full px-4 text-sm font-medium text-zinc-400 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-turquoise"
+              >
+                Contact Us
+              </Link>
             </nav>
             {loading ? (
               <Button
