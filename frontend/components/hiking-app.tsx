@@ -7,14 +7,16 @@ import {
   ArrowLeft,
   ArrowRight,
   Binoculars,
+  Check,
   Clock3,
   Download,
   MapPin,
   MoreVertical,
+  Share2,
   Sparkles,
   Star,
 } from "lucide-react";
-import { Fragment, useState, useSyncExternalStore } from "react";
+import { Fragment, useRef, useState, useSyncExternalStore } from "react";
 
 import { useAuth } from "@/components/auth-provider";
 import { DesktopNavigation } from "@/components/desktop-navigation";
@@ -139,16 +141,16 @@ function TripCard({
     <button
       type="button"
       onClick={onOpen}
-      className="group w-[78%] max-w-[78%] basis-[78%] shrink-0 snap-center text-left md:w-[82%] md:max-w-[82%] md:basis-[82%] lg:w-full lg:max-w-none lg:basis-auto"
+      className="group h-full w-[78%] max-w-[78%] basis-[78%] shrink-0 snap-center text-left md:w-[82%] md:max-w-[82%] md:basis-[82%] lg:w-[calc((100%_-_2.5rem)/3)] lg:max-w-[calc((100%_-_2.5rem)/3)] lg:basis-[calc((100%_-_2.5rem)/3)]"
       aria-label={`Open ${title}`}
     >
-      <Card className="gap-0 overflow-hidden border-0 bg-[#3c3c3c] py-0 shadow-none transition-transform duration-300 group-hover:-translate-y-1">
+      <Card className="h-full gap-0 overflow-hidden border-0 bg-[#3c3c3c] py-0 shadow-none transition-transform duration-300 group-hover:-translate-y-1">
         <ShowcasePhoto
           src={photo}
           alt={`${title} in ${location}`}
           className="aspect-[1.4/1] w-full rounded-t-[20px]"
         />
-        <CardContent className="space-y-1 px-4 py-3">
+        <CardContent className="min-h-24 space-y-1 px-4 py-3">
           <p className="text-[15px] font-medium text-zinc-100">{title}</p>
           <p className="flex items-center gap-1 text-xs text-zinc-400">
             <MapPin className="size-3 fill-zinc-300 text-zinc-300" />
@@ -157,6 +159,106 @@ function TripCard({
         </CardContent>
       </Card>
     </button>
+  );
+}
+
+const sampleMemeText = "Ung bigla kang na-add sa gc kahit nagtatanong ka lang";
+
+function MemeCard() {
+  const [shared, setShared] = useState(false);
+
+  const getMemeUrl = () => new URL("/assets/meme-poker-face.png", window.location.origin).href;
+
+  const copyMemeLink = async (memeUrl: string) => {
+    try {
+      await navigator.clipboard.writeText(`${sampleMemeText}\n${memeUrl}`);
+      setShared(true);
+    } catch {
+      window.open(memeUrl, "_blank", "noopener,noreferrer");
+    }
+  };
+
+  const shareMeme = async () => {
+    const memeUrl = getMemeUrl();
+
+    try {
+      const response = await fetch(memeUrl);
+      if (!response.ok) throw new Error("Could not load the meme image.");
+
+      const memeFile = new File([await response.blob()], "ambangeg-poker-face.png", {
+        type: "image/png",
+      });
+      const canShareImage = navigator.canShare?.({ files: [memeFile] }) ?? false;
+
+      if (navigator.share && canShareImage) {
+        await navigator.share({
+          title: "Ambangeg meme",
+          text: sampleMemeText,
+          files: [memeFile],
+        });
+      } else if (navigator.share) {
+        await navigator.share({ title: "Ambangeg meme", text: sampleMemeText, url: memeUrl });
+      } else {
+        await copyMemeLink(memeUrl);
+      }
+
+      setShared(true);
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+
+      await copyMemeLink(memeUrl);
+    }
+  };
+
+  const shareOnFacebook = () => {
+    const shareUrl = new URL("https://www.facebook.com/sharer/sharer.php");
+    shareUrl.searchParams.set("u", getMemeUrl());
+    shareUrl.searchParams.set("quote", sampleMemeText);
+    window.open(shareUrl.href, "facebook-share", "popup,width=680,height=560,noopener,noreferrer");
+  };
+
+  return (
+    <article className="h-full w-[78%] max-w-[78%] basis-[78%] shrink-0 snap-center md:w-[82%] md:max-w-[82%] md:basis-[82%] lg:w-[calc((100%_-_2.5rem)/3)] lg:max-w-[calc((100%_-_2.5rem)/3)] lg:basis-[calc((100%_-_2.5rem)/3)]">
+      <Card className="h-full gap-0 overflow-hidden border-0 bg-[#eee8dc] py-0 text-zinc-950 shadow-none transition-transform duration-300 hover:-translate-y-1">
+        <div className="relative aspect-[1.4/1] w-full overflow-hidden">
+          <Image
+            src="/assets/meme-poker-face.png"
+            alt="Doodled poker face surrounded by group-chat and hiking symbols"
+            fill
+            sizes="(min-width: 1024px) 24vw, 78vw"
+            className="object-cover"
+            priority
+          />
+        </div>
+        <CardContent className="flex min-h-24 items-start justify-between gap-3 px-4 py-3">
+          <p className="text-sm font-semibold leading-5 text-zinc-900">{sampleMemeText}</p>
+          <div className="flex shrink-0 gap-2">
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
+              onClick={shareOnFacebook}
+              aria-label="Share meme on Facebook"
+              title="Share on Facebook"
+              className="size-9 rounded-full bg-[#1877f2] text-lg font-bold text-white hover:bg-[#0f69db] hover:text-white"
+            >
+              f
+            </Button>
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
+              onClick={() => void shareMeme()}
+              aria-label={shared ? "Meme shared or copied" : "Share meme image"}
+              title={shared ? "Shared or copied" : "Share image"}
+              className="size-9 rounded-full bg-zinc-900 text-white hover:bg-grass hover:text-white"
+            >
+              {shared ? <Check className="size-4" /> : <Share2 className="size-4" />}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </article>
   );
 }
 
@@ -373,6 +475,14 @@ function HomeScreen({
   onOpenTrip: (trip: (typeof trips)[number]) => void;
 }) {
   const { authError, loading, user, signOutUser } = useAuth();
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  const scrollCarousel = (direction: -1 | 1) => {
+    carouselRef.current?.scrollBy({
+      left: direction * carouselRef.current.clientWidth * 0.72,
+      behavior: "smooth",
+    });
+  };
 
   return (
     <div className="flex min-h-full min-w-0 flex-col bg-[#202020] text-white lg:h-full">
@@ -460,7 +570,22 @@ function HomeScreen({
           <div className="mt-6 lg:mt-8">
             <HikerDetailsCard />
           </div>
-          <div className="no-scrollbar -mx-5 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-1 lg:mx-0 lg:mt-5 lg:grid lg:grid-cols-3 lg:gap-5 lg:overflow-visible lg:px-0">
+          <div className="mt-3 hidden items-center justify-between lg:mt-5 lg:flex">
+            <p className="text-sm font-medium text-zinc-400">Trail picks &amp; memes</p>
+            <div className="flex gap-2">
+              <IconButton label="Previous card" onClick={() => scrollCarousel(-1)}>
+                <ArrowLeft className="size-4" />
+              </IconButton>
+              <IconButton label="Next card" onClick={() => scrollCarousel(1)}>
+                <ArrowRight className="size-4" />
+              </IconButton>
+            </div>
+          </div>
+          <div
+            ref={carouselRef}
+            className="no-scrollbar -mx-5 mt-3 flex snap-x snap-mandatory items-stretch gap-3 overflow-x-auto px-5 pb-1 lg:mx-0 lg:gap-5 lg:px-0"
+          >
+            <MemeCard />
             {trips.map((trip) => (
               <Fragment key={trip.title}>
                 <TripCard {...trip} onOpen={() => onOpenTrip(trip)} />
