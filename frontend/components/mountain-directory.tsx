@@ -122,7 +122,10 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
         )}
       </section>
 
-      <aside className="space-y-4 lg:sticky lg:top-8" aria-label="Mountain search and filters">
+      <aside
+        className="no-scrollbar space-y-4 lg:sticky lg:top-36 lg:max-h-[calc(100dvh-19rem)] lg:overflow-y-auto lg:pb-2 xl:top-20 xl:max-h-[calc(100dvh-15rem)]"
+        aria-label="Mountain search and filters"
+      >
         <div className="rounded-3xl border border-white/[0.06] bg-[#303030] p-4">
           <label htmlFor="mountain-search" className="text-sm font-semibold text-white">Find a mountain or trail</label>
           <div className="relative mt-3">
