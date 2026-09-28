@@ -3,6 +3,7 @@
 import "aws-amplify/auth/enable-oauth-listener";
 
 import {
+  fetchAuthSession,
   fetchUserAttributes,
   getCurrentUser,
   signInWithRedirect,
@@ -29,6 +30,18 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+function emailUsername(email?: string) {
+  return email?.includes("@") ? email.split("@")[0] : undefined;
+}
+
+function isProviderGeneratedUsername(username: string) {
+  return /^(google|facebook|signinwithapple)[_-]/i.test(username);
+}
+
+function stringClaim(value: unknown) {
+  return typeof value === "string" && value.trim() ? value.trim() : undefined;
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [configured, setConfigured] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -38,13 +51,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const refreshUser = useCallback(async () => {
     try {
       const currentUser = await getCurrentUser();
-      let nextUser: AppUser = { name: currentUser.username };
+      const loginId = currentUser.signInDetails?.loginId;
+      let nextUser: AppUser = {
+        name:
+          emailUsername(loginId) ||
+          (!isProviderGeneratedUsername(currentUser.username)
+            ? currentUser.username
+            : undefined),
+        email: loginId?.includes("@") ? loginId : undefined,
+      };
+
+      try {
+        const session = await fetchAuthSession();
+        const claims = session.tokens?.idToken?.payload;
+        const claimEmail = stringClaim(claims?.email);
+        const claimFullName = [
+          stringClaim(claims?.given_name),
+          stringClaim(claims?.family_name),
+        ]
+          .filter(Boolean)
+          .join(" ");
+
+        nextUser = {
+          name:
+            stringClaim(claims?.name) ||
+            claimFullName ||
+            stringClaim(claims?.preferred_username) ||
+            emailUsername(claimEmail) ||
+            nextUser.name,
+          email: claimEmail || nextUser.email,
+        };
+      } catch {
+        // Some Cognito setups expose Google profile data only as user attributes.
+      }
 
       try {
         const attributes = await fetchUserAttributes();
+        const fullName = [attributes.given_name, attributes.family_name]
+          .filter(Boolean)
+          .join(" ");
         nextUser = {
-          name: attributes.name || currentUser.username,
-          email: attributes.email,
+          name:
+            attributes.name ||
+            fullName ||
+            attributes.preferred_username ||
+            emailUsername(attributes.email) ||
+            nextUser.name,
+          email: attributes.email || nextUser.email,
         };
       } catch {
         // Profile attributes are optional UI data. A failure to fetch them must

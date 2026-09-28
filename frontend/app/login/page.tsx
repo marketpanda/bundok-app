@@ -7,6 +7,7 @@ import { useState } from "react";
 
 import { useAuth } from "@/components/auth-provider";
 import { GoogleMark } from "@/components/google-mark";
+import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
@@ -23,8 +24,9 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="flex min-h-dvh items-center justify-center bg-[#202020] px-5 py-10 text-white">
-      <div className="w-full max-w-md">
+    <main className="flex min-h-dvh flex-col bg-[#202020] px-5 text-white">
+      <div className="flex flex-1 items-center justify-center py-10">
+        <div className="w-full max-w-md">
         <Link
           href="/"
           className="mb-6 inline-flex items-center gap-2 text-sm text-zinc-400 transition-colors hover:text-white"
@@ -86,10 +88,20 @@ export default function LoginPage() {
           )}
 
           <p className="mt-6 text-center text-xs leading-5 text-zinc-500">
-            By continuing, you agree to Ambangeg&apos;s terms and privacy policy.
+            By continuing, you agree to Ambangeg&apos;s{" "}
+            <Link href="/terms" className="underline underline-offset-2 hover:text-turquoise">
+              terms
+            </Link>{" "}
+            and{" "}
+            <Link href="/privacy" className="underline underline-offset-2 hover:text-turquoise">
+              privacy policy
+            </Link>
+            .
           </p>
         </section>
+        </div>
       </div>
+      <SiteFooter />
     </main>
   );
 }
