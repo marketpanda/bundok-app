@@ -10,7 +10,6 @@ import {
   Clock3,
   Download,
   MapPin,
-  Menu,
   MoreVertical,
   Sparkles,
   Star,
@@ -18,6 +17,9 @@ import {
 import { Fragment, useState, useSyncExternalStore } from "react";
 
 import { useAuth } from "@/components/auth-provider";
+import { DesktopNavigation } from "@/components/desktop-navigation";
+import { MobileMenu } from "@/components/mobile-menu";
+import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ExploreMenu } from "@/components/explore-menu";
@@ -368,14 +370,16 @@ function HomeScreen({
 }: {
   onOpenTrip: (trip: (typeof trips)[number]) => void;
 }) {
-  const [activeNav, setActiveNav] = useState("home");
   const { authError, loading, user, signOutUser } = useAuth();
 
   return (
     <div className="flex min-h-full min-w-0 flex-col bg-[#202020] text-white lg:h-full">
-      <main className="no-scrollbar mx-auto w-full min-w-0 max-w-[1600px] flex-1 overflow-hidden px-5 pb-10 pt-[max(1.25rem,env(safe-area-inset-top))] lg:overflow-y-auto lg:px-32 lg:pt-8 xl:px-40">
-        <header className="mb-5 flex w-full items-center justify-between lg:mb-10">
-          <div className="flex items-center gap-3">
+      <main className="no-scrollbar mx-auto w-full min-w-0 max-w-[1600px] flex-1 overflow-hidden px-5 pb-10 pt-[max(1.25rem,env(safe-area-inset-top))] lg:overflow-y-auto lg:px-32 lg:pt-0 xl:px-40">
+        <header className="desktop-sticky-bar mb-5 flex w-full items-center justify-between lg:sticky lg:top-0 lg:z-40 lg:mb-8 lg:py-2">
+          <Link
+            href="/"
+            className="flex items-center gap-3 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-turquoise"
+          >
             <Image
               src="/assets/logo2.png"
               alt="Ambangeg logo"
@@ -384,38 +388,17 @@ function HomeScreen({
               className="size-12 rounded-full object-contain"
               priority
             />
-            <div className="hidden lg:block">
+            <div className="hidden xl:block">
               <p className="text-base font-semibold">Ambangeg</p>
               <p className="text-xs text-zinc-500">Let&apos;s hike!</p>
             </div>
+          </Link>
+          <div className="hidden xl:block xl:-translate-x-5 2xl:-translate-x-8">
+            <ExploreMenu active="popular" compact />
           </div>
           <div className="flex items-center gap-2">
-            <nav className="hidden items-center gap-1 lg:flex" aria-label="Desktop navigation">
-              {[
-                ["home", "Discover"],
-                ["activity", "Activity"],
-                ["profile", "Profile"],
-              ].map(([value, label]) => (
-                <Button
-                  key={value}
-                  type="button"
-                  variant="ghost"
-                  onClick={() => setActiveNav(value)}
-                  className={cn(
-                    "rounded-full px-4 text-zinc-400 hover:bg-white/10 hover:text-white",
-                    activeNav === value && "bg-white/10 text-turquoise",
-                  )}
-                >
-                  {label}
-                </Button>
-              ))}
-              <Link
-                href="/contact-us"
-                className="inline-flex h-9 items-center justify-center rounded-full px-4 text-sm font-medium text-zinc-400 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-turquoise"
-              >
-                Contact Us
-              </Link>
-            </nav>
+            <DesktopNavigation />
+            <div className="lg:hidden">
             {loading ? (
               <Button
                 type="button"
@@ -452,9 +435,8 @@ function HomeScreen({
                 Log in or sign up
               </Link>
             )}
-            <div className="lg:hidden">
-              <IconButton label="Open menu"><Menu className="size-6" /></IconButton>
             </div>
+            <MobileMenu />
           </div>
         </header>
 
@@ -469,8 +451,10 @@ function HomeScreen({
           <h1 className="text-[28px] font-semibold tracking-[-0.04em] lg:text-5xl">Ano? Tra?</h1>
         </div>
 
-        <div className="mb-7 w-full min-w-0 max-w-full overflow-hidden">
+        <div className="desktop-sticky-bar lg:sticky lg:top-16 lg:z-30 lg:-mx-2 lg:px-2 lg:py-3 xl:hidden">
           <ExploreMenu active="popular" />
+        </div>
+        <div className="mb-7 w-full min-w-0 max-w-full overflow-hidden">
           <div className="mt-6 lg:mt-8">
             <HikerDetailsCard />
           </div>
@@ -506,6 +490,8 @@ function HomeScreen({
             </Card>
           </div>
         </section>
+
+        <SiteFooter />
 
       </main>
     </div>

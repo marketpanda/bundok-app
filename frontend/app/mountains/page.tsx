@@ -3,7 +3,10 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { ExploreMenu } from "@/components/explore-menu";
+import { DesktopNavigation } from "@/components/desktop-navigation";
+import { MobileMenu } from "@/components/mobile-menu";
 import { MountainDirectory } from "@/components/mountain-directory";
+import { SiteFooter } from "@/components/site-footer";
 import { mountains } from "@/data/mountains";
 
 export const metadata: Metadata = {
@@ -14,8 +17,8 @@ export const metadata: Metadata = {
 export default function MountainsPage() {
   return (
     <main className="min-h-dvh bg-[#202020] text-white">
-      <div className="mx-auto w-full max-w-[1600px] px-5 pb-10 pt-[max(1.25rem,env(safe-area-inset-top))] lg:px-32 lg:pt-8 xl:px-40">
-        <header className="mb-10 flex items-center justify-between">
+      <div className="mx-auto w-full max-w-[1600px] px-5 pb-10 pt-[max(1.25rem,env(safe-area-inset-top))] lg:px-32 lg:pt-0 xl:px-40">
+        <header className="desktop-sticky-bar mb-8 flex items-center justify-between lg:sticky lg:top-0 lg:z-40 lg:py-2">
           <Link href="/" className="flex items-center gap-3 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-turquoise">
             <Image
               src="/assets/logo2.png"
@@ -25,18 +28,20 @@ export default function MountainsPage() {
               className="size-12 rounded-full object-contain"
               priority
             />
-            <div>
+            <div className="hidden xl:block">
               <p className="text-base font-semibold">Ambangeg</p>
               <p className="text-xs text-zinc-500">Let&apos;s hike!</p>
             </div>
           </Link>
 
-          <Link
-            href="/"
-            className="rounded-full bg-white/10 px-4 py-2 text-sm text-zinc-200 transition-colors hover:bg-white/15 hover:text-turquoise focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-turquoise"
-          >
-            Back to discover
-          </Link>
+          <div className="hidden xl:block xl:-translate-x-5 2xl:-translate-x-8">
+            <ExploreMenu active="mountains" compact />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <DesktopNavigation />
+            <MobileMenu />
+          </div>
         </header>
 
         <div className="mb-4">
@@ -44,9 +49,13 @@ export default function MountainsPage() {
           <h1 className="text-[28px] font-semibold tracking-[-0.04em] lg:text-5xl">Mountains</h1>
         </div>
 
-        <ExploreMenu active="mountains" />
+        <div className="desktop-sticky-bar lg:sticky lg:top-16 lg:z-30 lg:-mx-2 lg:px-2 lg:py-3 xl:hidden">
+          <ExploreMenu active="mountains" />
+        </div>
 
         <MountainDirectory mountains={mountains} />
+
+        <SiteFooter />
       </div>
     </main>
   );

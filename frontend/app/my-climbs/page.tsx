@@ -3,7 +3,10 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { ExploreMenu } from "@/components/explore-menu";
+import { DesktopNavigation } from "@/components/desktop-navigation";
+import { MobileMenu } from "@/components/mobile-menu";
 import { MyClimbsGallery } from "@/components/my-climbs-gallery";
+import { SiteFooter } from "@/components/site-footer";
 
 export const metadata: Metadata = {
   title: "My Climbs | Ambangeg",
@@ -13,8 +16,8 @@ export const metadata: Metadata = {
 export default function MyClimbsPage() {
   return (
     <main className="min-h-dvh bg-[#202020] text-white">
-      <div className="mx-auto w-full max-w-[1600px] px-5 pb-10 pt-[max(1.25rem,env(safe-area-inset-top))] lg:px-32 lg:pt-8 xl:px-40">
-        <header className="mb-8 flex items-center justify-between lg:mb-10">
+      <div className="mx-auto w-full max-w-[1600px] px-5 pb-10 pt-[max(1.25rem,env(safe-area-inset-top))] lg:px-32 lg:pt-0 xl:px-40">
+        <header className="desktop-sticky-bar mb-8 flex items-center justify-between lg:sticky lg:top-0 lg:z-40 lg:mb-8 lg:py-2">
           <Link href="/" className="flex items-center gap-3 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-turquoise">
             <Image
               src="/assets/logo2.png"
@@ -24,18 +27,20 @@ export default function MyClimbsPage() {
               className="size-12 rounded-full object-contain"
               priority
             />
-            <div className="hidden sm:block">
+            <div className="hidden xl:block">
               <p className="text-base font-semibold">Ambangeg</p>
               <p className="text-xs text-zinc-500">Let&apos;s hike!</p>
             </div>
           </Link>
 
-          <Link
-            href="/"
-            className="rounded-full bg-white/10 px-3.5 py-2 text-xs text-zinc-200 transition-colors hover:bg-white/15 hover:text-turquoise focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-turquoise sm:px-4 sm:text-sm"
-          >
-            Back to discover
-          </Link>
+          <div className="hidden xl:block xl:-translate-x-5 2xl:-translate-x-8">
+            <ExploreMenu active="my-climbs" compact />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <DesktopNavigation />
+            <MobileMenu />
+          </div>
         </header>
 
         <div className="mb-5 lg:mb-6">
@@ -46,9 +51,13 @@ export default function MyClimbsPage() {
           </p>
         </div>
 
-        <ExploreMenu active="my-climbs" />
+        <div className="desktop-sticky-bar lg:sticky lg:top-16 lg:z-30 lg:-mx-2 lg:px-2 lg:py-3 xl:hidden">
+          <ExploreMenu active="my-climbs" />
+        </div>
 
         <MyClimbsGallery />
+
+        <SiteFooter />
       </div>
     </main>
   );
