@@ -12,7 +12,7 @@ const sections = [
     heading: "Information we use",
     paragraphs: [
       "When you sign in with Google, Ambangeg may receive basic account information such as your name and email address through Amazon Cognito. We use this information to identify your account and personalize your profile.",
-      "The current contact form is a user-interface preview and does not submit or store the information entered into it.",
+      "When you use the contact form, we receive the name, email address, subject, and message you provide. Amazon Web Services processes the submission and delivers it to the Ambangeg team by email.",
     ],
   },
   {
@@ -24,7 +24,7 @@ const sections = [
   {
     heading: "How information is used",
     paragraphs: [
-      "We use account information to provide sign-in, display your profile, maintain your session, and improve the Ambangeg experience. We do not sell your personal information.",
+      "We use account information to provide sign-in, display your profile, maintain your session, and improve the Ambangeg experience. Contact-form information is used to respond to your enquiry. We do not sell your personal information.",
     ],
   },
   {

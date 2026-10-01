@@ -16,6 +16,25 @@ This is a statically exported Next.js application. Authentication stays on AWS t
 
 The Google client secret belongs only in Cognito's identity-provider configuration. Never place it in a `NEXT_PUBLIC_` variable or commit it to this repository.
 
+## Contact form email setup
+
+The contact form posts to an Amazon API Gateway HTTP API. A Lambda function validates the request and sends the message through Amazon SES; AWS credentials are never exposed to the browser.
+
+1. Verify `ambangeg.com` (or the exact sender email address) in Amazon SES in your deployment region. If the SES account is still in the sandbox, also verify the destination address.
+2. Create a Cloudflare Turnstile widget for the production hostname. Keep its secret key private and copy its public site key into `NEXT_PUBLIC_TURNSTILE_SITE_KEY` in the frontend build environment.
+3. Install the AWS SAM CLI, authenticate the AWS CLI, and deploy from `frontend/infra/contact-form`:
+
+   ```bash
+   sam build
+   sam deploy --guided
+   ```
+
+4. During the guided deployment, set `TurnstileSecretKey` to the widget's secret key. Set `AllowedOrigins` to the comma-separated site origins that may call the API (for example `https://ambangeg.com,https://www.ambangeg.com`). Do not include a trailing slash.
+5. If the SES sending identity has a default configuration set, enter its name for `ConfigurationSetName`; otherwise leave that parameter blank.
+6. Copy the deployment's `ContactApiUrl` output into `NEXT_PUBLIC_CONTACT_API_URL` in the frontend build environment, then rebuild and deploy the static site.
+
+Cloudflare Turnstile is enforced by the Lambda before any email is sent. API Gateway throttling and the honeypot field remain as additional layers; requests fail closed if Turnstile cannot be verified.
+
 ## Getting Started
 
 First, run the development server:

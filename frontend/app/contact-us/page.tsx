@@ -73,7 +73,7 @@ export default function ContactUsPage() {
                   contact@ambangeg.com
                 </a>
                 <p className="mt-8 text-xs leading-5 text-zinc-500">
-                  The form is currently a UI preview and does not send or store personal information.
+                  Messages are delivered securely through Amazon Web Services. We only use your details to respond to your enquiry.
                 </p>
               </div>
             </aside>
