@@ -1,0 +1,101 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Ambangeg contact form API backed by Lambda and Amazon SES
+
+Parameters:
+  SourceEmail:
+    Type: String
+    Default: contact@ambangeg.com
+    Description: Verified SES address used as the sender
+  SourceIdentity:
+    Type: String
+    Default: ambangeg.com
+    Description: Verified SES domain or email identity used to scope Lambda permissions
+  DestinationEmail:
+    Type: String
+    Default: contact@ambangeg.com
+    Description: Address that receives contact form submissions
+  ConfigurationSetName:
+    Type: String
+    Default: ""
+    Description: Optional default SES configuration set used by the sending identity
+  AllowedOrigins:
+    Type: CommaDelimitedList
+    Default: http://localhost:3000
+    Description: Comma-separated browser origins allowed by CORS, without trailing slashes
+  TurnstileSecretKey:
+    Type: String
+    NoEcho: true
+    Description: Secret key for the Cloudflare Turnstile widget
+
+Conditions:
+  HasConfigurationSet: !Not [!Equals [!Ref ConfigurationSetName, ""]]
+
+Globals:
+  Function:
+    Runtime: python3.13
+    Architectures:
+      - arm64
+    MemorySize: 128
+    Timeout: 10
+    Tracing: Active
+
+Resources:
+  ContactApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins: !Ref AllowedOrigins
+        AllowHeaders:
+          - Content-Type
+        AllowMethods:
+          - POST
+        MaxAge: 86400
+      DefaultRouteSettings:
+        ThrottlingBurstLimit: 5
+        ThrottlingRateLimit: 2
+
+  ContactFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: app.handler
+      Description: Validates Ambangeg contact form submissions and sends them through SES
+      Environment:
+        Variables:
+          SOURCE_EMAIL: !Ref SourceEmail
+          DESTINATION_EMAIL: !Ref DestinationEmail
+          ALLOWED_ORIGINS: !Join [",", !Ref AllowedOrigins]
+          TURNSTILE_SECRET_KEY: !Ref TurnstileSecretKey
+      Policies:
+        - Statement:
+            - Sid: SendContactEmail
+              Effect: Allow
+              Action: ses:SendEmail
+              Resource:
+                - !Sub arn:${AWS::Partition}:ses:${AWS::Region}:${AWS::AccountId}:identity/${SourceIdentity}
+                - !If
+                  - HasConfigurationSet
+                  - !Sub arn:${AWS::Partition}:ses:${AWS::Region}:${AWS::AccountId}:configuration-set/${ConfigurationSetName}
+                  - !Ref AWS::NoValue
+      Events:
+        SubmitContactForm:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ContactApi
+            Path: /contact
+            Method: POST
+            PayloadFormatVersion: "2.0"
+
+  ContactFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${ContactFunction}
+      RetentionInDays: 30
+
+Outputs:
+  ContactApiUrl:
+    Description: Set this value as NEXT_PUBLIC_CONTACT_API_URL in the frontend build
+    Value: !Sub https://${ContactApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/contact
