@@ -47,6 +47,7 @@ export default function MountainsPage() {
         <div className="mb-4">
           <p className="mb-2 hidden text-sm font-medium uppercase tracking-[0.2em] text-turquoise lg:block">Find your next climb</p>
           <h1 className="text-[28px] font-semibold tracking-[-0.04em] lg:text-5xl">Mountains</h1>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400 lg:text-base">From your first summit to your next big climb. Find your trail through the Philippines.</p>
         </div>
 
         <div className="desktop-sticky-bar lg:sticky lg:top-16 lg:z-30 lg:-mx-2 lg:px-2 lg:py-3 xl:hidden">

@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "predev": "node scripts/prepare-map-assets.mjs",
+    "prebuild": "node scripts/prepare-map-assets.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
@@ -14,6 +16,7 @@
     "class-variance-authority": "^0.7.1",
     "cn": "^0.3.0",
     "lucide-react": "^1.46.0",
+    "maplibre-gl": "^6.11.2",
     "next": "^16.3.6",
     "react": "19.2.8",
     "react-dom": "19.2.8",

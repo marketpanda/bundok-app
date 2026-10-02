@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "maplibre-gl/dist/maplibre-gl.css";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
@@ -145,6 +146,42 @@
 }
 
 @layer utilities {
+  .mountain-area-map {
+    background-image: radial-gradient(ellipse at 50% 35%, rgb(67 110 85 / 18%), transparent 70%);
+  }
+
+  .mountain-area-marker {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: #203e32;
+    color: #fff;
+    font: 600 13px var(--font-geist-sans), sans-serif;
+    box-shadow: 0 2px 10px rgb(0 0 0 / 25%);
+    cursor: pointer;
+  }
+
+  .mountain-area-marker:hover,
+  .mountain-area-marker[aria-pressed="true"] {
+    z-index: 1;
+    background: #22c7d6;
+    color: #122723;
+  }
+
+  .mountain-area-marker:focus-visible {
+    outline: 3px solid #1499aa;
+    outline-offset: 3px;
+  }
+
+  .mountain-results {
+    scrollbar-width: thin;
+    scrollbar-color: #52645a #292929;
+    overscroll-behavior-y: contain;
+  }
+
   .no-scrollbar {
     scrollbar-width: none;
   }
