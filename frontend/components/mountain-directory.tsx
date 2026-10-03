@@ -5,12 +5,17 @@ import { MapPin, MountainSnow, Route, Search, X } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { MountainAreaMap } from "@/components/mountain-area-map";
-import { mountainAreas, type MountainAreaId } from "@/data/mountain-areas";
+import { getMountainArea, mountainAreas, type MountainAreaId } from "@/data/mountain-areas";
+import { mapMountains } from "@/data/map-mountains";
 import { Input } from "@/components/ui/input";
 import type { Mountain, MountainDifficulty } from "@/data/mountains";
 import { cn } from "@/lib/utils";
 
 type DifficultyBand = "all" | "easy" | "moderate" | "hard";
+
+function mountainNameKey(name: string) {
+  return name.toLowerCase().replace(/^mt\.\s*/, "mount ");
+}
 
 const difficultyBands: { label: string; value: DifficultyBand; range: string }[] = [
   { label: "All", value: "all", range: "1–9" },
@@ -98,8 +103,20 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
     });
   }, [difficultyBand, mountains, query]);
 
-  const filteredMountains = matchingMountains.filter((mountain) => !area || (area.mountainSlugs as readonly string[]).includes(mountain.slug));
-  const counts = Object.fromEntries(mountainAreas.map((item) => [item.id, matchingMountains.filter((mountain) => (item.mountainSlugs as readonly string[]).includes(mountain.slug)).length])) as Record<MountainAreaId, number>;
+  const matchingMapMountains = mapMountains.filter((mountain) => {
+    if (mountains.some((profile) => mountainNameKey(profile.name) === mountainNameKey(mountain.name))) return false;
+    if (difficultyBand !== "all") return false;
+    const areaName = mountainAreas.find((item) => item.id === getMountainArea(mountain))?.name ?? "";
+    return `${mountain.name} ${mountain.location} ${areaName}`.toLowerCase().includes(query.trim().toLowerCase());
+  });
+  const filteredMountains = matchingMountains.filter((mountain) => !area || getMountainArea(mountain) === area.id);
+  const filteredMapMountains = matchingMapMountains.filter((mountain) => !area || getMountainArea(mountain) === area.id);
+  const resultCount = filteredMountains.length + filteredMapMountains.length;
+  const catalogueCount = mountains.length + mapMountains.filter((mountain) => !mountains.some((profile) => mountainNameKey(profile.name) === mountainNameKey(mountain.name))).length;
+  const counts = Object.fromEntries(mountainAreas.map((item) => [item.id,
+    matchingMountains.filter((mountain) => getMountainArea(mountain) === item.id).length +
+    matchingMapMountains.filter((mountain) => getMountainArea(mountain) === item.id).length,
+  ])) as Record<MountainAreaId, number>;
   const routeCount = filteredMountains.reduce((total, mountain) => total + (mountain.trails?.length ?? 0), 0);
   const hasFilters = query !== "" || difficultyBand !== "all" || selectedArea !== "all";
 
@@ -118,7 +135,7 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
             <h2 id="mountain-explorer-heading" className="mt-1 text-2xl font-semibold tracking-tight">A place for your next adventure</h2>
             <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">Pick an area to discover its mountains, compare the climbs, and explore their trails.</p>
           </div>
-          <span className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-zinc-400">{mountains.length} mountains · {mountainAreas.length} climbing areas</span>
+          <span className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-zinc-400">{catalogueCount} mountains · {mountainAreas.length} climbing areas</span>
         </div>
 
         <div className="overflow-hidden rounded-3xl border border-white/10 bg-[#292929]">
@@ -157,11 +174,11 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
                 </select>
                 <div role="status" aria-live="polite" aria-atomic="true">
                   <h3 className="text-xl font-semibold">{area?.name ?? "Across the Philippines"}</h3>
-                  <p className="mt-1 text-xs leading-5 text-zinc-400">{area?.detail ?? "Find a familiar favorite or somewhere new"} · {filteredMountains.length} {filteredMountains.length === 1 ? "mountain" : "mountains"} · {routeCount} trails</p>
+                  <p className="mt-1 text-xs leading-5 text-zinc-400">{area?.detail ?? "Find a familiar favorite or somewhere new"} · {resultCount} {resultCount === 1 ? "mountain" : "mountains"} · {routeCount} trails</p>
                 </div>
               </div>
               <div className="mountain-results min-h-0 space-y-3 p-4 lg:flex-1 lg:overflow-y-auto" tabIndex={0} aria-label="Mountains in selected area">
-                {filteredMountains.length ? filteredMountains.map((mountain) => (
+                {resultCount ? <>{filteredMountains.map((mountain) => (
                   <article key={mountain.slug} className="rounded-2xl border border-white/[0.07] bg-[#303030] p-4">
                     <div className="flex items-start gap-3">
                       <div className="relative size-16 shrink-0 overflow-hidden rounded-xl"><Image src={mountain.image} alt="" fill sizes="64px" className="object-cover" /></div>
@@ -186,14 +203,21 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
                       </ul>
                     </details> : null}
                   </article>
-                )) : <div className="flex min-h-56 flex-col items-center justify-center px-4 text-center">
+                ))}
+                {filteredMapMountains.map((mountain) => (
+                  <article key={mountain.name} className="rounded-2xl border border-white/[0.07] bg-[#303030] p-4">
+                    <h4 className="flex items-center gap-2 text-base font-semibold"><MountainSnow aria-hidden="true" className="size-4 shrink-0 text-turquoise" />{mountain.name}</h4>
+                    <p className="mt-2 text-xs leading-5 text-zinc-400">{mountain.location}</p>
+                    <p className="mt-3 text-xs leading-5 text-zinc-400">Trail and difficulty details coming soon.</p>
+                  </article>
+                ))}</> : <div className="flex min-h-56 flex-col items-center justify-center px-4 text-center">
                   <MountainSnow aria-hidden="true" className="mb-3 size-8 text-zinc-500" />
                   <h4 className="text-sm font-medium">No mountains match just yet</h4>
                   <p className="mt-2 text-xs leading-5 text-zinc-400">Try another area, a different difficulty, or a broader search.</p>
                   <button type="button" onClick={resetFilters} className="mt-4 min-h-11 rounded-xl border border-turquoise/30 px-4 text-sm text-turquoise focus-visible:outline-turquoise">Show all mountains</button>
                 </div>}
               </div>
-              <p className="border-t border-white/10 px-5 py-3 text-[11px] leading-5 text-zinc-400">Difficulty varies by route. Mountain profiles are pending editorial verification.</p>
+              <p className="border-t border-white/10 px-5 py-3 text-[11px] leading-5 text-zinc-400">Difficulty varies by route. Mountains without difficulty details appear under All. Mountain profiles are pending editorial verification.</p>
             </div>
           </div>
         </div>
