@@ -35,6 +35,37 @@ The contact form posts to an Amazon API Gateway HTTP API. A Lambda function vali
 
 Cloudflare Turnstile is enforced by the Lambda before any email is sent. API Gateway throttling and the honeypot field remain as additional layers; requests fail closed if Turnstile cannot be verified.
 
+## Map assets on S3 / CloudFront
+
+Deploy the full `out/` directory produced by `npm run build`, including
+`maplibre/`. The build prepares the MapLibre module worker and shared module
+with `.js` extensions so S3 upload tools infer a JavaScript content type.
+Both files must be served as `application/javascript` or `text/javascript`;
+`text/plain` prevents browsers from loading the map.
+
+After uploading a new build, invalidate the CloudFront cache for the updated
+site files (including `/maplibre/*`). Verify the response headers for
+`/maplibre/maplibre-gl-worker.js` and `/maplibre/maplibre-gl-shared.js`.
+
+### Fix page refreshes on CloudFront
+
+With an S3 REST origin, CloudFront's default root object only handles `/`.
+The exported `/mountains/` page is stored as `mountains/index.html`, so
+requesting `/mountains/` directly can return S3's XML `AccessDenied` response.
+
+1. Open **CloudFront > Functions** and create a function using runtime
+   **cloudfront-js-2.0**.
+2. Paste the code from `infra/cloudfront/directory-index.js`, save, and publish.
+3. In the site's distribution, edit the **default behavior**. Under
+   **Function associations**, associate this CloudFront Function with
+   **Viewer request**, then save. If a viewer request function already exists,
+   incorporate the rewrite into it instead of replacing its other logic.
+4. Wait for the distribution to deploy, then invalidate `/*` and verify a
+   direct visit and refresh on `/mountains/` and `/my-climbs/`.
+
+This rewrites page requests to their own exported `index.html` and preserves
+asset paths and query strings. Keep the S3 bucket private.
+
 ## Getting Started
 
 First, run the development server:
