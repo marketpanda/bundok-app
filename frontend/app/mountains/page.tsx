@@ -10,8 +10,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { mountains } from "@/data/mountains";
 
 export const metadata: Metadata = {
-  title: "Mountains | Ambangeg",
-  description: "Explore mountain profiles on Ambangeg.",
+  title: "Philippine Mountains & Hiking Guides | Ambangeg",
+  description: "Explore Philippine mountains on an interactive map and plan your climb with hiking guides to Mount Pulag, Mount Apo and Mount Guiting-Guiting.",
 };
 
 export default function MountainsPage() {
@@ -48,6 +48,7 @@ export default function MountainsPage() {
           <p className="mb-2 hidden text-sm font-medium uppercase tracking-[0.2em] text-turquoise lg:block">Find your next climb</p>
           <h1 className="text-[28px] font-semibold tracking-[-0.04em] lg:text-5xl">Mountains</h1>
           <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400 lg:text-base">From your first summit to your next big climb. Find your trail through the Philippines.</p>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">Explore the map to compare mountains by area and difficulty. For a closer look at routes and preparation, start with our guides to <Link href="/mountains/mount-pulag" className="text-turquoise hover:underline">Mount Pulag</Link>, <Link href="/mountains/mount-apo" className="text-turquoise hover:underline">Mount Apo</Link> and <Link href="/mountains/mount-guiting-guiting" className="text-turquoise hover:underline">Mount Guiting-Guiting</Link>.</p>
         </div>
 
         <div className="desktop-sticky-bar lg:sticky lg:top-16 lg:z-30 lg:-mx-2 lg:px-2 lg:py-3 xl:hidden">
