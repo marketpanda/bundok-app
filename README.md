@@ -14,7 +14,7 @@ The home screen keeps the full-width **Flex My Hike** creator above the trail ca
 
 ### Mobile
 
-<img src="docs/screenshots/mobile-home-flex-contained.png" alt="Ambangeg mobile homepage with the Flex My Hike creator" width="390" />
+<img src="docs/screenshots/mobile-home-390w.png" alt="Ambangeg mobile homepage at 390px with the header and Flex My Hike card fully contained" width="390" />
 
 ### Mountains
 
@@ -26,7 +26,7 @@ Browse the mountain catalogue by climbing area, search terms and difficulty. Pin
 
 #### Mobile
 
-<img src="docs/screenshots/mobile-mountains.png" alt="Ambangeg mobile Mountains explorer with Mount Pulag visible above the bottom sheet and its card highlighted" width="390" />
+<img src="docs/screenshots/mobile-mountains-390w.png" alt="Ambangeg mobile Mountains explorer with Mount Pulag visible above the bottom sheet and its card highlighted" width="390" />
 
 ### Mountain guides
 
@@ -44,7 +44,7 @@ The first dedicated guides cover **Mount Pulag**, **Mount Apo** and **Mount Guit
 
 #### Mobile
 
-<img src="docs/screenshots/mobile-pulag-guide.png" alt="Ambangeg mobile Mount Pulag hiking guide" width="390" />
+<img src="docs/screenshots/mobile-pulag-guide-390w.png" alt="Ambangeg mobile Mount Pulag hiking guide" width="390" />
 
 ### My Climbs
 
@@ -56,7 +56,7 @@ The My Climbs collection keeps up to three pinned mountains at the front of the 
 
 #### Mobile
 
-<img src="docs/screenshots/mobile-my-climbs-complete.png" alt="Ambangeg mobile My Climbs page with every mountain photo loaded" width="390" />
+<img src="docs/screenshots/mobile-my-climbs-390w.png" alt="Ambangeg mobile My Climbs page with every mountain photo loaded and cards fully contained" width="390" />
 
 ## Features
 
