@@ -307,8 +307,11 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
           };
           button.addEventListener("mouseenter", showTooltip);
           button.addEventListener("focus", showTooltip);
-          button.addEventListener("mouseleave", () => setAreaTooltip(null));
-          button.addEventListener("blur", () => setAreaTooltip(null));
+          const hideHoverTooltip = () => {
+            if (window.matchMedia("(hover: hover)").matches) setAreaTooltip(null);
+          };
+          button.addEventListener("mouseleave", hideHoverTooltip);
+          button.addEventListener("blur", hideHoverTooltip);
           button.textContent = String(area.mountainSlugs.length);
           button.addEventListener("click", (event) => {
             event.stopPropagation();
