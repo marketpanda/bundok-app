@@ -10,6 +10,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { getMountainGuide, mountainGuides } from "@/data/mountain-guides";
 import { getMountainItineraries } from "@/data/hike-itineraries";
 import { mountains } from "@/data/mountains";
+import { getMountainPhoto, guideDetailPhotos } from "@/data/mountain-photos";
+import { PhotoCredit } from "@/components/photo-credit";
 
 type Props = { params: Promise<{ slug: string }> };
 const siteUrl = "https://ambangeg.com";
@@ -26,12 +28,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!guide) notFound();
   const title = `${guide.title} Hiking Guide: Trails & Preparation | Ambangeg`;
   const url = `${siteUrl}/mountains/${slug}/`;
+  const photo = getMountainPhoto(slug);
   return {
     title,
     description: guide.introduction,
     alternates: { canonical: url },
-    openGraph: { title, description: guide.introduction, url, type: "article", siteName: "Ambangeg" },
-    twitter: { card: "summary", title, description: guide.introduction },
+    openGraph: { title, description: guide.introduction, url, type: "article", siteName: "Ambangeg", images: photo ? [{ url: `${siteUrl}${photo.src}`, alt: photo.alt }] : undefined },
+    twitter: { card: "summary_large_image", title, description: guide.introduction, images: photo ? [`${siteUrl}${photo.src}`] : undefined },
   };
 }
 
@@ -41,6 +44,8 @@ export default async function MountainGuidePage({ params }: Props) {
   const mountain = mountains.find((item) => item.slug === slug);
   if (!guide || !mountain) notFound();
   const related = mountainGuides.filter((item) => item.slug !== slug);
+  const photo = getMountainPhoto(slug);
+  const detailPhoto = guideDetailPhotos[slug];
   const breadcrumbs = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -68,6 +73,10 @@ export default async function MountainGuidePage({ params }: Props) {
         </nav>
 
         <article>
+          {photo && <figure className="mb-6">
+            <div className="relative aspect-[16/9] overflow-hidden rounded-3xl"><Image src={photo.src} alt={photo.alt} fill priority sizes="(min-width: 1152px) 1088px, 100vw" className="object-cover" /></div>
+            <figcaption className="mt-3"><PhotoCredit photo={photo} caption /></figcaption>
+          </figure>}
           <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#203e32] via-[#263432] to-[#202020] p-6 sm:p-10">
             <MountainSnow aria-hidden="true" className="pointer-events-none absolute -right-8 -bottom-8 size-60 text-turquoise/5 sm:size-80" />
             <div className="relative max-w-3xl">
@@ -89,6 +98,10 @@ export default async function MountainGuidePage({ params }: Props) {
                 <section key={section.heading} id={`section-${index}`} aria-labelledby={`heading-${index}`} className="mb-9 scroll-mt-6">
                   <h2 id={`heading-${index}`} className="text-2xl font-semibold tracking-tight">{section.heading}</h2>
                   {section.paragraphs.map((paragraph) => <p key={paragraph} className="mt-4 text-sm leading-7 text-zinc-300 sm:text-base">{paragraph}</p>)}
+                  {index === 1 && detailPhoto && <figure className="mt-6">
+                    <div className="relative aspect-[3/2] overflow-hidden rounded-2xl"><Image src={detailPhoto.src} alt={detailPhoto.alt} fill sizes="(min-width: 1024px) 720px, 100vw" className="object-cover" /></div>
+                    <figcaption className="mt-2"><PhotoCredit photo={detailPhoto} caption /></figcaption>
+                  </figure>}
                 </section>
               ))}
               <section aria-labelledby="sources-heading" className="rounded-2xl border border-white/10 bg-[#292929] p-5">

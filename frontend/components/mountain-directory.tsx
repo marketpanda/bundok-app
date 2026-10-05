@@ -2,10 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, MapPin, MountainSnow, Route, Search, X } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChevronDown, Info, MapPin, MountainSnow, Route, Search, X } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 
 import { MountainAreaMap } from "@/components/mountain-area-map";
+import { PhotoCredit } from "@/components/photo-credit";
+import { getMountainPhoto } from "@/data/mountain-photos";
 import { getMountainArea, mountainAreas, type MountainAreaId } from "@/data/mountain-areas";
 import { hikeItineraries, getMountainItineraries, resolveHikeTarget, type HikeItinerary } from "@/data/hike-itineraries";
 import { mapMountains, mountainDifficultyLabel, type PublishedTrail } from "@/data/map-mountains";
@@ -13,6 +15,8 @@ import { getMountainGuide } from "@/data/mountain-guides";
 import { Input } from "@/components/ui/input";
 import type { Mountain, MountainDifficulty, Trail } from "@/data/mountains";
 import { cn } from "@/lib/utils";
+
+import { getMountainMapLayer } from "@/data/mountain-map-layers";
 
 type DifficultyBand = "all" | "easy" | "moderate" | "hard";
 
@@ -40,14 +44,15 @@ function isPublishedTrail(trail: Trail): trail is PublishedTrail {
 
 function MountainCard({ mountain }: { mountain: Mountain }) {
   const guide = getMountainGuide(mountain.slug);
+  const photo = getMountainPhoto(mountain.slug);
   return (
     <article className="group overflow-hidden rounded-3xl border border-white/[0.06] bg-[#303030] shadow-sm transition-transform duration-300 hover:-translate-y-1">
       <div className="relative aspect-[4/3] overflow-hidden bg-zinc-800">
         {getMountainItineraries(mountain.slug).length > 0 && <div className="flex flex-wrap gap-2">{getMountainItineraries(mountain.slug).map((itinerary) => <a key={itinerary.slug} href={`#itinerary-${itinerary.slug}`} className="text-xs text-turquoise hover:underline">{itinerary.name}</a>)}</div>}
         {guide && <Link href={`/mountains/${mountain.slug}`} aria-label={`Read the ${guide.title} hiking guide`} className="absolute inset-0 z-10 rounded-t-3xl focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-turquoise" />}
         <Image
-          src={mountain.image}
-          alt={`${mountain.name} in ${mountain.location}`}
+          src={photo?.src ?? mountain.image}
+          alt={photo?.alt ?? `${mountain.name} in ${mountain.location}`}
           fill
           sizes="(min-width: 1280px) 22vw, (min-width: 768px) 40vw, 90vw"
           className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -66,6 +71,7 @@ function MountainCard({ mountain }: { mountain: Mountain }) {
       </div>
 
       <div className="space-y-4 p-4">
+        {photo && <PhotoCredit photo={photo} />}
         <div className="flex items-center justify-between text-xs text-zinc-400">
           <span className="flex items-center gap-1.5">
             <MountainSnow className="size-4 text-turquoise" />
@@ -98,8 +104,12 @@ function MountainCard({ mountain }: { mountain: Mountain }) {
 }
 
 function ItineraryCard({ itinerary, onSelect, selected = false, anchor = false }: { itinerary: HikeItinerary; onSelect: () => void; selected?: boolean; anchor?: boolean }) {
+  const photo = getMountainPhoto(itinerary.slug);
   return (
-    <article id={anchor ? `itinerary-${itinerary.slug}` : undefined} className={cn("rounded-3xl border bg-[#303030] p-5", selected ? "border-sky-400/60" : "border-white/[0.07]")}>
+    <article id={anchor ? `itinerary-${itinerary.slug}` : undefined} className={cn("overflow-hidden rounded-3xl border bg-[#303030]", selected ? "border-sky-400/60" : "border-white/[0.07]")}>
+      {anchor && photo && <div className="relative aspect-[4/3] overflow-hidden bg-zinc-800"><Image src={photo.src} alt={photo.alt} fill sizes="(min-width: 1280px) 22vw, (min-width: 768px) 40vw, 90vw" className="object-cover object-[center_65%]" /></div>}
+      <div className="p-4">
+      {anchor && photo && <div className="mb-4"><PhotoCredit photo={photo} caption /></div>}
       <p className="text-xs font-semibold uppercase tracking-wider text-turquoise">{itinerary.category === "multi-point" ? "Mountain circuit" : itinerary.category === "cross-country" ? "Cross-country traverse" : "Mountain combination"}</p>
       <h3 className="mt-2 text-xl font-semibold">{itinerary.name}</h3>
       <p className="mt-1 text-xs text-zinc-400">{itinerary.location}</p>
@@ -114,6 +124,7 @@ function ItineraryCard({ itinerary, onSelect, selected = false, anchor = false }
         })}</ul>
       </details>}
       <button type="button" onClick={onSelect} className="mt-3 min-h-11 rounded text-sm font-medium text-turquoise hover:underline focus-visible:outline-2 focus-visible:outline-turquoise">Show on map</button>
+      </div>
     </article>
   );
 }
@@ -123,13 +134,25 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
   const [difficultyBand, setDifficultyBand] = useState<DifficultyBand>("all");
   const [selectedArea, setSelectedArea] = useState<MountainAreaId | "all">("all");
   const [selectedMountain, setSelectedMountain] = useState<{ name: string; slug?: string } | null>(null);
+  const [revealAllMountains, setRevealAllMountains] = useState(false);
   const [listLimit, setListLimit] = useState(60);
   const [listOpen, setListOpen] = useState(true);
+  const [sheetHeight, setSheetHeight] = useState(2 / 3);
+  const [draggingSheet, setDraggingSheet] = useState(false);
+  const sheet = useRef<HTMLDivElement>(null);
+  const sheetDrag = useRef<{ startY: number; startRatio: number; moved: boolean; ratio: number } | null>(null);
+  const onMapInteraction = useCallback((clearSelection = false) => {
+    if (!window.matchMedia("(max-width: 1023px)").matches) return;
+    setListOpen(true);
+    setSheetHeight(0.4);
+    if (clearSelection) setSelectedMountain(null);
+  }, []);
   const selectedCard = useRef<HTMLElement | null>(null);
   const results = useRef<HTMLDivElement | null>(null);
   const selectMountain = useCallback((name: string, areaId: MountainAreaId | undefined, slug?: string) => {
     setSelectedMountain({ name: mountainNameKey(name), slug });
     setListOpen(true);
+    if (window.matchMedia("(max-width: 1023px)").matches) setSheetHeight(0.4);
     setSelectedArea(areaId ?? "all");
     setQuery("");
     setDifficultyBand("all");
@@ -194,6 +217,11 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
     matchingMountains.filter((mountain) => getMountainArea(mountain) === item.id).length +
     matchingMapMountains.filter((mountain) => getMountainArea(mountain) === item.id).length,
   ])) as Record<MountainAreaId, number>;
+  const visibleOnMap = (mountain: { slug: string }) => revealAllMountains || getMountainMapLayer(mountain.slug) === "primary" || mountain.slug === selectedMountain?.slug;
+  const mapCounts = Object.fromEntries(mountainAreas.map((item) => [item.id,
+    matchingMountains.filter((mountain) => getMountainArea(mountain) === item.id && visibleOnMap(mountain)).length +
+    matchingMapMountains.filter((mountain) => getMountainArea(mountain) === item.id && visibleOnMap(mountain)).length,
+  ])) as Record<MountainAreaId, number>;
   const routeCount = [...filteredMountains, ...filteredMapMountains].reduce((total, mountain) => total + (mountain.trails?.length ?? 0), 0);
   const hasFilters = query !== "" || difficultyBand !== "all" || selectedArea !== "all";
 
@@ -245,13 +273,52 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
           </div>
 
           <div className="relative grid h-[85svh] min-h-[620px] max-h-[850px] lg:h-auto lg:min-h-0 lg:max-h-none lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.85fr)] xl:grid-cols-[minmax(0,1.25fr)_minmax(340px,1fr)]">
-            <MountainAreaMap selectedArea={selectedArea} selectedMountain={selectedMountain} listOpen={listOpen} onSelect={setSelectedArea} onSelectMountain={selectMountain} counts={counts} />
-            <div id="mountain-area-results" className={cn("absolute inset-x-0 bottom-0 z-20 flex min-w-0 flex-col overflow-hidden rounded-t-3xl border-t border-white/10 bg-[#292929] shadow-[0_-8px_30px_rgba(0,0,0,0.3)] transition-[height] duration-300 lg:static lg:z-auto lg:h-[600px] lg:rounded-none lg:border-l lg:border-t-0 lg:shadow-none", listOpen ? "h-2/3" : "h-14")}>
-              <button type="button" onClick={() => setListOpen((open) => !open)} aria-expanded={listOpen} aria-controls="mountain-list-content" className="flex h-14 shrink-0 items-center justify-between px-5 text-sm font-medium text-zinc-200 lg:hidden">
-                <span>{listOpen ? "Hide mountain list" : `Show mountains (${resultCount})`}</span>
-                <ChevronDown aria-hidden="true" className={cn("size-4 transition-transform", !listOpen && "rotate-180")} />
+            <MountainAreaMap revealAllMountains={revealAllMountains} selectedArea={selectedArea} selectedMountain={selectedMountain} listOpen={listOpen} sheetHeight={sheetHeight} onMapInteraction={onMapInteraction} onSelect={setSelectedArea} onSelectMountain={selectMountain} counts={mapCounts} />
+            <div ref={sheet} id="mountain-area-results" style={{ "--sheet-height": listOpen ? `${sheetHeight * 100}%` : "56px" } as CSSProperties} className={cn("absolute inset-x-0 bottom-0 z-20 flex h-[var(--sheet-height)] min-h-14 min-w-0 flex-col overflow-hidden rounded-t-3xl border-t border-white/10 bg-[#292929] shadow-[0_-8px_30px_rgba(0,0,0,0.3)] lg:static lg:z-auto lg:h-[600px] lg:rounded-none lg:border-l lg:border-t-0 lg:shadow-none", !draggingSheet && "transition-[height] duration-300 motion-reduce:transition-none")}>
+              <button type="button" aria-label="Adjust mountain panel height" aria-expanded={listOpen} aria-controls="mountain-list-content" onClick={() => {
+                if (sheetDrag.current?.moved) { sheetDrag.current = null; return; }
+                setListOpen((open) => !open);
+                setSheetHeight(2 / 3);
+              }} onPointerDown={(event) => {
+                if (event.button !== 0) return;
+                event.currentTarget.setPointerCapture(event.pointerId);
+                const bounds = sheet.current?.parentElement?.getBoundingClientRect();
+                const ratio = listOpen ? sheetHeight : 56 / (bounds?.height ?? 620);
+                sheetDrag.current = { startY: event.clientY, startRatio: ratio, moved: false, ratio };
+                setDraggingSheet(true);
+              }} onPointerMove={(event) => {
+                const drag = sheetDrag.current;
+                const bounds = sheet.current?.parentElement?.getBoundingClientRect();
+                if (!drag || !bounds || !event.currentTarget.hasPointerCapture(event.pointerId)) return;
+                if (Math.abs(event.clientY - drag.startY) > 4) drag.moved = true;
+                if (!drag.moved) return;
+                drag.ratio = Math.max(56 / bounds.height, Math.min(0.9, drag.startRatio + (drag.startY - event.clientY) / bounds.height));
+                setListOpen(true);
+                setSheetHeight(drag.ratio);
+              }} onPointerUp={(event) => {
+                if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
+                event.currentTarget.releasePointerCapture(event.pointerId);
+                setDraggingSheet(false);
+                const drag = sheetDrag.current;
+                if (!drag?.moved) return;
+                const snap = [0, 0.4, 2 / 3, 0.9].reduce((closest, value) => Math.abs(value - drag.ratio) < Math.abs(closest - drag.ratio) ? value : closest);
+                setListOpen(snap !== 0);
+                setSheetHeight(snap || 0.4);
+              }} onPointerCancel={() => { sheetDrag.current = null; setDraggingSheet(false); }} onKeyDown={(event) => {
+                if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return;
+                event.preventDefault();
+                const next = Math.max(0, Math.min(0.9, (listOpen ? sheetHeight : 0) + (event.key === "ArrowUp" ? 0.25 : -0.25)));
+                setListOpen(next > 0.15);
+                setSheetHeight(Math.max(0.4, next));
+              }} className="flex h-14 shrink-0 touch-none select-none flex-col items-center justify-start gap-2 px-5 pt-2 text-xs font-medium text-zinc-400 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-turquoise lg:hidden">
+                <span aria-hidden="true" className="h-1 w-10 rounded-full bg-zinc-500" />
+                <span>{listOpen ? "Mountains · Drag to adjust" : `Show mountains (${resultCount})`}</span>
               </button>
-              <div id="mountain-list-content" className={cn("min-h-0 flex-1 flex-col lg:flex", listOpen ? "flex" : "hidden")}>
+              <div id="mountain-list-content" onClick={() => {
+                if (!window.matchMedia("(max-width: 1023px)").matches) return;
+                setListOpen(true);
+                setSheetHeight((height) => Math.max(height, 2 / 3));
+              }} className={cn("min-h-0 flex-1 flex-col lg:flex", listOpen ? "flex" : "hidden")}>
               <div className="shrink-0 space-y-2 border-b border-white/10 px-4 pb-3 lg:space-y-4 lg:p-5">
                 <div className="flex items-center justify-between gap-3">
                   <label htmlFor="mountain-area" className="text-xs font-medium text-zinc-400">Your climbing area</label>
@@ -263,6 +330,18 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
                   {mountainAreas.map((item) => <option key={item.id} value={item.id}>{item.name} ({counts[item.id]})</option>)}
                 </select>
                 <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-zinc-400" />
+                </div>
+                <div className="flex items-center justify-end gap-1">
+                    <button type="button" role="switch" aria-checked={revealAllMountains} onClick={() => setRevealAllMountains((visible) => !visible)} className="flex min-h-9 items-center gap-2 rounded text-xs focus-visible:outline-2 focus-visible:outline-turquoise">
+                      <span aria-hidden="true" className={cn("flex h-6 w-11 shrink-0 items-center rounded-full p-0.5 transition-colors", revealAllMountains ? "bg-turquoise" : "bg-zinc-600")}>
+                        <span className={cn("size-5 rounded-full bg-white shadow-sm transition-transform", revealAllMountains ? "translate-x-5" : "translate-x-0")} />
+                      </span>
+                      Reveal All Mountains
+                    </button>
+                    <span className="group relative">
+                      <button type="button" aria-label="About map visibility" aria-describedby="map-visibility-help" className="flex size-7 items-center justify-center rounded text-zinc-400 hover:text-zinc-200 focus-visible:outline-2 focus-visible:outline-turquoise"><Info aria-hidden="true" className="size-3.5" /></button>
+                      <span id="map-visibility-help" role="tooltip" className="pointer-events-none absolute right-0 top-full z-20 mt-2 hidden w-64 rounded-lg border border-white/10 bg-[#202020] p-3 text-xs leading-5 text-zinc-200 shadow-lg group-hover:block group-focus-within:block">The map shows 800 priority mountains to reduce clutter. Reveal all mountains, or select any mountain in the list to show it.</span>
+                    </span>
                 </div>
                 <div role="status" aria-live="polite" aria-atomic="true">
                   <h3 className="text-xl font-semibold">{area?.name ?? "Across the Philippines"}</h3>
@@ -302,6 +381,7 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
                   <article key={mountain.slug} onClick={(event) => selectCard(event, mountain)} ref={selectedMountain?.slug === mountain.slug ? selectedCard : undefined} className={cn("cursor-pointer rounded-2xl border bg-[#303030] p-4 transition-[border-color,box-shadow] duration-300", selectedMountain?.slug === mountain.slug ? "border-sky-400/60 shadow-[0_0_16px_rgba(56,189,248,0.16)]" : "border-white/[0.07]")}>
                     <h4 className="flex items-center gap-2 text-base font-semibold"><MountainSnow aria-hidden="true" className="size-4 shrink-0 text-turquoise" /><button type="button" onClick={() => selectMountain(mountain.name, getMountainArea(mountain), mountain.slug)} className="rounded text-left transition-colors hover:text-sky-300 focus-visible:outline-2 focus-visible:outline-sky-400" aria-label={`Show ${mountain.name} on map`}>{mountain.name}</button></h4>
                     <p className="mt-2 text-xs leading-5 text-zinc-400">{mountain.location}</p>
+                    {getMountainMapLayer(mountain.slug) === "secondary" && <p className="mt-2 text-xs text-violet-300">Secondary map layer{!revealAllMountains ? (selectedMountain?.slug === mountain.slug ? " · Visible while selected" : " · Select to reveal on map") : " · Visible on map"}</p>}
                     <div className="mt-3 flex flex-wrap gap-3 text-xs">
                       {mountain.elevationMeters !== undefined && <span className="text-turquoise">{mountain.elevationMeters.toLocaleString("en-US")} m</span>}
                       <span className={mountain.difficulty ? "text-zinc-200" : "text-zinc-400"}>{mountainDifficultyLabel(mountain)}</span>
@@ -340,11 +420,12 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
           <p className="mt-2 text-sm text-zinc-400">Iconic mountains and collective hiking itineraries from across the islands.</p>
         </div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {mountains.filter((mountain) => mountain.slug === "mount-ulap").map((mountain) => <MountainCard key={mountain.slug} mountain={mountain} />)}
           {hikeItineraries.map((itinerary) => <ItineraryCard key={itinerary.slug} itinerary={itinerary} anchor onSelect={() => {
             selectMountain(itinerary.name, getMountainArea(itinerary));
             document.querySelector(".mountain-area-map")?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start" });
           }} />)}
-          {mountains.map((mountain) => <MountainCard key={mountain.slug} mountain={mountain} />)}
+          {mountains.filter((mountain) => mountain.slug !== "mount-ulap").map((mountain) => <MountainCard key={mountain.slug} mountain={mountain} />)}
         </div>
       </section>
     </div>

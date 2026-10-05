@@ -5,9 +5,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* MapLibre ships an unlayered Arial rule; match its cascade priority. */
+.maplibregl-map {
+  font-family: var(--font-geist-sans), sans-serif;
+}
+
 /* Keep popup overrides outside layers, matching MapLibre's imported CSS. */
 .mountain-peak-popup {
-  z-index: 6;
+  z-index: 200;
 }
 
 .mountain-peak-popup .maplibregl-popup-content {
@@ -40,7 +45,7 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-artistic: var(--font-caveat);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-manrope);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -172,6 +177,9 @@
   html {
     @apply font-sans;
   }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
 }
 
 @layer utilities {
@@ -195,10 +203,56 @@
   }
 
   .mountain-area-marker:hover,
-  .mountain-area-marker[aria-pressed="true"] {
-    z-index: 1;
-    background: #22c7d6;
-    color: #122723;
+  .mountain-area-marker:focus-visible {
+    z-index: 100;
+  }
+
+  .mountain-area-marker::before,
+  .mountain-peak-marker::before {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    padding: 3px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from 35deg,
+      color-mix(in srgb, var(--area-color, #203e32) 65%, white),
+      var(--area-color, #203e32),
+      color-mix(in srgb, var(--area-color, #203e32) 75%, #7c3aed),
+      color-mix(in srgb, var(--area-color, #203e32) 65%, white)
+    );
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 150ms ease;
+    pointer-events: none;
+  }
+
+  .mountain-area-marker::after,
+  .mountain-peak-marker::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border: 1px solid white;
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 150ms ease;
+    pointer-events: none;
+  }
+
+  .mountain-area-marker:hover::before,
+  .mountain-area-marker:focus-visible::before,
+  .mountain-area-marker[aria-pressed="true"]::before,
+  .mountain-area-marker:hover::after,
+  .mountain-area-marker:focus-visible::after,
+  .mountain-area-marker[aria-pressed="true"]::after,
+  .mountain-peak-marker:hover::before,
+  .mountain-peak-marker:focus-visible::before,
+  .mountain-peak-marker[aria-pressed="true"]::before,
+  .mountain-peak-marker:hover::after,
+  .mountain-peak-marker:focus-visible::after,
+  .mountain-peak-marker[aria-pressed="true"]::after {
+    opacity: 1;
   }
 
   .mountain-area-marker:focus-visible {
@@ -218,7 +272,7 @@
     width: 26px;
     height: 26px;
     place-items: center;
-    border: 2px solid white;
+    border: 2px solid var(--area-color, #1499aa);
     border-radius: 50%;
     background: #1499aa;
     color: white;
@@ -244,10 +298,7 @@
   .mountain-peak-marker:hover,
   .mountain-peak-marker[aria-pressed="true"],
   .mountain-peak-marker:focus-visible {
-    z-index: 3;
-    background: #203e32;
-    outline: 2px solid #22c7d6;
-    outline-offset: 2px;
+    z-index: 100;
   }
 
   .mountain-peak-marker:hover,
