@@ -18,15 +18,15 @@ The home screen keeps the full-width **Flex My Hike** creator above the trail ca
 
 ### Mountains
 
-Browse the mountain catalogue by climbing area, search terms and difficulty. Pins and cards share selection, with smooth camera movement, a subtle blue card highlight and a separate **View mountain guide** link. The reset button shows zoom steps relative to the country view.
+Browse all 2,015 mountains by climbing area, search terms and difficulty. The map starts with 800 priority mountains; **Reveal All Mountains** displays the secondary layer, while selecting a hidden mountain reveals that peak individually. Region colors, touch-friendly area previews and shareable map coordinates help exploration. The mobile list has a draggable height handle, and touch gestures keep the map upright.
 
 #### Desktop
 
-![Ambangeg desktop Mountains explorer with Mount Pulag selected in the map and list](docs/screenshots/desktop-mountains.png)
+![Ambangeg desktop Mountains explorer with Mount Ulap selected and credited prominent mountain cards](docs/screenshots/desktop-mountains.png)
 
 #### Mobile
 
-<img src="docs/screenshots/mobile-mountains-390w.png" alt="Ambangeg mobile Mountains explorer with Mount Pulag visible above the bottom sheet and its card highlighted" width="390" />
+<img src="docs/screenshots/mobile-mountains-390w.png" alt="Ambangeg mobile Mountains explorer with Mount Ulap selected above the adjustable bottom sheet" width="390" />
 
 ### Mountain guides
 
@@ -64,7 +64,9 @@ The My Climbs collection keeps up to three pinned mountains at the front of the 
 - Interactive Philippine mountain map with climbing areas and labeled peak pins
 - Search and difficulty filters for the mountain directory
 - Synchronized map and card selection with smooth zoom and scrolling
-- Collapsible mobile mountain list over the map
+- Draggable mobile mountain list over the map
+- Primary and secondary map layers with shareable map position and zoom
+- Collective mountain itineraries and credited prominent mountain photography
 - Static hiking guides for Pulag, Apo and Guiting-Guiting
 - Per-guide titles, descriptions, canonical URLs and breadcrumb structured data
 - Personalized mountain bag tags with a downloadable PNG
@@ -92,6 +94,8 @@ The frontend exports static HTML with Next.js. Authentication uses Amazon Cognit
 Mountain profiles live in `frontend/data/mountains.ts`, map coordinates in `frontend/data/map-mountains.ts`, and published guide content in `frontend/data/mountain-guides.ts`. Guide pages are generated at build time from the published guide list; adding a profile alone does not publish a guide. Review sources and update the guide’s review date when changing content.
 
 Screenshots show the current static export at desktop and mobile sizes. Map imagery is supplied by OpenFreeMap with OpenStreetMap data and attribution displayed in the app.
+
+The [secondary map mountain list](frontend/docs/secondary-map-mountains.md) documents the hidden layer and selection policy. [Mountain photo credits](frontend/docs/mountain-photo-credits.md) record the photographers, licenses and source links for prominent cards and illustrated guides.
 
 ## Run locally
 

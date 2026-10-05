@@ -96,7 +96,11 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This project uses `next/font` to load Geist for body text, Manrope for headings and map labels, and Caveat for handwritten accents.
+
+## Refresh screenshots
+
+Build the static export, serve `out/` at `http://127.0.0.1:4173`, and run `node scripts/capture-screenshots.cjs` with Playwright available and Chrome installed. An optional first argument specifies the Playwright module path; `SCREENSHOT_ORIGIN` overrides the server URL. The script updates desktop and mobile previews in `../docs/screenshots` and checks map counts, mobile area previews and shared map coordinates.
 
 ## Learn More
 
