@@ -55,6 +55,19 @@ const draftProfileFields: Pick<
 
 export const mountains: Mountain[] = [
   {
+    slug: "mount-ulap",
+    name: "Mt. Ulap",
+    location: "Itogon, Benguet",
+    elevationMeters: 1846,
+    difficulty: 3,
+    ...draftProfileFields,
+    duration: "Day hike; 2–3 hours to the summit",
+    summary: "Pine forests, grassy ridges and wide Cordillera views along the Ampucao–Sta. Fe Eco-Trail.",
+    image: "/images/mountains/ulap-gungal.jpg",
+    trails: [{ name: "Ampucao–Sta. Fe Eco-Trail", difficulty: 3, duration: "1 day / 2–3 hours to the summit" }],
+    sources: [{ label: "Pinoy Mountaineer: Mt. Ulap Eco-Trail", url: "https://www.pinoymountaineer.com/2015/11/mt-ulap-1846m-in-itogon-benguet.html" }],
+  },
+  {
     slug: "mount-pulag",
     name: "Mt. Pulag",
     location: "Benguet",

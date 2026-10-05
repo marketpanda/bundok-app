@@ -29,6 +29,36 @@ export const mountainAreas = [
 
 export type MountainAreaId = (typeof mountainAreas)[number]["id"];
 
+// Stable colors shared by polygons, area badges, itinerary pins, and peaks.
+export const mountainAreaColors: Record<MountainAreaId, string> = {
+  cordillera: "#2563eb", "central-luzon": "#d97706", calabarzon: "#059669",
+  romblon: "#9333ea", apo: "#dc2626", ilocos: "#0891b2",
+  bicol: "#db2777", mindoro: "#65a30d", marinduque: "#7c3aed",
+  palawan: "#0d9488", panay: "#ea580c", negros: "#4f46e5",
+  cebu: "#c026d3", leyte: "#0284c7", camiguin: "#b45309",
+  bukidnon: "#16a34a", "south-cotabato": "#be123c", "cagayan-valley": "#4338ca",
+  "central-visayas": "#a16207", "eastern-visayas": "#0369a1", "northern-mindanao": "#047857",
+  caraga: "#a21caf", zamboanga: "#c2410c", barmm: "#6d28d9",
+};
+
+export const mountainAreaProvinces: Record<MountainAreaId, string> = {
+  cordillera: "Benguet, Ifugao, Mountain Province, Abra, Apayao, Kalinga and Nueva Vizcaya",
+  "central-luzon": "Zambales, Tarlac, Pampanga, Bataan, Bulacan, Nueva Ecija and Aurora",
+  calabarzon: "Cavite, Laguna, Batangas, Rizal and Quezon", romblon: "Romblon, including Sibuyan Island",
+  apo: "Davao provinces and Cotabato", ilocos: "Ilocos Norte, Ilocos Sur, La Union and Pangasinan",
+  bicol: "Albay, Camarines Norte, Camarines Sur, Sorsogon, Masbate and Catanduanes",
+  mindoro: "Oriental Mindoro and Occidental Mindoro", marinduque: "Marinduque", palawan: "Palawan",
+  panay: "Antique, Aklan, Iloilo, Capiz and Guimaras", negros: "Negros Occidental and Negros Oriental",
+  cebu: "Cebu", leyte: "Leyte and Southern Leyte", camiguin: "Camiguin", bukidnon: "Bukidnon",
+  "south-cotabato": "South Cotabato, Sarangani and Sultan Kudarat",
+  "cagayan-valley": "Batanes, Cagayan, Isabela and Quirino", "central-visayas": "Bohol and Siquijor",
+  "eastern-visayas": "Samar, Northern Samar, Eastern Samar and Biliran",
+  "northern-mindanao": "Misamis Occidental, Misamis Oriental and Lanao del Norte",
+  caraga: "Agusan del Norte, Agusan del Sur, Surigao del Norte, Surigao del Sur and Dinagat Islands",
+  zamboanga: "Zamboanga del Norte, Zamboanga del Sur and Zamboanga Sibugay",
+  barmm: "Lanao del Sur, Maguindanao, Basilan, Sulu and Tawi-Tawi catalogue areas",
+};
+
 // Match the catalogue's province labels, keeping map and directory grouping identical.
 export function getMountainArea(mountain: { location: string }): MountainAreaId | undefined {
   const location = mountain.location;

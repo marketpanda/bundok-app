@@ -16,6 +16,19 @@ const { mapMountains, mountainDifficultyLabel } = require(path.join(root, "data/
 const { getMountainArea } = require(path.join(root, "data/mountain-areas.ts"));
 const { mountains } = require(path.join(root, "data/mountains.ts"));
 const overrides = require(path.join(root, "data/map-mountain-overrides.json"));
+const { primaryMapMountains, secondaryMapMountains, getVisibleSecondaryMountains, getMountainMapLayer, mountainMapFeatures } = require(path.join(root, "data/mountain-map-layers.ts"));
+
+assert.equal(primaryMapMountains.length, 800);
+assert.equal(primaryMapMountains.length + secondaryMapMountains.length, mapMountains.length);
+assert.equal(new Set([...primaryMapMountains, ...secondaryMapMountains].map((entry) => entry.slug)).size, mapMountains.length);
+assert(mapMountains.filter((entry) => entry.trails?.length).every((entry) => getMountainMapLayer(entry.slug) === "primary"));
+assert.equal(getVisibleSecondaryMountains(false).length, 0);
+const secondary = secondaryMapMountains[0];
+assert.deepEqual(getVisibleSecondaryMountains(false, secondary.slug), [secondary]);
+assert.deepEqual(getVisibleSecondaryMountains(false, secondaryMapMountains[1].slug), [secondaryMapMountains[1]]);
+assert.equal(getVisibleSecondaryMountains(false, primaryMapMountains[0].slug).length, 0);
+assert.equal(getVisibleSecondaryMountains(true, secondary.slug).length, secondaryMapMountains.length);
+assert.equal(mountainMapFeatures([secondary]).features[0].properties.mapLayer, "secondary");
 
 assert(mapMountains.length > 1800, "National import must retain nationwide coverage");
 assert.equal(new Set(mapMountains.map((entry) => entry.slug)).size, mapMountains.length, "Every peak needs a distinct selection ID");
