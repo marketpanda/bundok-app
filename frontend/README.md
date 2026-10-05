@@ -2,6 +2,18 @@
 
 This is a statically exported Next.js application. Authentication stays on AWS through Amazon Cognito; Google is used only as the federated identity provider.
 
+The app includes an interactive mountain directory, a mobile map/list overlay, hiking guides for Pulag, Apo and Guiting-Guiting, personalized bag tags and a My Climbs gallery. Desktop and mobile screenshots are in the [project README](../README.md).
+
+## Mountain guides
+
+Published guides are defined in `data/mountain-guides.ts` and rendered by `app/mountains/[slug]/page.tsx`. `generateStaticParams` exports only those guides, using profile facts from `data/mountains.ts`. Each page includes its own metadata, canonical URL, breadcrumb structured data and source references.
+
+- `/mountains/mount-pulag/`
+- `/mountains/mount-apo/`
+- `/mountains/mount-guiting-guiting/`
+
+The mountain directory links to these guides from its introduction, map results and prominent cards. Card selection continues to focus the map; the guide link opens the full page. Canonical guide URLs use `https://ambangeg.com`; update `siteUrl` in the guide page if the production domain changes.
+
 ## Google sign-in setup
 
 1. In Amazon Cognito, create a user pool and an app client **without a client secret** (this is a browser app).
