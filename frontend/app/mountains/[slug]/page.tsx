@@ -8,6 +8,7 @@ import { DesktopNavigation } from "@/components/desktop-navigation";
 import { MobileMenu } from "@/components/mobile-menu";
 import { SiteFooter } from "@/components/site-footer";
 import { getMountainGuide, mountainGuides } from "@/data/mountain-guides";
+import { getMountainItineraries } from "@/data/hike-itineraries";
 import { mountains } from "@/data/mountains";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -111,6 +112,10 @@ export default async function MountainGuidePage({ params }: Props) {
           </div>
         </article>
 
+        {getMountainItineraries(slug).length > 0 && <section aria-labelledby="itineraries-heading" className="mt-8 rounded-2xl border border-white/10 p-5">
+          <h2 id="itineraries-heading" className="text-xl font-semibold">Hike this mountain as part of an itinerary</h2>
+          <div className="mt-3 flex flex-wrap gap-3">{getMountainItineraries(slug).map((itinerary) => <Link key={itinerary.slug} href={`/mountains/#itinerary-${itinerary.slug}`} className="min-h-11 text-sm text-turquoise hover:underline">{itinerary.name}</Link>)}</div>
+        </section>}
         <section aria-labelledby="related-heading" className="mt-12 border-t border-white/10 pt-8">
           <h2 id="related-heading" className="text-2xl font-semibold">Explore more mountain guides</h2>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">{related.map((item) => <Link key={item.slug} href={`/mountains/${item.slug}`} className="rounded-2xl border border-white/10 bg-[#292929] p-5 transition-colors hover:border-turquoise/40 focus-visible:outline-2 focus-visible:outline-turquoise"><h3 className="font-semibold">{item.title}</h3><p className="mt-2 text-sm leading-6 text-zinc-400">{item.introduction}</p><span className="mt-4 inline-block text-sm text-turquoise">View mountain guide →</span></Link>)}</div>

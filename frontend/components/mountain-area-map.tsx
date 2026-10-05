@@ -1,12 +1,18 @@
 "use client";
 
-import type { Map as MapLibreMap } from "maplibre-gl";
+import type { GeoJSONSource, Map as MapLibreMap } from "maplibre-gl";
 import { useEffect, useRef, useState } from "react";
 
 import { getMountainArea, mountainAreas, type MountainAreaId } from "@/data/mountain-areas";
-import { mapMountains } from "@/data/map-mountains";
+import { hikeItineraries } from "@/data/hike-itineraries";
+import { mapMountains, mountainDifficultyLabel } from "@/data/map-mountains";
 
-const countryBounds: [[number, number], [number, number]] = [[117, 5.5], [127, 19]];
+const mapEntries = [
+  ...mapMountains.map((mountain) => ({ ...mountain, itinerary: false })),
+  ...hikeItineraries.map((itinerary) => ({ slug: itinerary.slug, name: itinerary.name, location: itinerary.location, coordinates: itinerary.coordinates, itinerary: true })),
+];
+
+const countryBounds: [[number, number], [number, number]] = [[116.8, 4.5], [127, 21.3]];
 const countryPadding = { top: 80, bottom: 40, left: 24, right: 24 };
 const peakZoomSteps = 2;
 const cameraAnimation = {
@@ -16,10 +22,10 @@ const cameraAnimation = {
 
 export function MountainAreaMap({ selectedArea, selectedMountain, listOpen, onSelect, onSelectMountain, counts }: {
   selectedArea: MountainAreaId | "all";
-  selectedMountain: { name: string } | null;
+  selectedMountain: { name: string; slug?: string } | null;
   listOpen: boolean;
   onSelect: (area: MountainAreaId) => void;
-  onSelectMountain: (name: string, area: MountainAreaId | undefined) => void;
+  onSelectMountain: (name: string, area: MountainAreaId | undefined, slug?: string) => void;
   counts: Record<MountainAreaId, number>;
 }) {
   const container = useRef<HTMLDivElement>(null);
@@ -67,16 +73,21 @@ export function MountainAreaMap({ selectedArea, selectedMountain, listOpen, onSe
           const visible = map.getZoom() >= Math.max(map.getMinZoom(), resetZoom) + peakZoomSteps - 0.01;
           for (const button of peakElements) button.style.display = visible ? "" : "none";
           for (const button of markers.values()) button.style.display = visible ? "none" : "";
+          for (const layer of ["mountain-clusters", "mountain-cluster-count", "mountain-points", "mountain-labels"]) {
+            if (map.getLayer(layer)) map.setLayoutProperty(layer, "visibility", visible ? "visible" : "none");
+          }
           if (!visible) popup?.remove();
         };
-        for (const mountain of mapMountains) {
+        // Eight itinerary markers remain DOM buttons; thousands of peaks use
+        // clustered WebGL layers below to avoid thousands of DOM elements.
+        for (const mountain of mapEntries.filter((entry) => entry.itinerary)) {
           const button = document.createElement("button");
           button.type = "button";
           button.className = "mountain-peak-marker";
           button.style.display = "none";
           peakElements.push(button);
           const icon = document.createElement("span");
-          icon.textContent = "▲";
+          icon.textContent = mountain.itinerary ? "\u25c6" : "\u25b2";
           icon.setAttribute("aria-hidden", "true");
           const label = document.createElement("span");
           label.className = "mountain-peak-label";
@@ -89,7 +100,7 @@ export function MountainAreaMap({ selectedArea, selectedMountain, listOpen, onSe
           button.setAttribute("aria-controls", "mountain-area-results");
           button.addEventListener("click", (event) => {
             event.stopPropagation();
-            onSelectMountain(mountain.name, areaId);
+            onSelectMountain(mountain.name, areaId, mountain.slug);
             if (!map) return;
             popup?.remove();
             const content = document.createElement("div");
@@ -98,19 +109,72 @@ export function MountainAreaMap({ selectedArea, selectedMountain, listOpen, onSe
             const location = document.createElement("p");
             location.textContent = mountain.location;
             const note = document.createElement("p");
-            note.textContent = "Approximate mountain location";
+            note.textContent = mountain.itinerary ? "Hike itinerary - approximate area, not a route" : "Approximate mountain location";
             note.className = "mountain-peak-note";
             content.append(name, location, note);
             popup = new maplibre.Popup({ offset: 16, anchor: "bottom", className: "mountain-peak-popup" })
               .setLngLat(mountain.coordinates).setDOMContent(content).addTo(map);
           });
-          new maplibre.Marker({ element: button }).setLngLat(mountain.coordinates).addTo(map);
+          new maplibre.Marker({ element: button, offset: mountain.itinerary ? [0, -28] : [0, 0] }).setLngLat(mountain.coordinates).addTo(map);
         }
         updatePeakVisibility();
         map.on("zoom", updatePeakVisibility);
         map.on("resize", updatePeakVisibility);
         map.on("load", () => {
           if (!map || cancelled) return;
+          const fontLayer = map.getStyle().layers?.find((layer) => layer.type === "symbol" && layer.layout?.["text-font"]) as import("maplibre-gl").SymbolLayerSpecification | undefined;
+          const textFont = fontLayer?.layout?.["text-font"] ?? ["Noto Sans Regular"];
+          map.addSource("national-mountains", {
+            type: "geojson",
+            attribution: '<a href="https://www.geonames.org/">GeoNames</a> (CC BY 4.0) · <a href="https://github.com/j4ckofalltrades/phl-mountains">Philippine mountains</a>',
+            cluster: true,
+            clusterMaxZoom: 10,
+            clusterRadius: 36,
+            data: {
+              type: "FeatureCollection",
+              features: mapMountains.map((mountain) => ({
+                type: "Feature",
+                geometry: { type: "Point", coordinates: mountain.coordinates },
+                properties: { slug: mountain.slug, name: mountain.name, rated: mountain.difficulty !== undefined },
+              })),
+            },
+          });
+          map.addLayer({ id: "mountain-clusters", type: "circle", source: "national-mountains", filter: ["has", "point_count"], paint: { "circle-color": "#1499aa", "circle-radius": ["step", ["get", "point_count"], 16, 20, 20, 100, 25], "circle-stroke-color": "#ffffff", "circle-stroke-width": 1 } });
+          map.addLayer({ id: "mountain-cluster-count", type: "symbol", source: "national-mountains", filter: ["has", "point_count"], layout: { "text-field": ["get", "point_count_abbreviated"], "text-font": textFont, "text-size": 12 }, paint: { "text-color": "#ffffff" } });
+          map.addLayer({ id: "mountain-points", type: "circle", source: "national-mountains", filter: ["!", ["has", "point_count"]], paint: { "circle-color": ["case", ["get", "rated"], "#1499aa", "#596a64"], "circle-radius": 7, "circle-stroke-color": "#ffffff", "circle-stroke-width": 1.5 } });
+          map.addLayer({ id: "mountain-labels", type: "symbol", source: "national-mountains", minzoom: 9, filter: ["!", ["has", "point_count"]], layout: { "text-field": ["get", "name"], "text-font": textFont, "text-size": 11, "text-offset": [0, 1.5], "text-anchor": "top" }, paint: { "text-color": "#20332e", "text-halo-color": "#ffffff", "text-halo-width": 1.5 } });
+          map.on("click", "mountain-clusters", async (event) => {
+            const feature = event.features?.[0];
+            if (!map || !feature || feature.geometry.type !== "Point") return;
+            const source = map.getSource("national-mountains") as GeoJSONSource;
+            try {
+              const zoom = await source.getClusterExpansionZoom(Number(feature.properties.cluster_id));
+              if (!cancelled && map) map.easeTo({ ...cameraAnimation, center: feature.geometry.coordinates as [number, number], zoom });
+            } catch { /* The map may have been removed while the worker replied. */ }
+          });
+          const selectPeak = (event: import("maplibre-gl").MapLayerMouseEvent) => {
+            const mountain = mapMountains.find((entry) => entry.slug === event.features?.[0]?.properties?.slug);
+            if (!map || !mountain) return;
+            onSelectMountain(mountain.name, getMountainArea(mountain), mountain.slug);
+            popup?.remove();
+            const content = document.createElement("div");
+            const name = document.createElement("strong"); name.textContent = mountain.name;
+            const location = document.createElement("p"); location.textContent = mountain.location;
+            const rating = document.createElement("p"); rating.textContent = mountainDifficultyLabel(mountain);
+            const source = document.createElement("a");
+            source.href = mountain.trails?.[0]?.source.url ?? mountain.sources[0].url;
+            source.textContent = mountain.trails?.length ? "Read route source" : "Location source";
+            source.target = "_blank"; source.rel = "noopener noreferrer";
+            content.append(name, location, rating, source);
+            popup = new maplibre.Popup({ offset: 16, anchor: "bottom", className: "mountain-peak-popup" }).setLngLat(mountain.coordinates).setDOMContent(content).addTo(map);
+          };
+          map.on("click", "mountain-points", selectPeak);
+          map.on("click", "mountain-labels", selectPeak);
+          for (const layer of ["mountain-clusters", "mountain-points", "mountain-labels"]) {
+            map.on("mouseenter", layer, () => { if (map) map.getCanvas().style.cursor = "pointer"; });
+            map.on("mouseleave", layer, () => { if (map) map.getCanvas().style.cursor = ""; });
+          }
+          updatePeakVisibility();
           map.addSource("climbing-areas", {
             type: "geojson",
             data: "/map-data/climbing-areas.geojson",
@@ -148,6 +212,7 @@ export function MountainAreaMap({ selectedArea, selectedMountain, listOpen, onSe
             hoveredId = undefined;
           });
           map.on("click", "climbing-area-fill", (event) => {
+            if (map?.queryRenderedFeatures(event.point, { layers: ["mountain-clusters", "mountain-points", "mountain-labels"] }).length) return;
             const areaId = event.features?.[0]?.properties?.areaId;
             const area = mountainAreas.find((item) => item.id === areaId);
             if (!area) return;
@@ -215,8 +280,12 @@ export function MountainAreaMap({ selectedArea, selectedMountain, listOpen, onSe
   useEffect(() => {
     const map = mapRef.current;
     if (!map || status !== "ready" || !selectedMountain) return;
-    const mountain = mapMountains.find((item) => item.name.toLowerCase().replace(/^mt\.\s*/, "mount ") === selectedMountain.name);
+    const mountain = mapEntries.find((item) => selectedMountain.slug ? item.slug === selectedMountain.slug : item.name.toLowerCase().replace(/^mt\.\s*/, "mount ") === selectedMountain.name);
     if (!mountain) return;
+    if (map.getLayer("mountain-points")) {
+      map.setPaintProperty("mountain-points", "circle-radius", ["case", ["==", ["get", "slug"], mountain.slug], 10, 7]);
+      map.setPaintProperty("mountain-points", "circle-stroke-color", ["case", ["==", ["get", "slug"], mountain.slug], "#38bdf8", "#ffffff"]);
+    }
     const focusMountain = () => {
       const mobile = window.matchMedia("(max-width: 1023px)").matches;
       const height = map.getContainer().clientHeight;
@@ -226,7 +295,8 @@ export function MountainAreaMap({ selectedArea, selectedMountain, listOpen, onSe
       map.easeTo({
         ...cameraAnimation,
         center: mountain.coordinates,
-        zoom: Math.min(map.getMaxZoom(), Math.max(9, map.getZoom(), resetZoom + peakZoomSteps)),
+        // Cluster expansion ends at zoom 11, so the selected peak is visible.
+        zoom: Math.min(map.getMaxZoom(), Math.max(11, map.getZoom(), resetZoom + peakZoomSteps)),
         offset: [0, -coveredHeight / 2],
         bearing: 0,
         pitch: 0,

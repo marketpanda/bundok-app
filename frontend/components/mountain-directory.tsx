@@ -7,10 +7,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { MountainAreaMap } from "@/components/mountain-area-map";
 import { getMountainArea, mountainAreas, type MountainAreaId } from "@/data/mountain-areas";
-import { mapMountains } from "@/data/map-mountains";
+import { hikeItineraries, getMountainItineraries, resolveHikeTarget, type HikeItinerary } from "@/data/hike-itineraries";
+import { mapMountains, mountainDifficultyLabel, type PublishedTrail } from "@/data/map-mountains";
 import { getMountainGuide } from "@/data/mountain-guides";
 import { Input } from "@/components/ui/input";
-import type { Mountain, MountainDifficulty } from "@/data/mountains";
+import type { Mountain, MountainDifficulty, Trail } from "@/data/mountains";
 import { cn } from "@/lib/utils";
 
 type DifficultyBand = "all" | "easy" | "moderate" | "hard";
@@ -33,11 +34,16 @@ function matchesDifficulty(difficulty: MountainDifficulty, band: DifficultyBand)
   return true;
 }
 
+function isPublishedTrail(trail: Trail): trail is PublishedTrail {
+  return "source" in trail;
+}
+
 function MountainCard({ mountain }: { mountain: Mountain }) {
   const guide = getMountainGuide(mountain.slug);
   return (
     <article className="group overflow-hidden rounded-3xl border border-white/[0.06] bg-[#303030] shadow-sm transition-transform duration-300 hover:-translate-y-1">
       <div className="relative aspect-[4/3] overflow-hidden bg-zinc-800">
+        {getMountainItineraries(mountain.slug).length > 0 && <div className="flex flex-wrap gap-2">{getMountainItineraries(mountain.slug).map((itinerary) => <a key={itinerary.slug} href={`#itinerary-${itinerary.slug}`} className="text-xs text-turquoise hover:underline">{itinerary.name}</a>)}</div>}
         {guide && <Link href={`/mountains/${mountain.slug}`} aria-label={`Read the ${guide.title} hiking guide`} className="absolute inset-0 z-10 rounded-t-3xl focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-turquoise" />}
         <Image
           src={mountain.image}
@@ -91,16 +97,38 @@ function MountainCard({ mountain }: { mountain: Mountain }) {
   );
 }
 
+function ItineraryCard({ itinerary, onSelect, selected = false, anchor = false }: { itinerary: HikeItinerary; onSelect: () => void; selected?: boolean; anchor?: boolean }) {
+  return (
+    <article id={anchor ? `itinerary-${itinerary.slug}` : undefined} className={cn("rounded-3xl border bg-[#303030] p-5", selected ? "border-sky-400/60" : "border-white/[0.07]")}>
+      <p className="text-xs font-semibold uppercase tracking-wider text-turquoise">{itinerary.category === "multi-point" ? "Mountain circuit" : itinerary.category === "cross-country" ? "Cross-country traverse" : "Mountain combination"}</p>
+      <h3 className="mt-2 text-xl font-semibold">{itinerary.name}</h3>
+      <p className="mt-1 text-xs text-zinc-400">{itinerary.location}</p>
+      <p className="mt-3 text-sm leading-6 text-zinc-300">{itinerary.summary}</p>
+      <p className="mt-3 text-xs text-turquoise">{itinerary.targets.length ? `${itinerary.targets.length} destinations` : "Mountain membership pending verification"} · {itinerary.hikeStyle === "multi-hike-trip" ? "Separate hikes in one trip" : "Linked route"}</p>
+      {itinerary.targets.length > 0 && <details className="mt-3 border-t border-white/10 pt-3">
+        <summary className="cursor-pointer text-sm text-turquoise">Explore destinations</summary>
+        <ul className="mt-3 space-y-2 text-sm text-zinc-300">{itinerary.targets.map((target) => {
+          const member = resolveHikeTarget(target);
+          const profile = target.kind === "mountain" && getMountainGuide(target.mountainSlug);
+          return <li key={target.kind === "mountain" ? target.mountainSlug : `${target.mountainSlug}-${target.pointSlug}`}>{profile ? <Link className="text-turquoise hover:underline" href={`/mountains/${target.mountainSlug}`}>{member.name}</Link> : member.name}</li>;
+        })}</ul>
+      </details>}
+      <button type="button" onClick={onSelect} className="mt-3 min-h-11 rounded text-sm font-medium text-turquoise hover:underline focus-visible:outline-2 focus-visible:outline-turquoise">Show on map</button>
+    </article>
+  );
+}
+
 export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
   const [query, setQuery] = useState("");
   const [difficultyBand, setDifficultyBand] = useState<DifficultyBand>("all");
   const [selectedArea, setSelectedArea] = useState<MountainAreaId | "all">("all");
-  const [selectedMountain, setSelectedMountain] = useState<{ name: string } | null>(null);
+  const [selectedMountain, setSelectedMountain] = useState<{ name: string; slug?: string } | null>(null);
+  const [listLimit, setListLimit] = useState(60);
   const [listOpen, setListOpen] = useState(true);
   const selectedCard = useRef<HTMLElement | null>(null);
   const results = useRef<HTMLDivElement | null>(null);
-  const selectMountain = useCallback((name: string, areaId: MountainAreaId | undefined) => {
-    setSelectedMountain({ name: mountainNameKey(name) });
+  const selectMountain = useCallback((name: string, areaId: MountainAreaId | undefined, slug?: string) => {
+    setSelectedMountain({ name: mountainNameKey(name), slug });
     setListOpen(true);
     setSelectedArea(areaId ?? "all");
     setQuery("");
@@ -127,35 +155,51 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
 
   const matchingMountains = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
-    return mountains.filter((mountain) => {
+    return mountains.map((mountain) => {
+      const published = mapMountains.find((entry) => entry.slug === mountain.slug);
+      // Enrich only the explorer; prominent cards still receive the original data.
+      return { ...mountain, difficulty: published?.difficulty ?? mountain.difficulty, trails: published?.trails?.length ? published.trails : mountain.trails };
+    }).filter((mountain) => {
       const searchableText = [mountain.name, mountain.location, mountain.summary,
         ...mountainAreas.filter((item) => (item.mountainSlugs as readonly string[]).includes(mountain.slug)).map((item) => item.name),
         ...(mountain.trails?.map((trail) => trail.name) ?? []),
       ].join(" ").toLowerCase();
-      return searchableText.includes(normalizedQuery) && matchesDifficulty(mountain.difficulty, difficultyBand);
+      return searchableText.includes(normalizedQuery) && (difficultyBand === "all" || mountain.trails?.some((trail) => trail.difficulty && matchesDifficulty(trail.difficulty, difficultyBand)) || matchesDifficulty(mountain.difficulty, difficultyBand));
     });
   }, [difficultyBand, mountains, query]);
 
   const matchingMapMountains = mapMountains.filter((mountain) => {
-    if (mountains.some((profile) => mountainNameKey(profile.name) === mountainNameKey(mountain.name))) return false;
-    if (difficultyBand !== "all") return false;
+    if (mountains.some((profile) => profile.slug === mountain.slug)) return false;
+    if (difficultyBand !== "all" && !mountain.trails?.some((trail) => {
+      const lower = difficultyBand === "easy" ? 1 : difficultyBand === "moderate" ? 4 : 7;
+      const upper = difficultyBand === "easy" ? 3 : difficultyBand === "moderate" ? 6 : 9;
+      return trail.difficulty <= upper && (trail.difficultyMax ?? trail.difficulty) >= lower;
+    })) return false;
     const areaName = mountainAreas.find((item) => item.id === getMountainArea(mountain))?.name ?? "";
-    return `${mountain.name} ${mountain.location} ${areaName}`.toLowerCase().includes(query.trim().toLowerCase());
+    return [mountain.name, ...mountain.aliases, mountain.location, areaName, ...(mountain.trails?.map((trail) => trail.name) ?? [])].join(" ").toLowerCase().includes(query.trim().toLowerCase());
   });
   const filteredMountains = matchingMountains.filter((mountain) => !area || getMountainArea(mountain) === area.id);
   const filteredMapMountains = matchingMapMountains.filter((mountain) => !area || getMountainArea(mountain) === area.id);
-  const resultCount = filteredMountains.length + filteredMapMountains.length;
-  const catalogueCount = mountains.length + mapMountains.filter((mountain) => !mountains.some((profile) => mountainNameKey(profile.name) === mountainNameKey(mountain.name))).length;
+  const visibleMapMountains = filteredMapMountains.slice(0, listLimit);
+  const selectedMapMountain = filteredMapMountains.find((mountain) => mountain.slug === selectedMountain?.slug);
+  if (selectedMapMountain && !visibleMapMountains.includes(selectedMapMountain)) visibleMapMountains.unshift(selectedMapMountain);
+  const filteredItineraries = hikeItineraries.filter((itinerary) =>
+    (!area || getMountainArea(itinerary) === area.id) &&
+    (difficultyBand === "all" || (itinerary.difficulty !== undefined && matchesDifficulty(itinerary.difficulty, difficultyBand))) &&
+    [itinerary.name, ...(itinerary.aliases ?? []), itinerary.location, itinerary.summary, ...itinerary.targets.map((target) => resolveHikeTarget(target).name)].join(" ").toLowerCase().includes(query.trim().toLowerCase())
+  );
+  const resultCount = filteredMountains.length + filteredMapMountains.length + filteredItineraries.length;
+  const catalogueCount = mountains.length + mapMountains.filter((mountain) => !mountains.some((profile) => profile.slug === mountain.slug)).length;
   const counts = Object.fromEntries(mountainAreas.map((item) => [item.id,
     matchingMountains.filter((mountain) => getMountainArea(mountain) === item.id).length +
     matchingMapMountains.filter((mountain) => getMountainArea(mountain) === item.id).length,
   ])) as Record<MountainAreaId, number>;
-  const routeCount = filteredMountains.reduce((total, mountain) => total + (mountain.trails?.length ?? 0), 0);
+  const routeCount = [...filteredMountains, ...filteredMapMountains].reduce((total, mountain) => total + (mountain.trails?.length ?? 0), 0);
   const hasFilters = query !== "" || difficultyBand !== "all" || selectedArea !== "all";
 
-  function selectCard(event: React.MouseEvent<HTMLElement>, mountain: { name: string; location: string }) {
+  function selectCard(event: React.MouseEvent<HTMLElement>, mountain: { name: string; location: string; slug: string }) {
     if ((event.target as HTMLElement).closest("button, a, summary, details")) return;
-    selectMountain(mountain.name, getMountainArea(mountain));
+    selectMountain(mountain.name, getMountainArea(mountain), mountain.slug);
   }
 
   function resetFilters() {
@@ -163,6 +207,7 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
     setDifficultyBand("all");
     setSelectedArea("all");
     setSelectedMountain(null);
+    setListLimit(60);
   }
 
   return (
@@ -174,7 +219,7 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
             <h2 id="mountain-explorer-heading" className="mt-1 text-2xl font-semibold tracking-tight">A place for your next adventure</h2>
             <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">Pick an area to discover its mountains, compare the climbs, and explore their trails.</p>
           </div>
-          <span className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-zinc-400">{catalogueCount} mountains · {mountainAreas.length} climbing areas</span>
+          <span className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-zinc-400">{catalogueCount} mountains · {hikeItineraries.length} itineraries · {mountainAreas.length} climbing areas</span>
         </div>
 
         <div className="overflow-hidden rounded-3xl border border-white/10 bg-[#292929]">
@@ -183,7 +228,7 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
               <label htmlFor="mountain-search" className="text-xs font-medium text-zinc-300">Find a mountain, area or trail</label>
               <div className="relative mt-2">
                 <Search aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-turquoise" />
-                <Input id="mountain-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Try Pulag, Rizal or Akiki" className="h-11 rounded-xl border-white/10 bg-[#202020] pl-10 pr-11 text-sm text-white placeholder:text-zinc-500 focus-visible:ring-turquoise/60" />
+                <Input id="mountain-search" value={query} onChange={(event) => { setQuery(event.target.value); setListLimit(60); }} placeholder="Try Pulag, Rizal or Akiki" className="h-11 rounded-xl border-white/10 bg-[#202020] pl-10 pr-11 text-sm text-white placeholder:text-zinc-500 focus-visible:ring-turquoise/60" />
                 {query && <button type="button" onClick={() => setQuery("")} aria-label="Clear search" className="absolute right-0 top-0 flex size-11 items-center justify-center rounded-xl text-zinc-400 hover:text-white focus-visible:outline-turquoise"><X className="size-4" /></button>}
               </div>
             </div>
@@ -213,7 +258,7 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
                   {hasFilters && <button type="button" onClick={resetFilters} className="min-h-8 rounded text-xs text-turquoise hover:underline focus-visible:outline-turquoise">Reset filters</button>}
                 </div>
                 <div className="relative">
-                <select id="mountain-area" value={selectedArea} onChange={(event) => setSelectedArea(event.target.value as MountainAreaId | "all")} className="h-11 w-full appearance-none rounded-xl border border-white/10 bg-[#202020] pl-3 pr-10 text-sm text-white focus-visible:outline-2 focus-visible:outline-turquoise">
+                <select id="mountain-area" value={selectedArea} onChange={(event) => { setSelectedArea(event.target.value as MountainAreaId | "all"); setListLimit(60); }} className="h-11 w-full appearance-none rounded-xl border border-white/10 bg-[#202020] pl-3 pr-10 text-sm text-white focus-visible:outline-2 focus-visible:outline-turquoise">
                   <option value="all">All climbing areas</option>
                   {mountainAreas.map((item) => <option key={item.id} value={item.id}>{item.name} ({counts[item.id]})</option>)}
                 </select>
@@ -221,20 +266,20 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
                 </div>
                 <div role="status" aria-live="polite" aria-atomic="true">
                   <h3 className="text-xl font-semibold">{area?.name ?? "Across the Philippines"}</h3>
-                  <p className="mt-1 text-xs leading-5 text-zinc-400">{area?.detail ?? "Find a familiar favorite or somewhere new"} · {resultCount} {resultCount === 1 ? "mountain" : "mountains"} · {routeCount} trails</p>
+                  <p className="mt-1 text-xs leading-5 text-zinc-400">{area?.detail ?? "Find a familiar favorite or somewhere new"} · {resultCount} {resultCount === 1 ? "entry" : "entries"} · {routeCount} trails</p>
                 </div>
               </div>
               <div ref={results} className="mountain-results min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain p-4" tabIndex={0} aria-label="Mountains in selected area">
-                {resultCount ? <>{filteredMountains.map((mountain) => (
-                  <article key={mountain.slug} onClick={(event) => selectCard(event, mountain)} ref={selectedMountain?.name === mountainNameKey(mountain.name) ? selectedCard : undefined} className={cn("cursor-pointer rounded-2xl border bg-[#303030] p-4 transition-[border-color,box-shadow] duration-300", selectedMountain?.name === mountainNameKey(mountain.name) ? "border-sky-400/60 shadow-[0_0_16px_rgba(56,189,248,0.16)]" : "border-white/[0.07]")}>
+                {resultCount ? <>{filteredItineraries.map((itinerary) => <section key={itinerary.slug} ref={selectedMountain?.name === mountainNameKey(itinerary.name) ? selectedCard : undefined}><ItineraryCard itinerary={itinerary} selected={selectedMountain?.name === mountainNameKey(itinerary.name)} onSelect={() => selectMountain(itinerary.name, getMountainArea(itinerary))} /></section>)}{filteredMountains.map((mountain) => (
+                  <article key={mountain.slug} onClick={(event) => selectCard(event, mountain)} ref={(selectedMountain?.slug ? selectedMountain.slug === mountain.slug : selectedMountain?.name === mountainNameKey(mountain.name)) ? selectedCard : undefined} className={cn("cursor-pointer rounded-2xl border bg-[#303030] p-4 transition-[border-color,box-shadow] duration-300", (selectedMountain?.slug ? selectedMountain.slug === mountain.slug : selectedMountain?.name === mountainNameKey(mountain.name)) ? "border-sky-400/60 shadow-[0_0_16px_rgba(56,189,248,0.16)]" : "border-white/[0.07]")}>
                     <div className="flex items-start gap-3">
                       <div className="relative size-16 shrink-0 overflow-hidden rounded-xl"><Image src={mountain.image} alt="" fill sizes="64px" className="object-cover" /></div>
                       <div className="min-w-0 flex-1">
-                        <h4 className="text-base font-semibold"><button type="button" onClick={() => selectMountain(mountain.name, getMountainArea(mountain))} className="rounded text-left transition-colors hover:text-sky-300 focus-visible:outline-2 focus-visible:outline-sky-400" aria-label={`Show ${mountain.name} on map`}>{mountain.name}</button></h4>
+                        <h4 className="text-base font-semibold"><button type="button" onClick={() => selectMountain(mountain.name, getMountainArea(mountain), mountain.slug)} className="rounded text-left transition-colors hover:text-sky-300 focus-visible:outline-2 focus-visible:outline-sky-400" aria-label={`Show ${mountain.name} on map`}>{mountain.name}</button></h4>
                         <p className="mt-1 text-xs leading-5 text-zinc-400">{mountain.location}</p>
                         <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs">
                           <span className="text-turquoise">{mountain.elevationMeters.toLocaleString("en-US")} m</span>
-                          <span className="text-zinc-300">Difficulty {mountain.difficulty}/9</span>
+                          <span className="text-zinc-300">{mountainDifficultyLabel(mapMountains.find((entry) => entry.slug === mountain.slug)!)}</span>
                         </div>
                       </div>
                     </div>
@@ -246,26 +291,42 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
                           <div className="flex justify-between gap-2"><span className="text-zinc-200">{trail.name}</span>{trail.difficulty && <span className="shrink-0 text-zinc-400">{trail.difficulty}/9</span>}</div>
                           {trail.duration && <p className="text-zinc-400">{trail.duration}</p>}
                           {trail.note && <p className="text-zinc-400">{trail.note}</p>}
+                          {isPublishedTrail(trail) && <a href={trail.source.url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-8 items-center text-turquoise hover:underline">Read route source</a>}
                         </li>)}
                       </ul>
                     </details> : null}
                     {getMountainGuide(mountain.slug) && <Link href={`/mountains/${mountain.slug}`} className="mt-3 inline-flex min-h-11 items-center rounded text-sm font-medium text-turquoise hover:underline focus-visible:outline-2 focus-visible:outline-turquoise">View mountain guide →</Link>}
                   </article>
                 ))}
-                {filteredMapMountains.map((mountain) => (
-                  <article key={mountain.name} onClick={(event) => selectCard(event, mountain)} ref={selectedMountain?.name === mountainNameKey(mountain.name) ? selectedCard : undefined} className={cn("cursor-pointer rounded-2xl border bg-[#303030] p-4 transition-[border-color,box-shadow] duration-300", selectedMountain?.name === mountainNameKey(mountain.name) ? "border-sky-400/60 shadow-[0_0_16px_rgba(56,189,248,0.16)]" : "border-white/[0.07]")}>
-                    <h4 className="flex items-center gap-2 text-base font-semibold"><MountainSnow aria-hidden="true" className="size-4 shrink-0 text-turquoise" /><button type="button" onClick={() => selectMountain(mountain.name, getMountainArea(mountain))} className="rounded text-left transition-colors hover:text-sky-300 focus-visible:outline-2 focus-visible:outline-sky-400" aria-label={`Show ${mountain.name} on map`}>{mountain.name}</button></h4>
+                {visibleMapMountains.map((mountain) => (
+                  <article key={mountain.slug} onClick={(event) => selectCard(event, mountain)} ref={selectedMountain?.slug === mountain.slug ? selectedCard : undefined} className={cn("cursor-pointer rounded-2xl border bg-[#303030] p-4 transition-[border-color,box-shadow] duration-300", selectedMountain?.slug === mountain.slug ? "border-sky-400/60 shadow-[0_0_16px_rgba(56,189,248,0.16)]" : "border-white/[0.07]")}>
+                    <h4 className="flex items-center gap-2 text-base font-semibold"><MountainSnow aria-hidden="true" className="size-4 shrink-0 text-turquoise" /><button type="button" onClick={() => selectMountain(mountain.name, getMountainArea(mountain), mountain.slug)} className="rounded text-left transition-colors hover:text-sky-300 focus-visible:outline-2 focus-visible:outline-sky-400" aria-label={`Show ${mountain.name} on map`}>{mountain.name}</button></h4>
                     <p className="mt-2 text-xs leading-5 text-zinc-400">{mountain.location}</p>
-                    <p className="mt-3 text-xs leading-5 text-zinc-400">Trail and difficulty details coming soon.</p>
+                    <div className="mt-3 flex flex-wrap gap-3 text-xs">
+                      {mountain.elevationMeters !== undefined && <span className="text-turquoise">{mountain.elevationMeters.toLocaleString("en-US")} m</span>}
+                      <span className={mountain.difficulty ? "text-zinc-200" : "text-zinc-400"}>{mountainDifficultyLabel(mountain)}</span>
+                    </div>
+                    {mountain.trails?.length ? <details className="mt-3 border-t border-white/10 pt-3">
+                      <summary className="cursor-pointer text-xs font-medium text-turquoise">Explore {mountain.trails.length} published {mountain.trails.length === 1 ? "route" : "routes"}</summary>
+                      <ul className="mt-3 space-y-3">{mountain.trails.map((trail) => <li key={`${trail.source.url}-${trail.name}`} className="text-xs leading-5">
+                        <p className="text-zinc-200">{trail.name} · {trail.difficulty}{trail.difficultyMax ? `–${trail.difficultyMax}` : ""}/9</p>
+                        {trail.duration && <p className="text-zinc-400">Days / hours to summit: {trail.duration}</p>}
+                        <a href={trail.source.url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-8 items-center text-turquoise hover:underline">Read route source</a>
+                      </li>)}</ul>
+                    </details> : <p className="mt-2 text-xs leading-5 text-zinc-400">A mapped peak; hiking route and access have not been verified.</p>}
+                    <a href={mountain.sources[0].url} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex min-h-8 items-center text-xs text-turquoise hover:underline">Location source</a>
+                    <div className="mt-2 flex flex-wrap gap-2">{getMountainItineraries(mountain.slug).map((itinerary) => <a key={itinerary.slug} href={`#itinerary-${itinerary.slug}`} className="min-h-8 text-xs text-turquoise hover:underline">{itinerary.name}</a>)}</div>
                   </article>
-                ))}</> : <div className="flex min-h-56 flex-col items-center justify-center px-4 text-center">
+                ))}
+                {filteredMapMountains.length > listLimit && <button type="button" onClick={() => setListLimit((limit) => limit + 60)} className="min-h-11 w-full rounded-xl border border-turquoise/30 text-sm text-turquoise">Show more mountains ({filteredMapMountains.length - listLimit} remaining)</button>}
+                </> : <div className="flex min-h-56 flex-col items-center justify-center px-4 text-center">
                   <MountainSnow aria-hidden="true" className="mb-3 size-8 text-zinc-500" />
                   <h4 className="text-sm font-medium">No mountains match just yet</h4>
                   <p className="mt-2 text-xs leading-5 text-zinc-400">Try another area, a different difficulty, or a broader search.</p>
                   <button type="button" onClick={resetFilters} className="mt-4 min-h-11 rounded-xl border border-turquoise/30 px-4 text-sm text-turquoise focus-visible:outline-turquoise">Show all mountains</button>
                 </div>}
               </div>
-              <p className="hidden shrink-0 border-t border-white/10 px-5 py-3 text-[11px] leading-5 text-zinc-400 lg:block">Difficulty varies by route. Mountains without difficulty details appear under All. Mountain profiles are pending editorial verification.</p>
+              <p className="hidden shrink-0 border-t border-white/10 px-5 py-3 text-[11px] leading-5 text-zinc-400 lg:block">Ratings describe published routes and do not confirm current access. Unrated peaks appear under All. Coordinates: GeoNames and the Philippine mountains dataset.</p>
               </div>
             </div>
           </div>
@@ -276,9 +337,13 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
         <div className="mb-5">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-turquoise">The peaks that inspire us</p>
           <h2 id="prominent-mountains-heading" className="mt-1 text-2xl font-semibold">Prominent mountains</h2>
-          <p className="mt-2 text-sm text-zinc-400">Iconic climbs from across the islands, ready to explore.</p>
+          <p className="mt-2 text-sm text-zinc-400">Iconic mountains and collective hiking itineraries from across the islands.</p>
         </div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {hikeItineraries.map((itinerary) => <ItineraryCard key={itinerary.slug} itinerary={itinerary} anchor onSelect={() => {
+            selectMountain(itinerary.name, getMountainArea(itinerary));
+            document.querySelector(".mountain-area-map")?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start" });
+          }} />)}
           {mountains.map((mountain) => <MountainCard key={mountain.slug} mountain={mountain} />)}
         </div>
       </section>

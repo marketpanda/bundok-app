@@ -1,0 +1,2326 @@
+[
+  {
+    "mountainName": "Mt. Samat",
+    "name": "Historical trails: Mt. Samat",
+    "difficulty": 1,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/05/mt-samat.html"
+    },
+    "provinces": [
+      "Bataan"
+    ],
+    "duration": "1 day / 1 hour"
+  },
+  {
+    "mountainName": "Mt. Manalmon",
+    "name": "Mt. Manalmon",
+    "difficulty": 2,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/10/mt-manalmon-196.html"
+    },
+    "provinces": [
+      "Bulacan"
+    ],
+    "duration": "Half-day / 1 hour",
+    "coordinates": [
+      121.020333,
+      15.251833
+    ]
+  },
+  {
+    "mountainName": "Mt. Romelo",
+    "name": "Mt. Romelo",
+    "difficulty": 2,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/09/mt-romelo-240.html"
+    },
+    "provinces": [
+      "Laguna"
+    ],
+    "duration": "1 day, 2-3 hours"
+  },
+  {
+    "mountainName": "Mt. Pinatubo",
+    "name": "Mt. Pinatubo",
+    "difficulty": 2,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/08/mt-pinatubo-960.html"
+    },
+    "provinces": [
+      "Tarlac"
+    ],
+    "coordinates": [
+      120.348333,
+      15.143056
+    ]
+  },
+  {
+    "mountainName": "Manabu Peak",
+    "name": "Manabu Peak",
+    "difficulty": 2,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/08/manabu-peak-760.html"
+    },
+    "provinces": [
+      "Batangas"
+    ],
+    "duration": "1 day / 1-2 hours",
+    "coordinates": [
+      121.2413,
+      13.9777
+    ]
+  },
+  {
+    "mountainName": "Mt. Bongao",
+    "name": "Mt. Bongao",
+    "difficulty": 2,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/08/mt-bongao-422.html"
+    },
+    "provinces": [
+      "Tawi-Tawi"
+    ],
+    "duration": "Half-day / 2 hours",
+    "coordinates": [
+      119.7422,
+      5.01361
+    ]
+  },
+  {
+    "mountainName": "Mt. Gulugod-Baboy",
+    "name": "Mt. Gulugod-Baboy",
+    "difficulty": 2,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/08/mt-gulugod-baboy-525.html"
+    },
+    "provinces": [
+      "Batangas"
+    ],
+    "duration": "Half-day / 1-2 hours",
+    "coordinates": [
+      120.895278,
+      13.715278
+    ]
+  },
+  {
+    "mountainName": "Mt. Tagapo",
+    "name": "Mt. Tagapo",
+    "difficulty": 2,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/08/mt-tagapo-438.html"
+    },
+    "provinces": [
+      "Rizal",
+      "Laguna"
+    ],
+    "duration": "1 day / 2 hours"
+  },
+  {
+    "mountainName": "Mt. Tibig",
+    "name": "Mt. Tibig in Lobo, Batangas",
+    "difficulty": 2,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2014/08/mt-tibig-563-in-lobo-batangas.html"
+    },
+    "provinces": [
+      "Batangas"
+    ],
+    "duration": "1 day / 1.5-2.5 hours",
+    "coordinates": [
+      121.160333,
+      13.67525
+    ]
+  },
+  {
+    "mountainName": "Mt. Mabilog",
+    "name": "Mt. Mabilog",
+    "difficulty": 2,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2012/08/mt-mabilog-441.html"
+    },
+    "provinces": [
+      "Laguna"
+    ],
+    "duration": "1 day / 2-3 hours",
+    "coordinates": [
+      121.358333,
+      14.1325
+    ]
+  },
+  {
+    "mountainName": "Mt. Osdung",
+    "name": "Mt. Osdung, Kibungan, Benguet",
+    "difficulty": 2,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2012/07/mt-osdung-2617-kibungan-benguet.html"
+    },
+    "provinces": [
+      "Benguet"
+    ],
+    "duration": "Half-day / 1-2 hours*",
+    "coordinates": [
+      120.761111,
+      16.718333
+    ]
+  },
+  {
+    "mountainName": "Mt. Pinatubo",
+    "name": "Mt. Pinatubo Crater Lake",
+    "difficulty": 2,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/11/mt-pinatubo-green-edition-960.html"
+    },
+    "provinces": [
+      "Tarlac"
+    ],
+    "coordinates": [
+      120.348333,
+      15.143056
+    ]
+  },
+  {
+    "mountainName": "Mt. Buntis",
+    "name": "Historical trails: Mt. Buntis and Mt. Nagpatong",
+    "difficulty": 2,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/05/historical-trails-mt-buntis-and.html"
+    },
+    "provinces": [
+      "Cavite"
+    ],
+    "duration": "Half day / 1.5-2 hours (Mt. Buntis)"
+  },
+  {
+    "mountainName": "Mt. Cabuyao",
+    "name": "Mt. Cabuyao / Mt. Sto. Tomas",
+    "difficulty": 2,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/04/mt-sto-tomas-2256-mt-cabuyao-2025.html"
+    },
+    "provinces": [
+      "Benguet"
+    ],
+    "duration": "1 day / 2 hours (ST) 3 hours (C)"
+  },
+  {
+    "mountainName": "Mt. Ampacao",
+    "name": "Mt. Ampacao",
+    "difficulty": 2,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/01/mt-ampacao-1889.html"
+    },
+    "provinces": [],
+    "duration": "Half day, 1.5 hours"
+  },
+  {
+    "mountainName": "Mt. Nagsasa",
+    "name": "Nagsasa Cove via Mt. Nagsasa",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2010/01/nagsasa-cove-via-mt-nagsasa-450.html"
+    },
+    "provinces": [
+      "Zambales"
+    ],
+    "coordinates": [
+      120.104167,
+      14.817167
+    ]
+  },
+  {
+    "mountainName": "Mt. Darala",
+    "name": "Mt. Darala",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2009/08/mt-darala-600.html"
+    },
+    "provinces": [
+      "Palawan"
+    ],
+    "duration": "1 day / 3 hours"
+  },
+  {
+    "mountainName": "Mt. Bungkol Baka",
+    "name": "Mt. Bungkol Baka",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/12/mt-bungkol-baka-551.html"
+    },
+    "provinces": [
+      "Tarlac"
+    ],
+    "duration": "1 day / 3-4 hours"
+  },
+  {
+    "mountainName": "Valungid Peak",
+    "name": "Valungid Peak",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/12/valungid-peak.html"
+    },
+    "provinces": [
+      "Batanes"
+    ],
+    "duration": "Half-day / 30 minutes"
+  },
+  {
+    "mountainName": "Osmeña Peak",
+    "name": "Osmeña Peak/Traverse to Kawasan Falls",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/10/osmea-peaktraverse-to-kawasan-falls.html"
+    },
+    "provinces": [
+      "Cebu"
+    ],
+    "coordinates": [
+      123.44235,
+      9.82015
+    ]
+  },
+  {
+    "mountainName": "Mt. Manunggal",
+    "name": "Mt. Manunggal",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/06/mt-manunggal-1003.html"
+    },
+    "provinces": [
+      "Cebu"
+    ],
+    "duration": "1-2 days / 3-5 hours"
+  },
+  {
+    "mountainName": "Mt. Matarem",
+    "name": "Mt. Matarem",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/04/mt-matarem-473.html"
+    },
+    "provinces": [],
+    "duration": "1 day / 2.5-3 hours",
+    "coordinates": [
+      121.9416,
+      20.3933
+    ]
+  },
+  {
+    "mountainName": "Mt. Pundaquit",
+    "name": "Anawangin Cove via Mt. Pundaquit",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/04/anawangin-cove-via-mt-pundaquit-464.html"
+    },
+    "provinces": [
+      "Zambales"
+    ]
+  },
+  {
+    "mountainName": "Mt. Kapugan",
+    "name": "Mt. Kapugan",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/02/mt-kapugan-1305.html"
+    },
+    "provinces": [
+      "Ifugao"
+    ],
+    "duration": "Half-day / 2 hours",
+    "coordinates": [
+      121.081111,
+      16.791667
+    ]
+  },
+  {
+    "mountainName": "Mt. Cinco Picos",
+    "name": "Mt. Cinco Picos",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/01/mt-cinco-picos-881.html"
+    },
+    "provinces": [
+      "Zambales"
+    ],
+    "duration": "2 days / 6-7 hours",
+    "coordinates": [
+      120.15,
+      14.783333
+    ]
+  },
+  {
+    "mountainName": "Mt. Timbak",
+    "name": "Mt. Timbak/Singakalsa",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/12/mt-timbaksingakalsa-2824.html"
+    },
+    "provinces": [
+      "Benguet"
+    ],
+    "duration": "1 day / 1.5-2.5 hours Specs (Backtrail): Minor climb, Difficulty 2/9, Trail class 2"
+  },
+  {
+    "mountainName": "Mt. Daguldul",
+    "name": "Mt. Daguldul",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/11/mt-daguldul-670.html"
+    },
+    "provinces": [
+      "Batangas"
+    ],
+    "duration": "1-2 days / 5 hours",
+    "coordinates": [
+      121.319333,
+      13.673
+    ]
+  },
+  {
+    "mountainName": "Mt. Malipunyo",
+    "name": "Mt. Malipunyo 1005+",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/10/mtmalipunyomalarayat.html"
+    },
+    "provinces": [
+      "Laguna",
+      "Batangas"
+    ],
+    "duration": "1 day / 3-5 hours"
+  },
+  {
+    "mountainName": "Mt. Marami",
+    "name": "Mt. Marami",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/09/mt-marami-405.html"
+    },
+    "provinces": [
+      "Cavite"
+    ],
+    "duration": "1-2 days / 4-6 hours"
+  },
+  {
+    "mountainName": "Mt. Sembrano",
+    "name": "Mt. Sembrano",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/09/mt-sembrano-745.html"
+    },
+    "provinces": [
+      "Rizal",
+      "Laguna"
+    ],
+    "duration": "1 day / 3-4 hours"
+  },
+  {
+    "mountainName": "Mt. Pulag",
+    "name": "Mt. Pulag Ambangeg Trail",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/09/mt-pulag-2922.html"
+    },
+    "provinces": [
+      "Benguet"
+    ],
+    "duration": "4-5 hours / 1-2 days",
+    "coordinates": [
+      120.8875,
+      16.582778
+    ]
+  },
+  {
+    "mountainName": "Mt. Talamitam",
+    "name": "Mt. Talamitam",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/08/mt-talamitam-630.html"
+    },
+    "provinces": [
+      "Batangas"
+    ],
+    "duration": "1 day / 1.5-2.2 hours"
+  },
+  {
+    "mountainName": "Mt. Kalisungan",
+    "name": "Mt. Kalisungan",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/08/mt-kalisungan-760.html"
+    },
+    "provinces": [
+      "Laguna"
+    ],
+    "duration": "1 day / 2.5-3 hours",
+    "coordinates": [
+      121.344717,
+      14.1465
+    ]
+  },
+  {
+    "mountainName": "Mt. Arayat",
+    "name": "Mt. Arayat/ Arayat Trail",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/08/mt-arayat-1030_09.html"
+    },
+    "provinces": [
+      "Pampanga"
+    ],
+    "duration": "1 day / 4 hours",
+    "coordinates": [
+      120.742,
+      15.2
+    ]
+  },
+  {
+    "mountainName": "Mt. Maculot",
+    "name": "Mt. Maculot – Rockies and Rockies-Summit-Grotto Traverse",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/08/mt-maculot-685.html"
+    },
+    "provinces": [
+      "Batangas"
+    ],
+    "coordinates": [
+      121.033333,
+      13.916667
+    ]
+  },
+  {
+    "mountainName": "Pico de Loro",
+    "name": "Pico de Loro",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/08/mt-palay-palaypico-de-loro-664_9808.html"
+    },
+    "provinces": [
+      "Cavite",
+      "Batangas"
+    ],
+    "duration": "1-2 days / 2-5 hours",
+    "coordinates": [
+      120.646417,
+      14.21425
+    ]
+  },
+  {
+    "mountainName": "Mt. Sawi",
+    "name": "Mt. Sawi in Gabaldon, Nueva Ecija",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2017/03/mt-sawi-594m-in-gabaldon-nueva-ecija.html"
+    },
+    "provinces": [
+      "Nueva Ecija"
+    ],
+    "duration": "1 day / 2-3 hours"
+  },
+  {
+    "mountainName": "Mt. Sapari",
+    "name": "Maysawa Circuit: Mt. Sapari and Mt. Binutasan",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2016/08/maysawa-circuit-mt-sapari-592m-and-mt-binutasan-577m.html"
+    },
+    "provinces": [
+      "Rizal"
+    ],
+    "duration": "1 day / 1.5h (Sapari); 2.5 (Binutasan)",
+    "coordinates": [
+      121.358639,
+      14.619861
+    ]
+  },
+  {
+    "mountainName": "Mt. Hugom",
+    "name": "Mt. Hugom in San Juan, Batangas",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2015/12/mt-hugom-670m-in-san-juan-batangas.html"
+    },
+    "provinces": [
+      "Batangas"
+    ],
+    "duration": "1 day / 2.5-4 hours",
+    "coordinates": [
+      121.3593,
+      13.6731
+    ]
+  },
+  {
+    "mountainName": "Mt. Ulap",
+    "name": "Mt. Ulap in Itogon, Benguet",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2015/11/mt-ulap-1846m-in-itogon-benguet.html"
+    },
+    "provinces": [
+      "Benguet"
+    ],
+    "duration": "1 day / 2-3 hours",
+    "coordinates": [
+      120.6312,
+      16.2904
+    ]
+  },
+  {
+    "mountainName": "Mt. Sipit Ulang",
+    "name": "Mt. Sipit Ulang in Rodriguez, Rizal",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2015/08/mt-sipit-ulang-252-in-rodriguez-rizal.html"
+    },
+    "provinces": [
+      "Rizal"
+    ],
+    "duration": "1 day / 2-3.5 hours",
+    "coordinates": [
+      121.177278,
+      14.75575
+    ]
+  },
+  {
+    "mountainName": "Mt. Ayaas",
+    "name": "Mt. Ayaas in Rodriguez, Rizal",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2015/07/mt-ayaas-in-rodriguez-rizal.html"
+    },
+    "provinces": [
+      "Rizal"
+    ],
+    "duration": "1 day / 3-4 hours",
+    "coordinates": [
+      121.207639,
+      14.750939
+    ]
+  },
+  {
+    "mountainName": "Mt. Pamitinan",
+    "name": "Pamitinan day hike",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2015/02/mt-pamitinan-426-and-mt-binacayan-424.html"
+    },
+    "provinces": [
+      "Rizal"
+    ],
+    "duration": "1 day / 1.5-3 hours (P); 2-3 hours (B)"
+  },
+  {
+    "mountainName": "Mt. Batolusong",
+    "name": "Mt. Batolusong/Mapatag Plateau and Susong Dalaga Peak",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2013/02/mt-batolusongmapatag-plateau-and-susong.html"
+    },
+    "provinces": [
+      "Rizal",
+      "Quezon",
+      "Laguna"
+    ]
+  },
+  {
+    "mountainName": "Mt. Balagbag",
+    "name": "Mt. Balagbag in Rodriguez, Rizal",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2011/05/mt-balagbag-777-in-rodriguez-rizal.html"
+    },
+    "provinces": [
+      "Rizal"
+    ],
+    "duration": "1 day / 1-2 hours"
+  },
+  {
+    "mountainName": "Mt. Banoi",
+    "name": "Mt. Banoi",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2011/04/mt-banoi-960.html"
+    },
+    "provinces": [
+      "Batangas"
+    ],
+    "duration": "1 day / 3-5 hours"
+  },
+  {
+    "mountainName": "Mt. Cinco Picos",
+    "name": "Mt. Cinco Picos Traverse to Silanguin Cove",
+    "difficulty": 4,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/10/mt-cinco-picostraverse-to-silanguin.html"
+    },
+    "provinces": [
+      "Zambales"
+    ],
+    "duration": "2 days / 6-7 hours",
+    "coordinates": [
+      120.15,
+      14.783333
+    ]
+  },
+  {
+    "mountainName": "Mt. Calavite",
+    "name": "Mt. Calavite",
+    "difficulty": 4,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/05/mt-calavite-1521.html"
+    },
+    "provinces": [
+      "Occidental Mindoro"
+    ],
+    "duration": "1-2 days / 5-6 hours",
+    "coordinates": [
+      120.4,
+      13.483333
+    ]
+  },
+  {
+    "mountainName": "Mt. Iraya",
+    "name": "Mt. Iraya",
+    "difficulty": 4,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/04/mt-iraya-1009.html"
+    },
+    "provinces": [
+      "Batanes"
+    ],
+    "duration": "1 day / 3-4 hours",
+    "coordinates": [
+      122.009722,
+      20.466111
+    ]
+  },
+  {
+    "mountainName": "Mt. Malasimbo",
+    "name": "Mt. Malasimbo",
+    "difficulty": 4,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/11/mt-malasimbo-1168.html"
+    },
+    "provinces": [
+      "Oriental Mindoro"
+    ],
+    "duration": "1-2 days / 4-5 hours",
+    "coordinates": [
+      120.9,
+      13.45
+    ]
+  },
+  {
+    "mountainName": "Mt. Asog",
+    "name": "Mt. Asog",
+    "difficulty": 4,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/09/mt-asog-1140.html"
+    },
+    "provinces": [
+      "Camarines Sur"
+    ],
+    "duration": "1-2 days / 4 hours"
+  },
+  {
+    "mountainName": "Mt. Cristobal",
+    "name": "Mt. Cristobal",
+    "difficulty": 4,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/09/mt-cristobal-1470.html"
+    },
+    "provinces": [
+      "Quezon",
+      "Laguna"
+    ],
+    "duration": "1-2 days / 4-5 hours",
+    "coordinates": [
+      121.428,
+      14.064
+    ]
+  },
+  {
+    "mountainName": "Mt. Parker",
+    "name": "Mt. Parker/Lake Holon",
+    "difficulty": 4,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/09/mt-parkerlake-holon-1400.html"
+    },
+    "provinces": [
+      "South Cotabato",
+      "Cotabato"
+    ]
+  },
+  {
+    "mountainName": "Mt. Makiling",
+    "name": "Mt. Makiling/UPLB Trail",
+    "difficulty": 4,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/09/mt-makiling-1090.html"
+    },
+    "provinces": [
+      "Laguna"
+    ],
+    "coordinates": [
+      121.2,
+      14.13
+    ]
+  },
+  {
+    "mountainName": "Mount Mariveles",
+    "name": "Tarak Ridge",
+    "difficulty": 4,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/08/tarak-ridge-1130.html"
+    },
+    "provinces": [
+      "Bataan"
+    ],
+    "duration": "2 days, 5-6 hours",
+    "coordinates": [
+      120.5,
+      14.50595
+    ]
+  },
+  {
+    "mountainName": "Mt. Hibok-Hibok",
+    "name": "Mt. Hibok-Hibok",
+    "difficulty": 4,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/08/mt-hibok-hibok-1332.html"
+    },
+    "provinces": [
+      "Camiguin"
+    ],
+    "duration": "1 day / 3-5 hours",
+    "coordinates": [
+      124.668056,
+      9.200556
+    ]
+  },
+  {
+    "mountainName": "Mt. Batulao",
+    "name": "Mt. Batulao",
+    "difficulty": 4,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/08/mt-batulao-811.html"
+    },
+    "provinces": [
+      "Batangas"
+    ],
+    "duration": "1 day / 2-4 hours",
+    "coordinates": [
+      120.8011,
+      14.0408
+    ]
+  },
+  {
+    "mountainName": "Mt. Malindig",
+    "name": "Mt. Malindig",
+    "difficulty": 4,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/07/mt-malindig-1157.html"
+    },
+    "provinces": [
+      "Marinduque"
+    ],
+    "duration": "1-2 days / 4.5-5.5 hours",
+    "coordinates": [
+      122.0136,
+      13.2413
+    ]
+  },
+  {
+    "mountainName": "Mt. Pigingan",
+    "name": "Mt. Pigingan in Itogon, Benguet",
+    "difficulty": 4,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2018/01/mt-pigingan-1328m-in-itogon-benguet.html"
+    },
+    "provinces": [
+      "Benguet"
+    ],
+    "duration": "1-2 days / 5-7 hours"
+  },
+  {
+    "mountainName": "Mt. Maynoba",
+    "name": "Mt. Maynoba in Tanay, Rizal",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2016/06/mt-maynoba-728m-in-tanay-rizal.html"
+    },
+    "provinces": [
+      "Rizal"
+    ],
+    "duration": "1 day / 2-3 hours",
+    "coordinates": [
+      121.421833,
+      14.606222
+    ]
+  },
+  {
+    "mountainName": "Mt. Napulak",
+    "name": "Mt. Napulak in Igbaras, Iloilo",
+    "difficulty": 4,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2015/11/mt-napulak-1239-in-igbaras-iloilo.html"
+    },
+    "provinces": [
+      "Iloilo"
+    ],
+    "duration": "1-2 days / 4-6 hours"
+  },
+  {
+    "mountainName": "Mt. Hapunang Banoi",
+    "name": "Mt. Hapunang Banoi",
+    "difficulty": 4,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2015/07/mt-hapunang-banoi-517.html"
+    },
+    "provinces": [
+      "Rizal"
+    ],
+    "duration": "1 day / 2-3.5 hours",
+    "coordinates": [
+      121.191778,
+      14.740361
+    ]
+  },
+  {
+    "mountainName": "Mt. Lubog",
+    "name": "Mt. Lubog in Rodriguez, Rizal",
+    "difficulty": 4,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2015/06/mt-lubog-955-in-rodriguez-rizal.html"
+    },
+    "provinces": [
+      "Rizal"
+    ],
+    "coordinates": [
+      121.236917,
+      14.836222
+    ]
+  },
+  {
+    "mountainName": "Mt. Daraitan",
+    "name": "Mt. Daraitan",
+    "difficulty": 4,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2014/10/mt-daraitan-739.html"
+    },
+    "provinces": [
+      "Rizal",
+      "Quezon"
+    ],
+    "duration": "1 day / 2.5-4 hours",
+    "coordinates": [
+      121.43875,
+      14.613472
+    ]
+  },
+  {
+    "mountainName": "Mt. Lobo",
+    "name": "Mt. Lobo/Bangkalan Peak and Nagpatong Peak",
+    "difficulty": 4,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2012/11/mt-lobobangkalan-peak-and-nagpatong.html"
+    },
+    "provinces": [
+      "Batangas"
+    ]
+  },
+  {
+    "mountainName": "Mt. Pulog",
+    "name": "Mt. Pulog in Bacon, Sorsogon",
+    "difficulty": 4,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2011/08/mt-pulog-1020-in-bacon-sorsogon.html"
+    },
+    "provinces": [
+      "Sorsogon"
+    ],
+    "duration": "1 day / 3-4 hours"
+  },
+  {
+    "mountainName": "Mt. Pullol",
+    "name": "Mt. Pullol in Ambaguio, Nueva Vizcaya",
+    "difficulty": 4,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2011/01/mt-pullol-1400-in-ambaguio-nueva.html"
+    },
+    "provinces": [
+      "Nueva Vizcaya"
+    ],
+    "duration": "1 day / 3-4 hours"
+  },
+  {
+    "mountainName": "Mt. Magsanga",
+    "name": "Mt. Magsanga in Isabel, Leyte",
+    "difficulty": 4,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2011/01/mt-magsanga-655-in-isabel-leyte.html"
+    },
+    "provinces": [
+      "Leyte"
+    ],
+    "duration": "1 day / 2-3 hours"
+  },
+  {
+    "mountainName": "Mt. Hibok-Hibok",
+    "name": "Mt. Hibok-Hibok/Crater Trail via Brgy. Yumbing",
+    "difficulty": 5,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/10/mt-hibok-hibokcrater-trail-via-brgy.html"
+    },
+    "provinces": [
+      "Camiguin"
+    ],
+    "duration": "1-2 days / 5 hours",
+    "coordinates": [
+      124.668056,
+      9.200556
+    ]
+  },
+  {
+    "mountainName": "Mt. Arayat",
+    "name": "Mt. Arayat/Traverse",
+    "difficulty": 5,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/09/mt-arayattraverse-1030.html"
+    },
+    "provinces": [
+      "Pampanga"
+    ],
+    "duration": "1-2 days / 5 hours (NP) 8 hours (SP)",
+    "coordinates": [
+      120.7441,
+      15.2067
+    ]
+  },
+  {
+    "mountainName": "Mt. Balingkilat",
+    "name": "Mt. Balingkilat",
+    "difficulty": 5,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/07/mt-balingkilat-1100.html"
+    },
+    "provinces": [
+      "Zambales"
+    ],
+    "duration": "1-2 days / 4-6 hours",
+    "coordinates": [
+      120.11,
+      14.89
+    ]
+  },
+  {
+    "mountainName": "Mt. Natib",
+    "name": "Mt. Natib",
+    "difficulty": 5,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/05/mt-natib-1287.html"
+    },
+    "provinces": [
+      "Bataan"
+    ],
+    "coordinates": [
+      120.3997,
+      14.7119
+    ]
+  },
+  {
+    "mountainName": "Mt. Lumot",
+    "name": "Mt. Lumot",
+    "difficulty": 5,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/03/mt-lumot-2320.html"
+    },
+    "provinces": [
+      "Misamis Oriental"
+    ],
+    "duration": "3 days / 8 hours",
+    "coordinates": [
+      125.042778,
+      8.680833
+    ]
+  },
+  {
+    "mountainName": "Mt. Isarog",
+    "name": "Mt. Isarog/Panicuason Trail",
+    "difficulty": 5,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/01/mt-isarogpanicuason-trail-1966.html"
+    },
+    "provinces": [
+      "Camarines Sur"
+    ],
+    "duration": "2 days / 8-10 hours",
+    "coordinates": [
+      123.35,
+      13.666667
+    ]
+  },
+  {
+    "mountainName": "Mt. Matutum",
+    "name": "Mt. Matutum",
+    "difficulty": 5,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/01/mt-matutum-2293.html"
+    },
+    "provinces": [
+      "South Cotabato",
+      "Cotabato"
+    ],
+    "duration": "1-2 days / 4-6 hours",
+    "coordinates": [
+      125.108333,
+      6.366667
+    ]
+  },
+  {
+    "mountainName": "Mt. Banahaw de Lucban",
+    "name": "Mt. Banahaw de Lucban",
+    "difficulty": 5,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/12/mt-banahaw-de-lucban-1875.html"
+    },
+    "provinces": [
+      "Quezon"
+    ],
+    "duration": "2 days, 5-6 hours",
+    "coordinates": [
+      121.5,
+      14.066667
+    ]
+  },
+  {
+    "mountainName": "Mt. Ugo",
+    "name": "Mt. Ugo/Traverse",
+    "difficulty": 5,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/11/mt-ugu-2130.html"
+    },
+    "provinces": [
+      "Nueva Vizcaya",
+      "Benguet"
+    ],
+    "duration": "2-3 days, 9-10 hrs",
+    "coordinates": [
+      120.80166,
+      16.31916
+    ]
+  },
+  {
+    "mountainName": "Mt. Palali",
+    "name": "Mt. Palali",
+    "difficulty": 5,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/09/mt-palali-1715.html"
+    },
+    "provinces": [
+      "Quezon",
+      "Nueva Vizcaya"
+    ],
+    "duration": "2 days / 6-8 hours",
+    "coordinates": [
+      121.2236,
+      16.4283
+    ]
+  },
+  {
+    "mountainName": "Mt. Banahaw",
+    "name": "Mt. Banahaw",
+    "difficulty": 5,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/08/mt-banahaw-2158.html"
+    },
+    "provinces": [
+      "Quezon"
+    ],
+    "duration": "Level 2-3 days / 6-7 hours"
+  },
+  {
+    "mountainName": "Mt. Tapulao",
+    "name": "Mt. Tapulao",
+    "difficulty": 5,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/08/mt-tapulao-2037.html"
+    },
+    "provinces": [
+      "Zambales"
+    ],
+    "duration": "1-2 days / 6-12 hours",
+    "coordinates": [
+      120.1166,
+      15.4833
+    ]
+  },
+  {
+    "mountainName": "Mt. Naguiling",
+    "name": "Mt. Naguiling in Lobo, Batangas",
+    "difficulty": 5,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2014/09/mt-naguiling-1007-in-lobo-batangas.html"
+    },
+    "provinces": [
+      "Batangas"
+    ],
+    "duration": "1-2 days / 4-7 hours",
+    "coordinates": [
+      121.300139,
+      13.664083
+    ]
+  },
+  {
+    "mountainName": "Mt. Bahile",
+    "name": "Mt. Bahile in Puerto Princesa, Palawan",
+    "difficulty": 5,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2014/08/mt-bahile-747-in-puerto-princesa-palawan.html"
+    },
+    "provinces": [
+      "Palawan"
+    ],
+    "duration": "1-2 days / 4-6 hours",
+    "coordinates": [
+      118.742306,
+      9.985519
+    ]
+  },
+  {
+    "mountainName": "Mt. Malinao",
+    "name": "Mt. Malinao, Albay",
+    "difficulty": 5,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2011/06/mt-malinao-albay-1450.html"
+    },
+    "provinces": [
+      "Albay"
+    ],
+    "duration": "1-2 days / 5-7 hours"
+  },
+  {
+    "mountainName": "Mt. Tampurong",
+    "name": "Mt. Tampurong/Matti-Kapatagan Traverse",
+    "difficulty": 5,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2011/03/mt-tampurongmatti-kapatagan-traverse.html"
+    },
+    "provinces": [
+      "Davao del Sur"
+    ],
+    "duration": "1-2 days / 4-6 hours"
+  },
+  {
+    "mountainName": "Mt. Kalawitan",
+    "name": "Mt. Kalawitan",
+    "difficulty": 5,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2011/01/mt-kalawitan-2714.html"
+    },
+    "provinces": [],
+    "duration": "2-3* days / 6-7 hours"
+  },
+  {
+    "mountainName": "Tirad Peak",
+    "name": "Tirad Peak in Gregorio del Pilar, Ilocos Sur",
+    "difficulty": 5,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2010/08/tirad-peak-1388-in-gregorio-del-pilar.html"
+    },
+    "provinces": [
+      "Ilocos Sur"
+    ],
+    "duration": "2 days / 6-8 hours"
+  },
+  {
+    "mountainName": "Mt. Lanaya",
+    "name": "Mt. Lanaya in Alegria, Cebu",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2010/07/mt-lanaya-720-in-alegria-cebu.html"
+    },
+    "provinces": [
+      "Cebu"
+    ],
+    "duration": "1-2 days; 4-5 hours",
+    "coordinates": [
+      123.35,
+      9.7
+    ]
+  },
+  {
+    "mountainName": "Mt. Tres Marias",
+    "name": "Mt. Tres Marias",
+    "difficulty": 5,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2009/12/mt-tres-marias-1315.html"
+    },
+    "provinces": [
+      "Biliran"
+    ],
+    "duration": "6-7 hours / 2 days"
+  },
+  {
+    "mountainName": "Mt. Makiling",
+    "name": "Maktrav: Mt. Makiling/Sto. Tomas-Los Banos Traverse",
+    "difficulty": 5,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2009/12/maktrav-mt-makilingsto-tomas-los-banos.html"
+    },
+    "provinces": [
+      "Laguna",
+      "Batangas"
+    ],
+    "coordinates": [
+      121.2,
+      14.13
+    ]
+  },
+  {
+    "mountainName": "Mt. Palemlem",
+    "name": "Mt. Palemlem",
+    "difficulty": 5,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2009/08/mt-palemlem-1271.html"
+    },
+    "provinces": [
+      "Ilocos Norte"
+    ],
+    "duration": "1-2 days / 4-6 hours"
+  },
+  {
+    "mountainName": "Mt. Masaraga",
+    "name": "Mt. Masaraga in Ligao City, Albay",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2011/06/mt-masaraga-1328-in-ligao-city-albay.html"
+    },
+    "provinces": [
+      "Albay"
+    ],
+    "duration": "1-2 days / 4-7 hours",
+    "coordinates": [
+      123.5988,
+      13.3125
+    ]
+  },
+  {
+    "mountainName": "Mt. Mariveles",
+    "name": "Pantingan Peak – Mt. Mariveles",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2011/05/pantingan-peak-mt-mariveles-1388.html"
+    },
+    "provinces": [
+      "Bataan"
+    ],
+    "duration": "1-2 days / 6-9 hours"
+  },
+  {
+    "mountainName": "Mt. Talinis",
+    "name": "Mt. Talinis/Bediao-Apolong Traverse to Casaroro Falls",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2009/06/mt-talinisbediao-apolong-traverse-to.html"
+    },
+    "provinces": [
+      "Negros Oriental"
+    ],
+    "duration": "2-3 days / 10-11 hours"
+  },
+  {
+    "mountainName": "Mt. Manaphag",
+    "name": "Mt. Manaphag, Pan de Azucar Island",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2009/05/mt-manaphag-pan-de-azucar-island-606.html"
+    },
+    "provinces": [
+      "Iloilo"
+    ],
+    "duration": "1 day / 3-4 hours"
+  },
+  {
+    "mountainName": "Mt. Balingkilat",
+    "name": "Mt. Balingkilat/Traverse to Anawangin Cove",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2009/01/mt-balingkilattraverse-to-anawangin.html"
+    },
+    "provinces": [
+      "Zambales"
+    ],
+    "duration": "2 days / 5 hours",
+    "coordinates": [
+      120.11,
+      14.89
+    ]
+  },
+  {
+    "mountainName": "Mt. Cristobal",
+    "name": "Mt. Cristobal Traverse Trails",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/12/mt-cristobal-traverse-trails-1415.html"
+    },
+    "provinces": [
+      "Rizal",
+      "Quezon",
+      "Laguna"
+    ],
+    "duration": "1-2 days / 4 hours",
+    "coordinates": [
+      121.428,
+      14.064
+    ]
+  },
+  {
+    "mountainName": "Mt. Isarog",
+    "name": "Mt. Isarog/ Patag-Patag Trail",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/09/mt-isarog-patag-patag-trail-1966.html"
+    },
+    "provinces": [
+      "Camarines Sur"
+    ],
+    "duration": "2 days / 6-8 hours",
+    "coordinates": [
+      123.35,
+      13.666667
+    ]
+  },
+  {
+    "mountainName": "Mt. Pandadagsaan",
+    "name": "White Peak/ Mt. Pandadagsaan",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/08/white-peak-mt-pandadagsaan-2670.html"
+    },
+    "provinces": [
+      "Bataan"
+    ],
+    "duration": "2-3 days / 8-10 hours"
+  },
+  {
+    "mountainName": "Alto Peak",
+    "name": "Alto Peak",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/02/alto-peak-1332.html"
+    },
+    "provinces": [
+      "Leyte"
+    ],
+    "duration": "3-4 days / 11-14 hours*",
+    "coordinates": [
+      124.7097,
+      11.1061
+    ]
+  },
+  {
+    "mountainName": "Mt. Makiling",
+    "name": "Mt. Makiling/Sto. Tomas Trail",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/01/mt-makilingsto-tomas-trail-1090.html"
+    },
+    "provinces": [
+      "Batangas"
+    ],
+    "coordinates": [
+      121.2,
+      14.13
+    ]
+  },
+  {
+    "mountainName": "Mt. Hamiguitan",
+    "name": "Mt. Hamiguitan",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/12/mt-hamiguitan-1620.html"
+    },
+    "provinces": [
+      "La Union",
+      "Davao Oriental"
+    ],
+    "duration": "3 days / 11 hours",
+    "coordinates": [
+      126.174,
+      6.745
+    ]
+  },
+  {
+    "mountainName": "Mt. Amuyao",
+    "name": "Mt. Amuyao",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/11/mt-amuyao-2702.html"
+    },
+    "provinces": [
+      "Mountain Province",
+      "Ifugao"
+    ],
+    "duration": "2 days / 5-7 hours",
+    "coordinates": [
+      120.95,
+      17.166667
+    ]
+  },
+  {
+    "mountainName": "Mt. Pulag",
+    "name": "Mt. Pulag/Tawangan Trail",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/10/mt-pulagtawangan-trail-2922.html"
+    },
+    "provinces": [
+      "Benguet"
+    ],
+    "coordinates": [
+      120.8875,
+      16.582778
+    ]
+  },
+  {
+    "mountainName": "Mt. Tabayoc",
+    "name": "Mt. Tabayoc",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/10/mt-tabayoc-2842.html"
+    },
+    "provinces": [
+      "Ifugao",
+      "Benguet"
+    ],
+    "duration": "2-3 days /4-6 hours",
+    "coordinates": [
+      120.88333,
+      16.7
+    ]
+  },
+  {
+    "mountainName": "Mt. Dulang-Dulang",
+    "name": "Mt. Dulang-Dulang",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/09/mt-dulang-dulang-2398.html"
+    },
+    "provinces": [
+      "Bukidnon"
+    ],
+    "duration": "2 days / 10 hours",
+    "coordinates": [
+      124.9605,
+      8.09798
+    ]
+  },
+  {
+    "mountainName": "Mt. Kitanglad",
+    "name": "Mt. Kitanglad",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/09/mt-kitanglad-2899.html"
+    },
+    "provinces": [
+      "Bukidnon"
+    ],
+    "duration": "",
+    "coordinates": [
+      124.783333,
+      8.133889
+    ]
+  },
+  {
+    "mountainName": "Mt. Iglit",
+    "name": "Mt. Iglit",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/08/mt-iglit-1432.html"
+    },
+    "provinces": [
+      "Occidental Mindoro"
+    ],
+    "duration": "2-3 days /9-11 hours",
+    "coordinates": [
+      121.166667,
+      12.85
+    ]
+  },
+  {
+    "mountainName": "Mt. Irid",
+    "name": "Mt. Irid in Tanay, Rizal",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2015/06/mt-irid-in-tanay-rizal-1467.html"
+    },
+    "provinces": [
+      "Rizal"
+    ],
+    "duration": "1-2 days / 5-8 hours",
+    "coordinates": [
+      121.324528,
+      14.789139
+    ]
+  },
+  {
+    "mountainName": "Mt. Labo",
+    "name": "Mt. Labo, Camarines Norte",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2013/09/mt-labo-camarines-norte-1544.html"
+    },
+    "provinces": [
+      "Camarines Norte"
+    ],
+    "duration": "2-3 days / 8-10 hours",
+    "coordinates": [
+      122.788333,
+      14.013167
+    ]
+  },
+  {
+    "mountainName": "Mt. Mayapay",
+    "name": "Mt. Mayapay, Butuan City, Agusan del Norte",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2013/08/mt-mayapay-675-butuan-city-agusan-del.html"
+    },
+    "provinces": [
+      "Agusan del Norte"
+    ]
+  },
+  {
+    "mountainName": "Mt. Purgatory",
+    "name": "Mt. Purgatory Traverse/Mt. Pack-Mt. Komkompol",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2013/01/mt-purgatory-traversemt-pack-mt.html"
+    },
+    "provinces": [
+      "Benguet"
+    ],
+    "duration": "2-3 days / 4-5 (Pa); 5-7 (Pu); 9-11 (K)"
+  },
+  {
+    "mountainName": "Mt. Bulusan",
+    "name": "Mt. Bulusan / Bulusan Volcano",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2012/06/mt-bulusan-bulusan-volcano-1565.html"
+    },
+    "provinces": [
+      "Sorsogon"
+    ],
+    "duration": "1-2 days / 6-9 hours"
+  },
+  {
+    "mountainName": "Mt. Damas",
+    "name": "Mt. Damas/Traverse in San Clemente, Tarlac",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2011/08/mt-damastraverse-685-in-san-clemente.html"
+    },
+    "provinces": [
+      "Tarlac"
+    ],
+    "duration": "1-2 days/ 4-5 hours"
+  },
+  {
+    "mountainName": "Mt. Kilakiron",
+    "name": "Mt. Kilakiron in Valencia, Bukidnon",
+    "difficulty": 6,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2011/07/mt-kilakiron-2329-in-valencia-bukidnon.html"
+    },
+    "provinces": [
+      "Bukidnon"
+    ],
+    "duration": "2-3 days / 8-12 hours"
+  },
+  {
+    "mountainName": "Mt. Apo",
+    "name": "Mt. Apo/Kidapawan-Magpet Trail",
+    "difficulty": 7,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/10/mt-apokidapawan-magpet-trail-2956.html"
+    },
+    "provinces": [
+      "Cotabato"
+    ],
+    "duration": "3 days / 10-11 hours",
+    "coordinates": [
+      125.275833,
+      7.008333
+    ]
+  },
+  {
+    "mountainName": "Mt. Pulag",
+    "name": "Mt. Pulag/Akiki-Tawangan Traverse",
+    "difficulty": 7,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2013/04/mt-pulagakiki-tawangan-traverse-2922.html"
+    },
+    "provinces": [
+      "Benguet"
+    ],
+    "duration": "2-4 days / 9-12 hours",
+    "coordinates": [
+      120.8875,
+      16.582778
+    ]
+  },
+  {
+    "mountainName": "Mt. Thumbpeak",
+    "name": "Mt. Thumbpeak in Puerto Princesa, Palawan",
+    "difficulty": 7,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2011/05/mt-thumbpeak-1296-in-puerto-princesa.html"
+    },
+    "provinces": [
+      "Palawan"
+    ],
+    "duration": "2-3 days / 7-11 hours",
+    "coordinates": [
+      118.605667,
+      9.798722
+    ]
+  },
+  {
+    "mountainName": "Mt. Talomo",
+    "name": "Mt. Talomo",
+    "difficulty": 7,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2010/03/mt-talomo-2674.html"
+    },
+    "provinces": [
+      "Davao del Sur"
+    ],
+    "duration": "2-3 days / 9 hours"
+  },
+  {
+    "mountainName": "Mount Victoria",
+    "name": "Mount Victoria in Narra, Palawan",
+    "difficulty": 7,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2009/09/mount-victoria-2010.html"
+    },
+    "provinces": [
+      "Palawan"
+    ]
+  },
+  {
+    "mountainName": "Mt. Apo",
+    "name": "Mt. Apo/Kapatagan-Kidapawan Traverse Trail",
+    "difficulty": 7,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/10/mt-apokapatagan-kidapawan-traverse.html"
+    },
+    "provinces": [
+      "Cotabato",
+      "Davao del Sur"
+    ],
+    "duration": "3 days / 10-11 hours",
+    "coordinates": [
+      125.275833,
+      7.008333
+    ]
+  },
+  {
+    "mountainName": "Mount Mayon",
+    "name": "Mayon Volcano",
+    "difficulty": 7,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/10/mayon-volcano-2462.html"
+    },
+    "provinces": [
+      "Albay"
+    ],
+    "duration": "3 days / 10-12 hours",
+    "coordinates": [
+      123.685,
+      13.256667
+    ]
+  },
+  {
+    "mountainName": "Cleopatra’s Needle",
+    "name": "Cleopatra’s Needle",
+    "difficulty": 7,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/05/cleopatras-needle-1593.html"
+    },
+    "provinces": [
+      "Palawan"
+    ],
+    "duration": "3-4 days / 10-12 hours",
+    "coordinates": [
+      118.9953,
+      10.12389
+    ]
+  },
+  {
+    "mountainName": "Mt. Kanlaon",
+    "name": "Mt. Kanlaon/ Mapot-Masulog",
+    "difficulty": 7,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/02/mt-kanlaon-mapot-masulog-2435.html"
+    },
+    "provinces": [
+      "Negros Oriental"
+    ],
+    "duration": "2-3 days / 9-11 hours",
+    "coordinates": [
+      123.131944,
+      10.412222
+    ]
+  },
+  {
+    "mountainName": "Mt. Pulag",
+    "name": "Mt. Pulag/Akiki Trail",
+    "difficulty": 7,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/02/mt-pulagakiki-trail-2922.html"
+    },
+    "provinces": [
+      "Benguet"
+    ],
+    "coordinates": [
+      120.8875,
+      16.582778
+    ]
+  },
+  {
+    "mountainName": "Mt. Napulauan",
+    "name": "Mt. Napulauan/Traverse",
+    "difficulty": 7,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/11/mt-napulauan-2642.html"
+    },
+    "provinces": [
+      "Ifugao"
+    ],
+    "coordinates": [
+      121.166667,
+      16.833333
+    ]
+  },
+  {
+    "mountainName": "Mt. Nangtud",
+    "name": "Mt. Nangtud in Barbaza, Antique",
+    "difficulty": 8,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2015/11/mt-nangtud-2073-in-barbaza-antique.html"
+    },
+    "provinces": [
+      "Antique"
+    ],
+    "duration": "3-4 days / 12-16 hours",
+    "coordinates": [
+      122.206437,
+      11.267932
+    ]
+  },
+  {
+    "mountainName": "Mt. Ugo",
+    "name": "Mt. Ugo Traverse to Mt. Pulag",
+    "difficulty": 8,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2013/01/mt-ugo-2150-traverse-to-mt-pulag-2922.html"
+    },
+    "provinces": [
+      "Nueva Vizcaya",
+      "Benguet"
+    ]
+  },
+  {
+    "mountainName": "Mt. Kalatungan",
+    "name": "Mt. Kalatungan/Traverse",
+    "difficulty": 8,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2009/06/mt-kalatungantraverse-2824.html"
+    },
+    "provinces": [
+      "Bukidnon"
+    ],
+    "duration": "3-4 days / 15 hours",
+    "coordinates": [
+      124.8025,
+      7.955
+    ]
+  },
+  {
+    "mountainName": "Mt. Madjaas",
+    "name": "Mt. Madjaas",
+    "difficulty": 8,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2009/03/mt-madjaas-2090.html"
+    },
+    "provinces": [
+      "Antique"
+    ],
+    "duration": "3-4 days / 14 hours"
+  },
+  {
+    "mountainName": "Mt. Apo",
+    "name": "Mt. Apo/Sibulan-Kapatagan Traverse",
+    "difficulty": 8,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/12/mt-aposibulan-kapatagan-traverse-2956.html"
+    },
+    "provinces": [
+      "Davao del Sur"
+    ],
+    "duration": "3-4 days / 14-16 hours",
+    "coordinates": [
+      125.275833,
+      7.008333
+    ]
+  },
+  {
+    "mountainName": "Mt. Tapulao",
+    "name": "Mt. Tapulao/ Tarlac-Zambales Traverse",
+    "difficulty": 8,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/07/mt-tapulao-tarlac-zambales-traverse.html"
+    },
+    "provinces": [
+      "Zambales",
+      "Tarlac"
+    ],
+    "duration": "3-4 days / 14 hours",
+    "coordinates": [
+      120.1166,
+      15.4833
+    ]
+  },
+  {
+    "mountainName": "Mt. Candalaga",
+    "name": "Mt. Candalaga",
+    "difficulty": 8,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/07/mt-candalaga-2402.html"
+    },
+    "provinces": [
+      "Albay"
+    ],
+    "duration": "3 days / 12-14 hours",
+    "coordinates": [
+      126.077222,
+      7.35
+    ]
+  },
+  {
+    "mountainName": "Mt. Amuyao",
+    "name": "Mt. Amuyao/Traverse",
+    "difficulty": 8,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/05/mt-amuyaotraverse.html"
+    },
+    "provinces": [
+      "Mountain Province",
+      "Ifugao"
+    ],
+    "duration": "3-4 days / 5-7 hours",
+    "coordinates": [
+      121.1297,
+      17.0123
+    ]
+  },
+  {
+    "mountainName": "Mt. Kanlaon",
+    "name": "Mt. Kanlaon/ Wasay-Guintubdan",
+    "difficulty": 8,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/02/mt-kanlaon-wasay-guintubdan-trails-2435.html"
+    },
+    "provinces": [
+      "Negros Occidental"
+    ],
+    "duration": "3-4 days / 15-16 hours",
+    "coordinates": [
+      123.131944,
+      10.412222
+    ]
+  },
+  {
+    "mountainName": "Mt. Guiting-Guiting",
+    "name": "Mt. Guiting-Guiting Traverse",
+    "difficulty": 9,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2014/02/mt-guiting-guiting-traverse-2058.html"
+    },
+    "provinces": [
+      "Romblon"
+    ],
+    "duration": "10-18 hours / 2-3 days (excluding travel)",
+    "coordinates": [
+      122.567778,
+      12.413889
+    ]
+  },
+  {
+    "mountainName": "Mt. Talomo",
+    "name": "Mt. Talomo Traverse to Mt. Apo",
+    "difficulty": 9,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2012/01/mt-talomo-2674-traverse-to-mt-apo-2956.html"
+    },
+    "provinces": [
+      "Davao del Sur"
+    ]
+  },
+  {
+    "mountainName": "Mt. Sicapoo",
+    "name": "Mt. Sicapoo/Traverse via Timarid-Simagaysay",
+    "difficulty": 9,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2010/07/mt-sicapootraverse-via-timarid.html"
+    },
+    "provinces": [
+      "Ilocos Norte"
+    ],
+    "duration": "4 days / 16-18 hours"
+  },
+  {
+    "mountainName": "Mt. Tuminungan",
+    "name": "Mt. Tuminungan via Kitanglad cliffs-Inablayan Peak-Mt. Salimpukaw route",
+    "difficulty": 9,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2010/02/mt-tuminungan-via-kitanglad-cliffs.html"
+    },
+    "provinces": [
+      "Bukidnon"
+    ],
+    "duration": "3-4 days / 16 hours"
+  },
+  {
+    "mountainName": "Mt. Maagnaw",
+    "name": "Mt. Maagnaw",
+    "difficulty": 9,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2010/01/mt-maagnaw-2742.html"
+    },
+    "provinces": [
+      "Bukidnon"
+    ],
+    "duration": "3-4 days / 17-18 hours"
+  },
+  {
+    "mountainName": "Mt. Halcon",
+    "name": "Mt. Halcon",
+    "difficulty": 9,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2009/07/mt-halcon-2582.html"
+    },
+    "provinces": [
+      "Oriental Mindoro"
+    ],
+    "duration": "3.5-4 days / 15-18 hours",
+    "coordinates": [
+      120.99505,
+      13.262483
+    ]
+  },
+  {
+    "mountainName": "Mt. Guiting-Guiting",
+    "name": "Mt. Guiting-Guiting",
+    "difficulty": 9,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/03/mt-guiting-guiting-2058.html"
+    },
+    "provinces": [
+      "Romblon"
+    ],
+    "duration": "3 days / 10-13 hours",
+    "coordinates": [
+      122.567778,
+      12.413889
+    ]
+  },
+  {
+    "mountainName": "Mt. Mantalingajan",
+    "name": "Mt. Mantalingajan",
+    "difficulty": 9,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2008/03/mt-mantalingajan-2086.html"
+    },
+    "provinces": [
+      "Rizal",
+      "Palawan"
+    ],
+    "duration": "3-5 days / 15-20 hours",
+    "coordinates": [
+      117.666667,
+      8.8
+    ]
+  },
+  {
+    "mountainName": "Mt. Patukan",
+    "name": "Mt. Patukan/Mt. Mating-oy Dinayao",
+    "difficulty": 9,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2007/11/mt-patukanmt-mating-oy-dinayao-1906.html"
+    },
+    "provinces": [
+      "Kalinga"
+    ],
+    "duration": "7 days / 14-20 hours",
+    "coordinates": [
+      121.2,
+      17.28
+    ]
+  },
+  {
+    "mountainName": "Mount Binacayan",
+    "name": "Binacayan day hike",
+    "difficulty": 3,
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2015/02/mt-pamitinan-426-and-mt-binacayan-424.html"
+    },
+    "provinces": [
+      "Rizal"
+    ],
+    "duration": "1 day / 1.5-3 hours (P); 2-3 hours (B)"
+  },
+  {
+    "mountainName": "Mt. Fato",
+    "name": "Maligcong trail",
+    "difficulty": 3,
+    "provinces": [
+      "Mountain Province"
+    ],
+    "source": {
+      "label": "Pinoy Mountaineer trip report",
+      "url": "https://www.pinoymountaineer.com/2016/05/trip-report-mts-fato-and-kupapey-in-maligcong-bontoc-mt-province.html"
+    }
+  },
+  {
+    "mountainName": "Mt. Kupapey",
+    "name": "Maligcong trail",
+    "difficulty": 3,
+    "provinces": [
+      "Mountain Province"
+    ],
+    "source": {
+      "label": "Pinoy Mountaineer trip report",
+      "url": "https://www.pinoymountaineer.com/2016/05/trip-report-mts-fato-and-kupapey-in-maligcong-bontoc-mt-province.html"
+    }
+  },
+  {
+    "mountainName": "Mt. Kabunian",
+    "name": "Bakun day hike (provisional published rating)",
+    "difficulty": 5,
+    "provinces": [
+      "Benguet"
+    ],
+    "source": {
+      "label": "Pinoy Mountaineer provisional individual climb specifications",
+      "url": "https://www.pinoymountaineer.com/2009/01/bakun-trio-mts-tenglawan-kabunian-and.html"
+    }
+  },
+  {
+    "mountainName": "Mt. Tenglawan",
+    "name": "Bakun day hike (provisional published rating)",
+    "difficulty": 5,
+    "provinces": [
+      "Benguet"
+    ],
+    "source": {
+      "label": "Pinoy Mountaineer provisional individual climb specifications",
+      "url": "https://www.pinoymountaineer.com/2009/01/bakun-trio-mts-tenglawan-kabunian-and.html"
+    }
+  },
+  {
+    "mountainName": "Mt. Lobo",
+    "name": "Bakun day hike (provisional published rating)",
+    "difficulty": 5,
+    "provinces": [
+      "Benguet"
+    ],
+    "source": {
+      "label": "Pinoy Mountaineer provisional individual climb specifications",
+      "url": "https://www.pinoymountaineer.com/2009/01/bakun-trio-mts-tenglawan-kabunian-and.html"
+    }
+  },
+  {
+    "mountainName": "Mount Mandalagan",
+    "name": "Tinagong Dagat",
+    "difficulty": 4,
+    "provinces": [
+      "Negros Occidental"
+    ],
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2012/08/mt-mandalagantinagong-dagat-marapara.html"
+    }
+  },
+  {
+    "mountainName": "Mount Mandalagan",
+    "name": "Tinagong Dagat, Marapara and Solfatara circuit",
+    "difficulty": 7,
+    "provinces": [
+      "Negros Occidental"
+    ],
+    "source": {
+      "label": "Pinoy Mountaineer route guide",
+      "url": "https://www.pinoymountaineer.com/2012/08/mt-mandalagantinagong-dagat-marapara.html"
+    }
+  },
+  {
+    "mountainName": "Mount Bira-Bira",
+    "name": "Bira-Bira traverse to Nagsasa Cove",
+    "difficulty": 3,
+    "provinces": [
+      "Zambales"
+    ],
+    "source": {
+      "label": "Published Bira-Bira traverse specifications",
+      "url": "https://kapampangantraveller.com/2017/07/24/mt-bira-bira-traverse/"
+    }
+  }
+]

@@ -1,60 +1,32 @@
-// Map-only catalogue: deliberately independent of the mountain cards.
-// Approximate mountain locations [longitude, latitude], not trailheads.
-// Reference: https://en.wikipedia.org/wiki/List_of_mountains_in_the_Philippines
-export const mapMountains = [
-  { name: "Mount Pulag", location: "Benguet / Ifugao / Nueva Vizcaya", coordinates: [120.883, 16.597] },
-  { name: "Mount Apo", location: "Davao del Sur / Cotabato", coordinates: [125.269, 6.988] },
-  { name: "Mount Dulang-Dulang", location: "Bukidnon", coordinates: [124.96, 8.133] },
-  { name: "Mount Kitanglad", location: "Bukidnon", coordinates: [124.917, 8.117] },
-  { name: "Mount Kalatungan", location: "Bukidnon", coordinates: [124.803, 7.896] },
-  { name: "Mount Guiting-Guiting", location: "Sibuyan, Romblon", coordinates: [122.567, 12.417] },
-  { name: "Mount Halcon", location: "Oriental Mindoro", coordinates: [121.004, 13.262] },
-  { name: "Mount Mantalingajan", location: "Palawan", coordinates: [117.986, 8.808] },
-  { name: "Mount Mayon", location: "Albay", coordinates: [123.686, 13.255] },
-  { name: "Mount Kanlaon", location: "Negros", coordinates: [123.132, 10.412] },
-  { name: "Mount Pinatubo", location: "Zambales / Tarlac / Pampanga", coordinates: [120.35, 15.143] },
-  { name: "Mount Banahaw", location: "Laguna / Quezon", coordinates: [121.489, 14.066] },
-  { name: "Mount Makiling", location: "Laguna / Batangas", coordinates: [121.194, 14.136] },
-  { name: "Mount Arayat", location: "Pampanga", coordinates: [120.743, 15.205] },
-  { name: "Mount Batulao", location: "Batangas", coordinates: [120.803, 14.025] },
-  { name: "Mount Daraitan", location: "Rizal / Quezon", coordinates: [121.431, 14.603] },
-  { name: "Mount Maculot", location: "Batangas", coordinates: [121.035, 13.931] },
-  { name: "Mount Pico de Loro", location: "Cavite / Batangas", coordinates: [120.65, 14.214] },
-  { name: "Mount Mariveles", location: "Bataan", coordinates: [120.482, 14.516] },
-  { name: "Mount Natib", location: "Bataan", coordinates: [120.4, 14.717] },
-  { name: "Mount Tapulao", location: "Zambales", coordinates: [120.117, 15.483] },
-  { name: "Mount Balingkilat", location: "Zambales", coordinates: [120.188, 14.893] },
-  { name: "Mount Cristobal", location: "Laguna / Quezon", coordinates: [121.428, 14.064] },
-  { name: "Mount Isarog", location: "Camarines Sur", coordinates: [123.38, 13.658] },
-  { name: "Mount Iriga", location: "Camarines Sur", coordinates: [123.457, 13.457] },
-  { name: "Mount Bulusan", location: "Sorsogon", coordinates: [124.05, 12.77] },
-  { name: "Mount Malinao", location: "Albay", coordinates: [123.6, 13.417] },
-  { name: "Mount Masaraga", location: "Albay", coordinates: [123.598, 13.32] },
-  { name: "Mount Labo", location: "Camarines Norte", coordinates: [122.792, 14.017] },
-  { name: "Mount Amuyao", location: "Mountain Province", coordinates: [121.13, 17.012] },
-  // Approximate peaks: https://mapcarta.com/N5981368143 and https://mapcarta.com/N8098782591
-  { name: "Mount Kabunian", location: "Bakun, Benguet", coordinates: [120.633, 16.803] },
-  { name: "Mount Fato", location: "Maligcong, Mountain Province", coordinates: [120.968, 17.118] },
-  // Also spelled Kupappey: https://www.peakbagger.com/peak.aspx?pid=-89794
-  { name: "Mount Kupapey", location: "Maligcong, Mountain Province", coordinates: [120.974, 17.139] },
-  { name: "Mount Purgatory", location: "Benguet", coordinates: [120.818, 16.494] },
-  { name: "Mount Ugo", location: "Benguet / Nueva Vizcaya", coordinates: [120.802, 16.319] },
-  { name: "Mount Ulap", location: "Benguet", coordinates: [120.632, 16.29] },
-  { name: "Mount Timbak", location: "Benguet", coordinates: [120.695, 16.629] },
-  { name: "Mount Tabayoc", location: "Benguet", coordinates: [120.878, 16.699] },
-  { name: "Mount Sicapoo", location: "Ilocos Norte", coordinates: [120.95, 18.1] },
-  { name: "Mount Baco", location: "Occidental Mindoro", coordinates: [121.143, 12.806] },
-  { name: "Mount Malindig", location: "Marinduque", coordinates: [122.018, 13.24] },
-  { name: "Mount Madja-as", location: "Antique", coordinates: [122.137, 11.367] },
-  { name: "Mount Nangtud", location: "Antique / Aklan", coordinates: [122.274, 11.282] },
-  { name: "Mount Talinis", location: "Negros Oriental", coordinates: [123.18, 9.25] },
-  { name: "Mount Mandalagan", location: "Negros Occidental", coordinates: [123.25, 10.65] },
-  { name: "Mount Silay", location: "Negros Occidental", coordinates: [123.233, 10.767] },
-  { name: "Osmeña Peak", location: "Cebu", coordinates: [123.443, 9.821] },
-  { name: "Alto Peak", location: "Leyte", coordinates: [124.742, 11.105] },
-  { name: "Mount Hibok-Hibok", location: "Camiguin", coordinates: [124.673, 9.203] },
-  { name: "Mount Timpoong", location: "Camiguin", coordinates: [124.715, 9.173] },
-  { name: "Mount Hamiguitan", location: "Davao Oriental", coordinates: [126.183, 6.733] },
-  { name: "Mount Matutum", location: "South Cotabato", coordinates: [125.108, 6.367] },
-  { name: "Mount Parker", location: "South Cotabato", coordinates: [124.892, 6.113] },
-] satisfies { name: string; location: string; coordinates: [number, number] }[];
+import catalogue from "./national-mountains.json";
+import type { MountainDifficulty, Source, Trail } from "./mountains";
+
+export type PublishedTrail = Trail & {
+  difficulty: MountainDifficulty;
+  difficultyMax?: MountainDifficulty;
+  source: Source;
+};
+
+export type MapMountain = {
+  slug: string;
+  name: string;
+  location: string;
+  coordinates: [number, number];
+  aliases: string[];
+  elevationMeters?: number;
+  /** Lowest published route rating; use trails for route-specific comparisons. */
+  difficulty?: MountainDifficulty;
+  trails?: PublishedTrail[];
+  sources: Source[];
+};
+
+// Nationwide map/list catalogue, independent of the prominent cards.
+// Generated by scripts/import-mountain-catalogue.py; see docs/mountain-catalogue.md.
+export const mapMountains = catalogue as MapMountain[];
+
+export function mountainDifficultyLabel(mountain: MapMountain): string {
+  if (!mountain.trails?.length) return "No published route rating found";
+  const minimum = Math.min(...mountain.trails.map((trail) => trail.difficulty));
+  const maximum = Math.max(...mountain.trails.map((trail) => trail.difficultyMax ?? trail.difficulty));
+  return minimum === maximum ? `Route difficulty ${minimum}/9` : `Route difficulty ${minimum}\u2013${maximum}/9`;
+}
