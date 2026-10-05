@@ -9,10 +9,17 @@ import { mapMountains } from "@/data/map-mountains";
 const countryBounds: [[number, number], [number, number]] = [[117, 5.5], [127, 19]];
 const countryPadding = { top: 80, bottom: 40, left: 24, right: 24 };
 const peakZoomSteps = 2;
+const cameraAnimation = {
+  duration: 1000,
+  easing: (progress: number) => progress * progress * (3 - 2 * progress),
+};
 
-export function MountainAreaMap({ selectedArea, onSelect, counts }: {
+export function MountainAreaMap({ selectedArea, selectedMountain, listOpen, onSelect, onSelectMountain, counts }: {
   selectedArea: MountainAreaId | "all";
+  selectedMountain: { name: string } | null;
+  listOpen: boolean;
   onSelect: (area: MountainAreaId) => void;
+  onSelectMountain: (name: string, area: MountainAreaId | undefined) => void;
   counts: Record<MountainAreaId, number>;
 }) {
   const container = useRef<HTMLDivElement>(null);
@@ -21,6 +28,7 @@ export function MountainAreaMap({ selectedArea, onSelect, counts }: {
   const peakButtons = useRef(new Map<HTMLButtonElement, MountainAreaId>());
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [attempt, setAttempt] = useState(0);
+  const [relativeZoom, setRelativeZoom] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -48,14 +56,17 @@ export function MountainAreaMap({ selectedArea, onSelect, counts }: {
           attributionControl: { compact: true },
         });
         mapRef.current = map;
-        map.addControl(new maplibre.NavigationControl({ showCompass: false }), "bottom-right");
+        map.addControl(new maplibre.NavigationControl({ showCompass: false }), "top-left");
         const peakElements: HTMLButtonElement[] = [];
         const updatePeakVisibility = () => {
           if (!map) return;
           // Match two navigation zoom steps from the reset view at any map size.
           const resetZoom = map.cameraForBounds(countryBounds, { padding: countryPadding })?.zoom ?? map.getMinZoom();
+          const zoomOffset = map.getZoom() - Math.max(map.getMinZoom(), resetZoom);
+          setRelativeZoom(Math.round(zoomOffset * 10) / 10);
           const visible = map.getZoom() >= Math.max(map.getMinZoom(), resetZoom) + peakZoomSteps - 0.01;
           for (const button of peakElements) button.style.display = visible ? "" : "none";
+          for (const button of markers.values()) button.style.display = visible ? "none" : "";
           if (!visible) popup?.remove();
         };
         for (const mountain of mapMountains) {
@@ -64,7 +75,13 @@ export function MountainAreaMap({ selectedArea, onSelect, counts }: {
           button.className = "mountain-peak-marker";
           button.style.display = "none";
           peakElements.push(button);
-          button.textContent = "▲";
+          const icon = document.createElement("span");
+          icon.textContent = "▲";
+          icon.setAttribute("aria-hidden", "true");
+          const label = document.createElement("span");
+          label.className = "mountain-peak-label";
+          label.textContent = mountain.name;
+          button.append(icon, label);
           button.title = mountain.name;
           button.setAttribute("aria-label", `${mountain.name}, ${mountain.location}`);
           const areaId = getMountainArea(mountain);
@@ -72,7 +89,7 @@ export function MountainAreaMap({ selectedArea, onSelect, counts }: {
           button.setAttribute("aria-controls", "mountain-area-results");
           button.addEventListener("click", (event) => {
             event.stopPropagation();
-            if (areaId) onSelect(areaId);
+            onSelectMountain(mountain.name, areaId);
             if (!map) return;
             popup?.remove();
             const content = document.createElement("div");
@@ -84,7 +101,7 @@ export function MountainAreaMap({ selectedArea, onSelect, counts }: {
             note.textContent = "Approximate mountain location";
             note.className = "mountain-peak-note";
             content.append(name, location, note);
-            popup = new maplibre.Popup({ offset: 16, className: "mountain-peak-popup" })
+            popup = new maplibre.Popup({ offset: 16, anchor: "bottom", className: "mountain-peak-popup" })
               .setLngLat(mountain.coordinates).setDOMContent(content).addTo(map);
           });
           new maplibre.Marker({ element: button }).setLngLat(mountain.coordinates).addTo(map);
@@ -155,10 +172,26 @@ export function MountainAreaMap({ selectedArea, onSelect, counts }: {
             event.stopPropagation();
             popup?.remove();
             onSelect(area.id);
+            if (!map) return;
+            const areaPeaks = mapMountains.filter((mountain) => getMountainArea(mountain) === area.id);
+            const bounds = new maplibre.LngLatBounds();
+            bounds.extend([...area.coordinates]);
+            for (const mountain of areaPeaks) bounds.extend(mountain.coordinates);
+            const padding = { top: 110, bottom: 60, left: 70, right: 70 };
+            const camera = map.cameraForBounds(bounds, { padding, maxZoom: 9 });
+            const resetZoom = map.cameraForBounds(countryBounds, { padding: countryPadding })?.zoom ?? map.getMinZoom();
+            map.easeTo({
+              ...cameraAnimation,
+              center: camera?.center ?? [...area.coordinates],
+              zoom: Math.max(camera?.zoom ?? 9, Math.max(map.getMinZoom(), resetZoom) + peakZoomSteps),
+              bearing: 0,
+              pitch: 0,
+            });
           });
           markers.set(area.id, button);
           new maplibre.Marker({ element: button }).setLngLat([...area.coordinates]).addTo(map);
         }
+        updatePeakVisibility();
         observer = new ResizeObserver(() => map?.resize());
         observer.observe(container.current);
       } catch {
@@ -177,7 +210,33 @@ export function MountainAreaMap({ selectedArea, onSelect, counts }: {
       markers.clear();
       peaks.clear();
     };
-  }, [onSelect, attempt]);
+  }, [onSelect, onSelectMountain, attempt]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || status !== "ready" || !selectedMountain) return;
+    const mountain = mapMountains.find((item) => item.name.toLowerCase().replace(/^mt\.\s*/, "mount ") === selectedMountain.name);
+    if (!mountain) return;
+    const focusMountain = () => {
+      const mobile = window.matchMedia("(max-width: 1023px)").matches;
+      const height = map.getContainer().clientHeight;
+      // Center in the exposed map above the sheet (or its collapsed 56px bar).
+      const coveredHeight = mobile ? (listOpen ? height * 2 / 3 : 56) : 0;
+      const resetZoom = map.cameraForBounds(countryBounds, { padding: countryPadding })?.zoom ?? map.getMinZoom();
+      map.easeTo({
+        ...cameraAnimation,
+        center: mountain.coordinates,
+        zoom: Math.min(map.getMaxZoom(), Math.max(9, map.getZoom(), resetZoom + peakZoomSteps)),
+        offset: [0, -coveredHeight / 2],
+        bearing: 0,
+        pitch: 0,
+        essential: false,
+      });
+    };
+    focusMountain();
+    map.on("resize", focusMountain);
+    return () => { map.off("resize", focusMountain); };
+  }, [selectedMountain, listOpen, status]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -204,17 +263,12 @@ export function MountainAreaMap({ selectedArea, onSelect, counts }: {
   }, [selectedArea, counts, status]);
 
   return (
-    <div className="mountain-area-map relative isolate h-[460px] min-w-0 overflow-hidden bg-[#182725] sm:h-[540px] lg:h-[600px]">
+    <div className="mountain-area-map relative isolate h-full min-w-0 overflow-hidden bg-[#182725] lg:h-[600px]">
       <div ref={container} style={{ position: "absolute", inset: 0 }} role="region" aria-label="Interactive map of Philippine climbing areas" />
-      <div className="pointer-events-none absolute left-4 right-4 top-4 z-10 flex items-start justify-between gap-3">
-        <div className="rounded-xl bg-[#20332e]/95 px-3 py-2 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-turquoise">Philippines</p>
-          <p className="mt-1 text-[11px] text-zinc-300">{mapMountains.length} mountains · Zoom in to see ▲ pins</p>
-          <p className="mt-1 text-[11px] text-zinc-300">Click a shaded area to see its mountains</p>
-        </div>
-        <button type="button" onClick={() => mapRef.current?.fitBounds(countryBounds, { padding: countryPadding, duration: 0 })} className="pointer-events-auto min-h-11 rounded-xl border border-white/10 bg-[#20332e]/95 px-3 text-xs text-white shadow-sm focus-visible:outline-2 focus-visible:outline-turquoise">Reset view</button>
+      <div className="pointer-events-none absolute right-4 top-4 z-10 flex items-start justify-end gap-3">
+        <button type="button" onClick={() => mapRef.current?.fitBounds(countryBounds, { ...cameraAnimation, padding: countryPadding, linear: true, bearing: 0, pitch: 0 })} className="pointer-events-auto min-h-11 rounded-xl border border-white/10 bg-[#20332e]/95 px-3 text-xs text-white shadow-sm focus-visible:outline-2 focus-visible:outline-turquoise">Reset view ({relativeZoom > 0 ? "+" : ""}{relativeZoom})</button>
       </div>
-      {status !== "ready" && <div role="status" className="absolute inset-x-4 bottom-14 z-10 rounded-xl bg-[#20332e]/95 p-4 text-sm text-zinc-200 shadow-sm">
+      {status !== "ready" && <div role="status" className="absolute inset-x-4 top-20 z-10 rounded-xl bg-[#20332e]/95 p-4 text-sm text-zinc-200 shadow-sm">
         {status === "loading" ? "Loading the map…" : <>
           <p>The map couldn&apos;t load. You can still choose an area from the list.</p>
           <button type="button" onClick={() => { setStatus("loading"); setAttempt((value) => value + 1); }} className="mt-2 min-h-11 rounded px-2 text-turquoise underline focus-visible:outline-turquoise">Retry map</button>

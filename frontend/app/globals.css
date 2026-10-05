@@ -5,6 +5,35 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Keep popup overrides outside layers, matching MapLibre's imported CSS. */
+.mountain-peak-popup {
+  z-index: 6;
+}
+
+.mountain-peak-popup .maplibregl-popup-content {
+  padding: 16px 44px 12px 14px;
+  border-radius: 12px;
+  color: #20332e;
+  font: 13px var(--font-geist-sans), sans-serif;
+  line-height: 1.6;
+}
+
+.mountain-peak-popup .maplibregl-popup-close-button {
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  color: #20332e;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.mountain-peak-popup .maplibregl-popup-close-button:focus-visible {
+  outline: 2px solid #1499aa;
+  outline-offset: 2px;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -184,6 +213,7 @@
   }
 
   .mountain-peak-marker {
+    z-index: 0;
     display: grid;
     width: 26px;
     height: 26px;
@@ -197,6 +227,20 @@
     cursor: pointer;
   }
 
+  .mountain-peak-label {
+    position: absolute;
+    left: calc(100% + 6px);
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 3px 6px;
+    border-radius: 5px;
+    background: rgb(255 255 255 / 92%);
+    color: #20332e;
+    font: 600 11px var(--font-geist-sans), sans-serif;
+    white-space: nowrap;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 15%);
+  }
+
   .mountain-peak-marker:hover,
   .mountain-peak-marker[aria-pressed="true"],
   .mountain-peak-marker:focus-visible {
@@ -206,12 +250,16 @@
     outline-offset: 2px;
   }
 
-  .mountain-peak-popup .maplibregl-popup-content {
-    padding: 16px 24px 12px 14px;
-    border-radius: 12px;
-    color: #20332e;
-    font: 13px var(--font-geist-sans), sans-serif;
-    line-height: 1.6;
+  .mountain-peak-marker:hover,
+  .mountain-peak-marker:active,
+  .mountain-peak-marker:focus-visible {
+    z-index: 5;
+  }
+
+  .mountain-peak-marker:hover .mountain-peak-label,
+  .mountain-peak-marker:active .mountain-peak-label,
+  .mountain-peak-marker:focus-visible .mountain-peak-label {
+    background: #fff;
   }
 
   .mountain-peak-note {

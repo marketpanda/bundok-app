@@ -1,12 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { MapPin, MountainSnow, Route, Search, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import Link from "next/link";
+import { ChevronDown, MapPin, MountainSnow, Route, Search, X } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { MountainAreaMap } from "@/components/mountain-area-map";
 import { getMountainArea, mountainAreas, type MountainAreaId } from "@/data/mountain-areas";
 import { mapMountains } from "@/data/map-mountains";
+import { getMountainGuide } from "@/data/mountain-guides";
 import { Input } from "@/components/ui/input";
 import type { Mountain, MountainDifficulty } from "@/data/mountains";
 import { cn } from "@/lib/utils";
@@ -32,9 +34,11 @@ function matchesDifficulty(difficulty: MountainDifficulty, band: DifficultyBand)
 }
 
 function MountainCard({ mountain }: { mountain: Mountain }) {
+  const guide = getMountainGuide(mountain.slug);
   return (
     <article className="group overflow-hidden rounded-3xl border border-white/[0.06] bg-[#303030] shadow-sm transition-transform duration-300 hover:-translate-y-1">
       <div className="relative aspect-[4/3] overflow-hidden bg-zinc-800">
+        {guide && <Link href={`/mountains/${mountain.slug}`} aria-label={`Read the ${guide.title} hiking guide`} className="absolute inset-0 z-10 rounded-t-3xl focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-turquoise" />}
         <Image
           src={mountain.image}
           alt={`${mountain.name} in ${mountain.location}`}
@@ -81,6 +85,7 @@ function MountainCard({ mountain }: { mountain: Mountain }) {
             </div>
           </div>
         ) : null}
+        {guide && <Link href={`/mountains/${mountain.slug}`} className="inline-flex min-h-11 items-center rounded text-sm font-medium text-turquoise hover:underline focus-visible:outline-2 focus-visible:outline-turquoise">View mountain guide →</Link>}
       </div>
     </article>
   );
@@ -90,6 +95,34 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
   const [query, setQuery] = useState("");
   const [difficultyBand, setDifficultyBand] = useState<DifficultyBand>("all");
   const [selectedArea, setSelectedArea] = useState<MountainAreaId | "all">("all");
+  const [selectedMountain, setSelectedMountain] = useState<{ name: string } | null>(null);
+  const [listOpen, setListOpen] = useState(true);
+  const selectedCard = useRef<HTMLElement | null>(null);
+  const results = useRef<HTMLDivElement | null>(null);
+  const selectMountain = useCallback((name: string, areaId: MountainAreaId | undefined) => {
+    setSelectedMountain({ name: mountainNameKey(name) });
+    setListOpen(true);
+    setSelectedArea(areaId ?? "all");
+    setQuery("");
+    setDifficultyBand("all");
+  }, []);
+
+  useEffect(() => {
+    const card = selectedCard.current;
+    const panel = results.current;
+    if (!selectedMountain || !card || !panel) return;
+    const cardBounds = card.getBoundingClientRect();
+    const panelBounds = panel.getBoundingClientRect();
+    const visibleTop = Math.max(0, panelBounds.top);
+    const visibleBottom = Math.min(window.innerHeight, panelBounds.bottom);
+    if (cardBounds.top < visibleTop || cardBounds.bottom > visibleBottom) {
+      card.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+        block: "nearest",
+        inline: "nearest",
+      });
+    }
+  }, [selectedMountain]);
   const area = mountainAreas.find((item) => item.id === selectedArea);
 
   const matchingMountains = useMemo(() => {
@@ -120,10 +153,16 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
   const routeCount = filteredMountains.reduce((total, mountain) => total + (mountain.trails?.length ?? 0), 0);
   const hasFilters = query !== "" || difficultyBand !== "all" || selectedArea !== "all";
 
+  function selectCard(event: React.MouseEvent<HTMLElement>, mountain: { name: string; location: string }) {
+    if ((event.target as HTMLElement).closest("button, a, summary, details")) return;
+    selectMountain(mountain.name, getMountainArea(mountain));
+  }
+
   function resetFilters() {
     setQuery("");
     setDifficultyBand("all");
     setSelectedArea("all");
+    setSelectedMountain(null);
   }
 
   return (
@@ -160,30 +199,38 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
             </fieldset>
           </div>
 
-          <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.85fr)] xl:grid-cols-[minmax(0,1.25fr)_minmax(340px,1fr)]">
-            <MountainAreaMap selectedArea={selectedArea} onSelect={setSelectedArea} counts={counts} />
-            <div id="mountain-area-results" className="min-w-0 border-t border-white/10 lg:flex lg:h-[600px] lg:flex-col lg:border-l lg:border-t-0">
-              <div className="space-y-4 border-b border-white/10 p-5">
+          <div className="relative grid h-[85svh] min-h-[620px] max-h-[850px] lg:h-auto lg:min-h-0 lg:max-h-none lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.85fr)] xl:grid-cols-[minmax(0,1.25fr)_minmax(340px,1fr)]">
+            <MountainAreaMap selectedArea={selectedArea} selectedMountain={selectedMountain} listOpen={listOpen} onSelect={setSelectedArea} onSelectMountain={selectMountain} counts={counts} />
+            <div id="mountain-area-results" className={cn("absolute inset-x-0 bottom-0 z-20 flex min-w-0 flex-col overflow-hidden rounded-t-3xl border-t border-white/10 bg-[#292929] shadow-[0_-8px_30px_rgba(0,0,0,0.3)] transition-[height] duration-300 lg:static lg:z-auto lg:h-[600px] lg:rounded-none lg:border-l lg:border-t-0 lg:shadow-none", listOpen ? "h-2/3" : "h-14")}>
+              <button type="button" onClick={() => setListOpen((open) => !open)} aria-expanded={listOpen} aria-controls="mountain-list-content" className="flex h-14 shrink-0 items-center justify-between px-5 text-sm font-medium text-zinc-200 lg:hidden">
+                <span>{listOpen ? "Hide mountain list" : `Show mountains (${resultCount})`}</span>
+                <ChevronDown aria-hidden="true" className={cn("size-4 transition-transform", !listOpen && "rotate-180")} />
+              </button>
+              <div id="mountain-list-content" className={cn("min-h-0 flex-1 flex-col lg:flex", listOpen ? "flex" : "hidden")}>
+              <div className="shrink-0 space-y-2 border-b border-white/10 px-4 pb-3 lg:space-y-4 lg:p-5">
                 <div className="flex items-center justify-between gap-3">
                   <label htmlFor="mountain-area" className="text-xs font-medium text-zinc-400">Your climbing area</label>
                   {hasFilters && <button type="button" onClick={resetFilters} className="min-h-8 rounded text-xs text-turquoise hover:underline focus-visible:outline-turquoise">Reset filters</button>}
                 </div>
-                <select id="mountain-area" value={selectedArea} onChange={(event) => setSelectedArea(event.target.value as MountainAreaId | "all")} className="h-11 w-full rounded-xl border border-white/10 bg-[#202020] px-3 text-sm text-white focus-visible:outline-2 focus-visible:outline-turquoise">
+                <div className="relative">
+                <select id="mountain-area" value={selectedArea} onChange={(event) => setSelectedArea(event.target.value as MountainAreaId | "all")} className="h-11 w-full appearance-none rounded-xl border border-white/10 bg-[#202020] pl-3 pr-10 text-sm text-white focus-visible:outline-2 focus-visible:outline-turquoise">
                   <option value="all">All climbing areas</option>
                   {mountainAreas.map((item) => <option key={item.id} value={item.id}>{item.name} ({counts[item.id]})</option>)}
                 </select>
+                <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-zinc-400" />
+                </div>
                 <div role="status" aria-live="polite" aria-atomic="true">
                   <h3 className="text-xl font-semibold">{area?.name ?? "Across the Philippines"}</h3>
                   <p className="mt-1 text-xs leading-5 text-zinc-400">{area?.detail ?? "Find a familiar favorite or somewhere new"} · {resultCount} {resultCount === 1 ? "mountain" : "mountains"} · {routeCount} trails</p>
                 </div>
               </div>
-              <div className="mountain-results min-h-0 space-y-3 p-4 lg:flex-1 lg:overflow-y-auto" tabIndex={0} aria-label="Mountains in selected area">
+              <div ref={results} className="mountain-results min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain p-4" tabIndex={0} aria-label="Mountains in selected area">
                 {resultCount ? <>{filteredMountains.map((mountain) => (
-                  <article key={mountain.slug} className="rounded-2xl border border-white/[0.07] bg-[#303030] p-4">
+                  <article key={mountain.slug} onClick={(event) => selectCard(event, mountain)} ref={selectedMountain?.name === mountainNameKey(mountain.name) ? selectedCard : undefined} className={cn("cursor-pointer rounded-2xl border bg-[#303030] p-4 transition-[border-color,box-shadow] duration-300", selectedMountain?.name === mountainNameKey(mountain.name) ? "border-sky-400/60 shadow-[0_0_16px_rgba(56,189,248,0.16)]" : "border-white/[0.07]")}>
                     <div className="flex items-start gap-3">
                       <div className="relative size-16 shrink-0 overflow-hidden rounded-xl"><Image src={mountain.image} alt="" fill sizes="64px" className="object-cover" /></div>
                       <div className="min-w-0 flex-1">
-                        <h4 className="text-base font-semibold">{mountain.name}</h4>
+                        <h4 className="text-base font-semibold"><button type="button" onClick={() => selectMountain(mountain.name, getMountainArea(mountain))} className="rounded text-left transition-colors hover:text-sky-300 focus-visible:outline-2 focus-visible:outline-sky-400" aria-label={`Show ${mountain.name} on map`}>{mountain.name}</button></h4>
                         <p className="mt-1 text-xs leading-5 text-zinc-400">{mountain.location}</p>
                         <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs">
                           <span className="text-turquoise">{mountain.elevationMeters.toLocaleString("en-US")} m</span>
@@ -202,11 +249,12 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
                         </li>)}
                       </ul>
                     </details> : null}
+                    {getMountainGuide(mountain.slug) && <Link href={`/mountains/${mountain.slug}`} className="mt-3 inline-flex min-h-11 items-center rounded text-sm font-medium text-turquoise hover:underline focus-visible:outline-2 focus-visible:outline-turquoise">View mountain guide →</Link>}
                   </article>
                 ))}
                 {filteredMapMountains.map((mountain) => (
-                  <article key={mountain.name} className="rounded-2xl border border-white/[0.07] bg-[#303030] p-4">
-                    <h4 className="flex items-center gap-2 text-base font-semibold"><MountainSnow aria-hidden="true" className="size-4 shrink-0 text-turquoise" />{mountain.name}</h4>
+                  <article key={mountain.name} onClick={(event) => selectCard(event, mountain)} ref={selectedMountain?.name === mountainNameKey(mountain.name) ? selectedCard : undefined} className={cn("cursor-pointer rounded-2xl border bg-[#303030] p-4 transition-[border-color,box-shadow] duration-300", selectedMountain?.name === mountainNameKey(mountain.name) ? "border-sky-400/60 shadow-[0_0_16px_rgba(56,189,248,0.16)]" : "border-white/[0.07]")}>
+                    <h4 className="flex items-center gap-2 text-base font-semibold"><MountainSnow aria-hidden="true" className="size-4 shrink-0 text-turquoise" /><button type="button" onClick={() => selectMountain(mountain.name, getMountainArea(mountain))} className="rounded text-left transition-colors hover:text-sky-300 focus-visible:outline-2 focus-visible:outline-sky-400" aria-label={`Show ${mountain.name} on map`}>{mountain.name}</button></h4>
                     <p className="mt-2 text-xs leading-5 text-zinc-400">{mountain.location}</p>
                     <p className="mt-3 text-xs leading-5 text-zinc-400">Trail and difficulty details coming soon.</p>
                   </article>
@@ -217,7 +265,8 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
                   <button type="button" onClick={resetFilters} className="mt-4 min-h-11 rounded-xl border border-turquoise/30 px-4 text-sm text-turquoise focus-visible:outline-turquoise">Show all mountains</button>
                 </div>}
               </div>
-              <p className="border-t border-white/10 px-5 py-3 text-[11px] leading-5 text-zinc-400">Difficulty varies by route. Mountains without difficulty details appear under All. Mountain profiles are pending editorial verification.</p>
+              <p className="hidden shrink-0 border-t border-white/10 px-5 py-3 text-[11px] leading-5 text-zinc-400 lg:block">Difficulty varies by route. Mountains without difficulty details appear under All. Mountain profiles are pending editorial verification.</p>
+              </div>
             </div>
           </div>
         </div>
