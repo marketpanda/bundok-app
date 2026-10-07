@@ -17,8 +17,8 @@ const areaColorExpression: import("maplibre-gl").ExpressionSpecification = ["mat
 const clusterColorExpression: import("maplibre-gl").ExpressionSpecification = ["case", ["==", ["get", "regionMin"], ["get", "regionMax"]], ["match", ["get", "regionMin"], 0, mountainAreaColors[mountainAreas[0].id], ...mountainAreas.slice(1).flatMap((area, index) => [index + 1, mountainAreaColors[area.id]]), "#64748b"], "#64748b"];
 
 const mapEntries = [
-  ...mapMountains.map((mountain) => ({ ...mountain, itinerary: false })),
-  ...hikeItineraries.map((itinerary) => ({ slug: itinerary.slug, name: itinerary.name, location: itinerary.location, coordinates: itinerary.coordinates, itinerary: true })),
+  ...mapMountains.map((mountain) => ({ ...mountain, itinerary: false as const })),
+  ...hikeItineraries.map((itinerary) => ({ slug: itinerary.slug, name: itinerary.name, location: itinerary.location, coordinates: itinerary.coordinates, itinerary: true as const })),
 ];
 
 const countryBounds: [[number, number], [number, number]] = [[116.8, 4.5], [127, 21.3]];
@@ -42,6 +42,7 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
 }) {
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
+  const showSelectedPopup = useRef<((mountain: (typeof mapEntries)[number] | null) => void) | null>(null);
   const visibility = useRef({ revealAllMountains, selectedSlug: selectedMountain?.slug });
   useEffect(() => {
     visibility.current = { revealAllMountains, selectedSlug: selectedMountain?.slug };
@@ -99,6 +100,31 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
           map.setPitch(0);
         }
         mapRef.current = map;
+        showSelectedPopup.current = (mountain) => {
+          popup?.remove();
+          if (!map || !mountain) return;
+          const content = document.createElement("div");
+          const name = document.createElement("strong"); name.textContent = mountain.name;
+          const location = document.createElement("p"); location.textContent = mountain.location;
+          content.append(name, location);
+          if (mountain.itinerary) {
+            const note = document.createElement("p");
+            note.textContent = "Hike itinerary - approximate area, not a route";
+            note.className = "mountain-peak-note";
+            content.append(note);
+          } else {
+            const rating = document.createElement("p"); rating.textContent = mountainDifficultyLabel(mountain);
+            const source = document.createElement("a");
+            source.href = mountain.trails?.[0]?.source.url ?? mountain.sources[0].url;
+            source.textContent = mountain.trails?.length ? "Read route source" : "Location source";
+            source.target = "_blank"; source.rel = "noopener noreferrer";
+            const layer = document.createElement("p");
+            layer.textContent = getMountainMapLayer(mountain.slug) === "secondary" ? "Secondary map layer" : "Primary map layer";
+            content.append(layer, rating, source);
+          }
+          popup = new maplibre.Popup({ offset: mountain.itinerary ? 48 : 16, anchor: "bottom", className: "mountain-peak-popup" })
+            .setLngLat(mountain.coordinates).setDOMContent(content).addTo(map);
+        };
         map.addControl(new maplibre.NavigationControl({ showCompass: false }), "top-left");
         const peakElements: HTMLButtonElement[] = [];
         const updatePeakVisibility = () => {
@@ -144,19 +170,6 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
           button.addEventListener("click", (event) => {
             event.stopPropagation();
             onSelectMountain(mountain.name, areaId, mountain.slug);
-            if (!map) return;
-            popup?.remove();
-            const content = document.createElement("div");
-            const name = document.createElement("strong");
-            name.textContent = mountain.name;
-            const location = document.createElement("p");
-            location.textContent = mountain.location;
-            const note = document.createElement("p");
-            note.textContent = mountain.itinerary ? "Hike itinerary - approximate area, not a route" : "Approximate mountain location";
-            note.className = "mountain-peak-note";
-            content.append(name, location, note);
-            popup = new maplibre.Popup({ offset: 48, anchor: "bottom", className: "mountain-peak-popup" })
-              .setLngLat(mountain.coordinates).setDOMContent(content).addTo(map);
           });
           new maplibre.Marker({ element: button, offset: mountain.itinerary ? [0, -28] : [0, 0] }).setLngLat(mountain.coordinates).addTo(map);
         }
@@ -206,18 +219,6 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
             const mountain = mapMountains.find((entry) => entry.slug === event.features?.[0]?.properties?.slug);
             if (!map || !mountain) return;
             onSelectMountain(mountain.name, getMountainArea(mountain), mountain.slug);
-            popup?.remove();
-            const content = document.createElement("div");
-            const name = document.createElement("strong"); name.textContent = mountain.name;
-            const location = document.createElement("p"); location.textContent = mountain.location;
-            const rating = document.createElement("p"); rating.textContent = mountainDifficultyLabel(mountain);
-            const source = document.createElement("a");
-            source.href = mountain.trails?.[0]?.source.url ?? mountain.sources[0].url;
-            source.textContent = mountain.trails?.length ? "Read route source" : "Location source";
-            source.target = "_blank"; source.rel = "noopener noreferrer";
-            const layer = document.createElement("p"); layer.textContent = getMountainMapLayer(mountain.slug) === "secondary" ? "Secondary map layer" : "Primary map layer";
-            content.append(name, location, layer, rating, source);
-            popup = new maplibre.Popup({ offset: 16, anchor: "bottom", className: "mountain-peak-popup" }).setLngLat(mountain.coordinates).setDOMContent(content).addTo(map);
           };
           for (const prefix of ["mountain", "secondary-mountain"]) {
             map.on("click", `${prefix}-points`, selectPeak);
@@ -360,6 +361,7 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
       popup?.remove();
       map?.remove();
       mapRef.current = null;
+      showSelectedPopup.current = null;
       markers.clear();
       peaks.clear();
     };
@@ -374,7 +376,11 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || status !== "ready" || !selectedMountain) return;
+    if (!map || status !== "ready") return;
+    if (!selectedMountain) {
+      showSelectedPopup.current?.(null);
+      return;
+    }
     const mountain = mapEntries.find((item) => selectedMountain.slug ? item.slug === selectedMountain.slug : item.name.toLowerCase().replace(/^mt\.\s*/, "mount ") === selectedMountain.name);
     if (!mountain) return;
     for (const layer of ["mountain-points", "secondary-mountain-points"]) {
@@ -382,7 +388,12 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
       map.setPaintProperty(layer, "circle-radius", ["case", ["==", ["get", "slug"], mountain.slug], 10, 7]);
       map.setPaintProperty(layer, "circle-stroke-color", ["case", ["==", ["get", "slug"], mountain.slug], "#38bdf8", "#ffffff"]);
     }
+    const openPopup = () => showSelectedPopup.current?.(mountain);
     const focusMountain = () => {
+      // Wait for the focus animation so low-zoom visibility cannot close the popup.
+      map.off("moveend", openPopup);
+      map.stop();
+      map.once("moveend", openPopup);
       const mobile = window.matchMedia("(max-width: 1023px)").matches;
       const height = map.getContainer().clientHeight;
       // Center in the exposed map above the sheet (or its collapsed 56px bar).
@@ -401,7 +412,10 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
     };
     focusMountain();
     map.on("resize", focusMountain);
-    return () => { map.off("resize", focusMountain); };
+    return () => {
+      map.off("resize", focusMountain);
+      map.off("moveend", openPopup);
+    };
   }, [selectedMountain, listOpen, sheetHeight, status]);
 
   useEffect(() => {
