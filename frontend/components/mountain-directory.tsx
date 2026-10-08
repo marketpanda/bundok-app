@@ -259,27 +259,6 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
         </div>
 
         <div className="overflow-hidden rounded-3xl border border-border bg-white">
-          <div className="grid gap-4 border-b border-border p-4 sm:p-5 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-end">
-            <div>
-              <label htmlFor="mountain-search" className="text-xs font-medium text-muted-foreground">Find a mountain, area or trail</label>
-              <div className="relative mt-2">
-                <Search aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-moss-deep" />
-                <Input id="mountain-search" value={query} onChange={(event) => { setQuery(event.target.value); setListLimit(60); }} placeholder="Try Pulag, Rizal or Akiki" className="h-11 rounded-xl border-border bg-white pl-10 pr-11 text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-moss-deep/60" />
-                {query && <button type="button" onClick={() => setQuery("")} aria-label="Clear search" className="absolute right-0 top-0 flex size-11 items-center justify-center rounded-xl text-muted-foreground hover:text-foreground focus-visible:outline-moss-deep"><X className="size-4" /></button>}
-              </div>
-            </div>
-            <fieldset className="min-w-0">
-              <legend className="mb-2 text-xs font-medium text-muted-foreground">Difficulty</legend>
-              <div className="grid grid-cols-4 gap-1.5">
-                {difficultyBands.map((band) => (
-                  <button key={band.value} type="button" onClick={() => setDifficultyBand(band.value)} aria-pressed={difficultyBand === band.value} className={cn("min-h-11 rounded-xl border border-border px-2 py-2 text-xs transition-colors hover:border-moss/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss-deep sm:px-4", difficultyBand === band.value ? "border-moss bg-moss text-white" : "text-muted-foreground")}>
-                    {band.label}<span className="ml-1 hidden text-[10px] opacity-70 sm:inline">{band.range}</span>
-                  </button>
-                ))}
-              </div>
-            </fieldset>
-          </div>
-
           <div className="relative grid h-[85svh] min-h-[620px] max-h-[850px] lg:h-auto lg:min-h-0 lg:max-h-none lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.85fr)] xl:grid-cols-[minmax(0,1.25fr)_minmax(340px,1fr)]">
             <MountainAreaMap revealAllMountains={revealAllMountains} selectedArea={selectedArea} selectedMountain={selectedMountain} listOpen={listOpen} sheetHeight={sheetHeight} onMapInteraction={onMapInteraction} onSelect={selectArea} onSelectMountain={selectMountain} counts={mapCounts} />
             <div ref={sheet} id="mountain-area-results" style={{ "--sheet-height": listOpen ? `${sheetHeight * 100}%` : "56px" } as CSSProperties} className={cn("absolute inset-x-0 bottom-0 z-20 flex h-[var(--sheet-height)] min-h-14 min-w-0 flex-col overflow-hidden rounded-t-3xl border-t border-border bg-white shadow-[0_-8px_30px_rgba(54,80,4,0.08)] lg:static lg:z-auto lg:h-[600px] lg:rounded-none lg:border-l lg:border-t-0 lg:shadow-none", !draggingSheet && "transition-[height] duration-300 motion-reduce:transition-none")}>
@@ -326,8 +305,32 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
                 if (!window.matchMedia("(max-width: 1023px)").matches) return;
                 setListOpen(true);
                 setSheetHeight((height) => Math.max(height, 2 / 3));
-              }} className={cn("min-h-0 flex-1 flex-col lg:flex", listOpen ? "flex" : "hidden")}>
-              <div className="shrink-0 space-y-2 border-b border-border px-4 pb-3 lg:space-y-4 lg:p-5">
+              }} onFocusCapture={() => {
+                if (!window.matchMedia("(max-width: 1023px)").matches) return;
+                setListOpen(true);
+                setSheetHeight((height) => Math.max(height, 2 / 3));
+              }} className={cn("min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain lg:flex lg:overflow-hidden", listOpen ? "flex" : "hidden")}>
+              <div className="grid shrink-0 gap-3 border-b border-border px-4 pb-4 sm:px-5 lg:gap-4 lg:p-5">
+                <div>
+                  <label htmlFor="mountain-search" className="text-xs font-medium text-muted-foreground">Find a mountain, area or trail</label>
+                  <div className="relative mt-2">
+                    <Search aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-moss-deep" />
+                    <Input id="mountain-search" value={query} onChange={(event) => { setQuery(event.target.value); setListLimit(60); }} placeholder="Try Pulag, Rizal or Akiki" className="h-11 rounded-xl border-border bg-white pl-10 pr-11 text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-moss-deep/60" />
+                    {query && <button type="button" onClick={() => setQuery("")} aria-label="Clear search" className="absolute right-0 top-0 flex size-11 items-center justify-center rounded-xl text-muted-foreground hover:text-foreground focus-visible:outline-moss-deep"><X className="size-4" /></button>}
+                  </div>
+                </div>
+                <fieldset className="min-w-0">
+                  <legend className="mb-2 text-xs font-medium text-muted-foreground">Difficulty</legend>
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {difficultyBands.map((band) => (
+                      <button key={band.value} type="button" onClick={() => setDifficultyBand(band.value)} aria-pressed={difficultyBand === band.value} className={cn("min-h-11 rounded-xl border border-border px-2 py-2 text-xs transition-colors hover:border-moss/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss-deep sm:px-4", difficultyBand === band.value ? "border-moss bg-moss text-white" : "text-muted-foreground")}>
+                        {band.label}<span className="ml-1 hidden text-[10px] opacity-70 sm:inline">{band.range}</span>
+                      </button>
+                    ))}
+                  </div>
+                </fieldset>
+              </div>
+              <div className="shrink-0 space-y-2 border-b border-border px-4 py-3 lg:space-y-4 lg:p-5">
                 <div className="flex items-center justify-between gap-3">
                   <label htmlFor="mountain-area" className="text-xs font-medium text-muted-foreground">Your climbing area</label>
                   {hasFilters && <button type="button" onClick={resetFilters} className="min-h-8 rounded text-xs text-moss-deep hover:underline focus-visible:outline-moss-deep">Reset filters</button>}
@@ -356,7 +359,7 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
                   <p className="mt-1 text-xs leading-5 text-muted-foreground">{area?.detail ?? "Find a familiar favorite or somewhere new"} · {resultCount} {resultCount === 1 ? "entry" : "entries"} · {routeCount} trails</p>
                 </div>
               </div>
-              <div ref={results} className="mountain-results min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain p-4" tabIndex={0} aria-label="Mountains in selected area">
+              <div ref={results} className="mountain-results shrink-0 space-y-3 p-4 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:overscroll-contain" tabIndex={0} aria-label="Mountains in selected area">
                 {resultCount ? <>{filteredItineraries.map((itinerary) => <section key={itinerary.slug} ref={selectedMountain?.name === mountainNameKey(itinerary.name) ? selectedCard : undefined}><ItineraryCard itinerary={itinerary} selected={selectedMountain?.name === mountainNameKey(itinerary.name)} onSelect={() => selectMountain(itinerary.name, getMountainArea(itinerary))} /></section>)}{filteredMountains.map((mountain) => (
                   <article key={mountain.slug} onClick={(event) => selectCard(event, mountain)} ref={(selectedMountain?.slug ? selectedMountain.slug === mountain.slug : selectedMountain?.name === mountainNameKey(mountain.name)) ? selectedCard : undefined} className={cn("cursor-pointer rounded-2xl border bg-white p-4 transition-[border-color,box-shadow] duration-300", (selectedMountain?.slug ? selectedMountain.slug === mountain.slug : selectedMountain?.name === mountainNameKey(mountain.name)) ? "border-moss/50 shadow-[0_0_16px_rgba(54,80,4,0.10)]" : "border-border")}>
                     <div className="flex items-start gap-3">
