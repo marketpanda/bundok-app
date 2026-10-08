@@ -506,5 +506,48 @@
         "url": "https://www.peakbagger.com/peak.aspx?pid=88942"
       }
     ]
+  },
+  {
+    "name": "Paminahawa Ridge",
+    "kind": "ridge",
+    "location": "Impasug-ong, Bukidnon",
+    "coordinates": [
+      125.042,
+      8.2778
+    ],
+    "aliases": [
+      "Panimahawa Ridge",
+      "Paminhawa Ridge"
+    ],
+    "sources": [
+      {
+        "label": "Department of Tourism Northern Mindanao",
+        "url": "https://dotregion10.com/panimahawa-ridge/"
+      },
+      {
+        "label": "OpenStreetMap ridge location",
+        "url": "https://www.openstreetmap.org/node/6036137270"
+      }
+    ]
+  },
+  {
+    "name": "Mount Mariglem",
+    "kind": "mountain",
+    "location": "Cabangan, Zambales",
+    "coordinates": [
+      120.0692824,
+      15.1530306
+    ],
+    "coordinateType": "jump-off",
+    "aliases": [
+      "Mt. Mariglem",
+      "Mt Mariglem"
+    ],
+    "sources": [
+      {
+        "label": "Recorded hike and jump-off GPS location",
+        "url": "https://www.peakbagger.com/climber/ascent.aspx?aid=2984486"
+      }
+    ]
   }
 ]

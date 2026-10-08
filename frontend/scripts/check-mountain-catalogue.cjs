@@ -60,3 +60,21 @@ const baco = mapMountains.find((entry) => entry.name === "Mount Baco");
 assert.equal(baco.difficulty, undefined, "Do not manufacture a rating from elevation or a nearby mountain");
 assert.match(mountainDifficultyLabel(baco), /No published route rating/);
 console.log(`Catalogue checks passed: ${mapMountains.length} peaks, ${mapMountains.filter((entry) => entry.difficulty).length} rated destinations, all areas and profile selections resolved.`);
+
+// These destinations must remain searchable by the names hikers actually use.
+const { matchesDestinationSearch } = require(path.join(root, "data/destination-search.ts"));
+for (const [query, slug] of [
+  ["paminahawa ridge", "paminahawa-ridge"],
+  ["Panimahawa", "paminahawa-ridge"],
+  ["Mt Mariglem", "mount-mariglem"],
+  ["Mt.Mariglem", "mount-mariglem"],
+  ["Mt GUlugod Baboy", "mount-gulugod-baboy"],
+  ["Mt. Gulugod-Baboy", "mount-gulugod-baboy"],
+]) {
+  const matches = mapMountains.filter((entry) => matchesDestinationSearch([entry.name, entry.location, ...entry.aliases], query));
+  assert(matches.some((entry) => entry.slug === slug), query + " should find " + slug);
+}
+assert.equal(mapMountains.find((entry) => entry.slug === "paminahawa-ridge").kind, "ridge");
+assert.equal(mapMountains.find((entry) => entry.slug === "mount-mariglem").coordinateType, "jump-off");
+assert.equal(mapMountains.filter((entry) => entry.slug === "mount-gulugod-baboy").length, 1);
+console.log("Requested destinations, ridge type, and Mt/Mount search checked.");

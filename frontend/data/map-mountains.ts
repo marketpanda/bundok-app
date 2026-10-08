@@ -8,6 +8,9 @@ export type PublishedTrail = Trail & {
 };
 
 export type MapMountain = {
+  kind?: "mountain" | "ridge";
+  /** A known jump-off is used when summit coordinates are not verified. */
+  coordinateType?: "jump-off";
   slug: string;
   name: string;
   location: string;

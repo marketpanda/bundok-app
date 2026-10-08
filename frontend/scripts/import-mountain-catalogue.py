@@ -109,10 +109,13 @@ def build(cache):
         if not entry:
             entries.append({**override, "slug": slug(override["name"]), "aliases": override.get("aliases", []), "sources": override.get("sources", [{"label": "Existing mountain location reference", "url": "https://en.wikipedia.org/wiki/List_of_mountains_in_the_Philippines"}])})
         else:
-            entry["aliases"] = sorted(set(entry["aliases"] + [override["name"]]))
+            entry["aliases"] = sorted(set(entry["aliases"] + [override["name"]] + override.get("aliases", [])))
             entry["name"] = override["name"]
             entry["location"] = override["location"]
             entry["sources"].extend(override.get("sources", []))
+            for field in ("kind", "coordinateType"):
+                if field in override:
+                    entry[field] = override[field]
 
     unmatched = []
     for route in json.loads((DATA / "mountain-route-ratings.json").read_text(encoding="utf-8")):

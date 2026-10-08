@@ -6545,7 +6545,7 @@
     "location": "Leyte",
     "coordinates": [
       124.68333,
-      11.0
+      11
     ],
     "aliases": [
       "Bantay Abunug",
@@ -10211,7 +10211,7 @@
     "location": "Eastern Samar",
     "coordinates": [
       125.31667,
-      12.0
+      12
     ],
     "aliases": [],
     "sources": [
@@ -18686,7 +18686,7 @@
     "name": "Mount Kabuyao",
     "location": "Benguet",
     "coordinates": [
-      120.0,
+      120,
       16.35
     ],
     "aliases": [],
@@ -18995,7 +18995,7 @@
     "name": "Mount Kangagan",
     "location": "Sulu",
     "coordinates": [
-      121.0,
+      121,
       6.01667
     ],
     "aliases": [],
@@ -21389,7 +21389,7 @@
     "location": "Leyte",
     "coordinates": [
       124.7,
-      11.0
+      11
     ],
     "aliases": [],
     "sources": [
@@ -23669,7 +23669,7 @@
     "name": "Mount Maranlangit",
     "location": "Misamis Oriental",
     "coordinates": [
-      125.0,
+      125,
       8.81667
     ],
     "aliases": [],
@@ -23749,6 +23749,27 @@
       }
     ],
     "elevationMeters": 484
+  },
+  {
+    "slug": "mount-mariglem",
+    "name": "Mount Mariglem",
+    "kind": "mountain",
+    "location": "Cabangan, Zambales",
+    "coordinates": [
+      120.0692824,
+      15.1530306
+    ],
+    "coordinateType": "jump-off",
+    "aliases": [
+      "Mt. Mariglem",
+      "Mt Mariglem"
+    ],
+    "sources": [
+      {
+        "label": "Recorded hike and jump-off GPS location",
+        "url": "https://www.peakbagger.com/climber/ascent.aspx?aid=2984486"
+      }
+    ]
   },
   {
     "slug": "mount-maringing",
@@ -26481,7 +26502,7 @@
     "name": "Mount Orcog",
     "location": "Nueva Vizcaya",
     "coordinates": [
-      121.0,
+      121,
       16.48333
     ],
     "aliases": [],
@@ -33491,7 +33512,7 @@
     "name": "Mount Tinalungan",
     "location": "Misamis Oriental",
     "coordinates": [
-      125.0,
+      125,
       8.83333
     ],
     "aliases": [],
@@ -35251,6 +35272,30 @@
       }
     ],
     "elevationMeters": 736
+  },
+  {
+    "slug": "paminahawa-ridge",
+    "name": "Paminahawa Ridge",
+    "kind": "ridge",
+    "location": "Impasug-ong, Bukidnon",
+    "coordinates": [
+      125.042,
+      8.2778
+    ],
+    "aliases": [
+      "Panimahawa Ridge",
+      "Paminhawa Ridge"
+    ],
+    "sources": [
+      {
+        "label": "Department of Tourism Northern Mindanao",
+        "url": "https://dotregion10.com/panimahawa-ridge/"
+      },
+      {
+        "label": "OpenStreetMap ridge location",
+        "url": "https://www.openstreetmap.org/node/6036137270"
+      }
+    ]
   },
   {
     "slug": "panangiran-peak",
