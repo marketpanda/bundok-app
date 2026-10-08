@@ -13,9 +13,11 @@ type ExploreMenuValue = (typeof menuItems)[number]["value"];
 export function ExploreMenu({
   active,
   compact = false,
+  light = true,
 }: {
   active?: ExploreMenuValue;
   compact?: boolean;
+  light?: boolean;
 }) {
   return (
     <nav
@@ -31,9 +33,10 @@ export function ExploreMenu({
           href={item.href}
           aria-current={active === item.value ? "page" : undefined}
           className={cn(
-            "inline-flex h-11 min-w-0 items-center justify-center overflow-hidden rounded-full border border-white/[0.06] bg-[#383838] px-2 text-sm font-medium text-zinc-200 shadow-sm transition-all duration-200 hover:border-turquoise/40 hover:bg-[#414141] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-turquoise md:w-40 md:flex-none md:px-5",
+            "inline-flex h-11 min-w-0 items-center justify-center overflow-hidden rounded-full border px-2 text-sm font-medium shadow-sm transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss-deep md:w-40 md:flex-none md:px-5",
+            light ? "border-border bg-white text-muted-foreground hover:border-moss/30 hover:bg-moss/5" : "border-white/[0.06] bg-[#383838] text-zinc-200 hover:border-moss/40 hover:bg-[#414141]",
             compact && "h-10 w-auto px-3 text-xs md:w-auto md:px-4",
-            active === item.value && "border-grass bg-grass text-white hover:border-grass-hover hover:bg-grass-hover",
+            active === item.value && (light ? "border-moss bg-moss text-white hover:border-moss-deep hover:bg-moss-hover" : "border-moss bg-moss text-white hover:border-moss-hover hover:bg-moss-hover"),
           )}
         >
           {item.label}

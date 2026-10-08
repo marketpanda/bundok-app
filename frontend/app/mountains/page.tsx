@@ -1,5 +1,5 @@
+import { SiteLogo } from "@/components/site-logo";
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 
 import { ExploreMenu } from "@/components/explore-menu";
@@ -16,21 +16,14 @@ export const metadata: Metadata = {
 
 export default function MountainsPage() {
   return (
-    <main className="min-h-dvh bg-[#202020] text-white">
-      <div className="mx-auto w-full max-w-[1600px] px-5 pb-10 pt-[max(1.25rem,env(safe-area-inset-top))] lg:px-32 lg:pt-0 xl:px-40">
+    <main className="min-h-dvh bg-background text-foreground">
+      <div className="mx-auto w-full site-page-shell px-5 pb-10 pt-[max(1.25rem,env(safe-area-inset-top))] lg:px-32 lg:pt-0 xl:px-40">
         <header className="desktop-sticky-bar mb-8 flex items-center justify-between lg:sticky lg:top-0 lg:z-40 lg:py-2">
-          <Link href="/" className="flex items-center gap-3 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-turquoise">
-            <Image
-              src="/assets/logo2.png"
-              alt="Ambangeg logo"
-              width={48}
-              height={48}
-              className="size-12 rounded-full object-contain"
-              priority
-            />
+          <Link href="/" className="flex items-center gap-3 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-moss-deep">
+            <SiteLogo />
             <div className="hidden xl:block">
               <p className="text-base font-semibold">Ambangeg</p>
-              <p className="text-xs text-zinc-500">Let&apos;s hike!</p>
+              <p className="text-xs text-muted-foreground">Let&apos;s hike!</p>
             </div>
           </Link>
 
@@ -45,10 +38,10 @@ export default function MountainsPage() {
         </header>
 
         <div className="mb-4">
-          <p className="mb-2 hidden text-sm font-medium uppercase tracking-[0.2em] text-turquoise lg:block">Find your next climb</p>
+          <p className="mb-2 hidden text-sm font-medium uppercase tracking-[0.2em] text-moss-deep lg:block">Find your next climb</p>
           <h1 className="text-[28px] font-semibold tracking-[-0.04em] lg:text-5xl">Mountains</h1>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400 lg:text-base">From your first summit to your next big climb. Find your trail through the Philippines.</p>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">Explore the map to compare mountains by area and difficulty. For a closer look at routes and preparation, start with our guides to <Link href="/mountains/mount-pulag" className="text-turquoise hover:underline">Mount Pulag</Link>, <Link href="/mountains/mount-apo" className="text-turquoise hover:underline">Mount Apo</Link> and <Link href="/mountains/mount-guiting-guiting" className="text-turquoise hover:underline">Mount Guiting-Guiting</Link>.</p>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground lg:text-base">From your first summit to your next big climb. Find your trail through the Philippines.</p>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">Explore the map to compare mountains by area and difficulty. For a closer look at routes and preparation, start with our guides to <Link href="/mountains/mount-pulag" className="text-moss-deep hover:underline">Mount Pulag</Link>, <Link href="/mountains/mount-apo" className="text-moss-deep hover:underline">Mount Apo</Link> and <Link href="/mountains/mount-guiting-guiting" className="text-moss-deep hover:underline">Mount Guiting-Guiting</Link>.</p>
         </div>
 
         <div className="desktop-sticky-bar lg:sticky lg:top-16 lg:z-30 lg:-mx-2 lg:px-2 lg:py-3 xl:hidden">

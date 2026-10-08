@@ -1,5 +1,6 @@
 "use client";
 
+import { SiteLogo } from "@/components/site-logo";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -45,7 +46,7 @@ const showcasePhotos = {
 
 function ShowcasePhoto({ src, alt, className }: { src: string; alt: string; className?: string }) {
   return (
-    <div className={cn("relative isolate overflow-hidden bg-zinc-700", className)}>
+    <div className={cn("relative isolate overflow-hidden bg-moss-100", className)}>
       <Image
         src={src}
         alt={alt}
@@ -73,7 +74,7 @@ function IconButton({
       variant="ghost"
       size="icon"
       onClick={onClick}
-      className="size-10 rounded-xl bg-white/10 text-zinc-100 hover:bg-white/15 hover:text-white"
+      className="size-10 rounded-xl bg-moss-100 text-foreground hover:bg-zinc-200 hover:text-foreground"
     >
       {children}
     </Button>
@@ -144,16 +145,16 @@ function TripCard({
       className="group h-full w-[78%] max-w-[78%] basis-[78%] shrink-0 snap-center text-left md:w-[82%] md:max-w-[82%] md:basis-[82%] lg:w-[calc((100%_-_2.5rem)/3)] lg:max-w-[calc((100%_-_2.5rem)/3)] lg:basis-[calc((100%_-_2.5rem)/3)]"
       aria-label={`Open ${title}`}
     >
-      <Card className="h-full gap-0 overflow-hidden border-0 bg-[#3c3c3c] py-0 shadow-none transition-transform duration-300 group-hover:-translate-y-1">
+      <Card className="h-full gap-0 overflow-hidden border border-border bg-white py-0 shadow-sm transition-transform duration-300 group-hover:-translate-y-1">
         <ShowcasePhoto
           src={photo}
           alt={`${title} in ${location}`}
           className="aspect-[1.4/1] w-full rounded-t-[20px]"
         />
         <CardContent className="min-h-24 space-y-1 px-4 py-3">
-          <p className="text-[15px] font-medium text-zinc-100">{title}</p>
-          <p className="flex items-center gap-1 text-xs text-zinc-400">
-            <MapPin className="size-3 fill-zinc-300 text-zinc-300" />
+          <p className="text-[15px] font-medium text-foreground">{title}</p>
+          <p className="flex items-center gap-1 text-xs text-muted-foreground">
+            <MapPin className="size-3 fill-zinc-500 text-muted-foreground" />
             {location}
           </p>
         </CardContent>
@@ -219,7 +220,7 @@ function MemeCard() {
 
   return (
     <article className="h-full w-[78%] max-w-[78%] basis-[78%] shrink-0 snap-center md:w-[82%] md:max-w-[82%] md:basis-[82%] lg:w-[calc((100%_-_2.5rem)/3)] lg:max-w-[calc((100%_-_2.5rem)/3)] lg:basis-[calc((100%_-_2.5rem)/3)]">
-      <Card className="h-full gap-0 overflow-hidden border-0 bg-[#eee8dc] py-0 text-zinc-950 shadow-none transition-transform duration-300 hover:-translate-y-1">
+      <Card className="h-full gap-0 overflow-hidden border border-border bg-white py-0 text-foreground shadow-sm transition-transform duration-300 hover:-translate-y-1">
         <div className="relative aspect-[1.4/1] w-full overflow-hidden">
           <Image
             src="/assets/meme-poker-face.png"
@@ -231,7 +232,7 @@ function MemeCard() {
           />
         </div>
         <CardContent className="flex min-h-24 items-start justify-between gap-3 px-4 py-3">
-          <p className="text-sm font-semibold leading-5 text-zinc-900">{sampleMemeText}</p>
+          <p className="text-sm font-semibold leading-5 text-foreground">{sampleMemeText}</p>
           <div className="flex shrink-0 gap-2">
             <Button
               type="button"
@@ -251,7 +252,7 @@ function MemeCard() {
               onClick={() => void shareMeme()}
               aria-label={shared ? "Meme shared or copied" : "Share meme image"}
               title={shared ? "Shared or copied" : "Share image"}
-              className="size-9 rounded-full bg-zinc-900 text-white hover:bg-grass hover:text-white"
+              className="size-9 rounded-full bg-zinc-900 text-white hover:bg-moss hover:text-white"
             >
               {shared ? <Check className="size-4" /> : <Share2 className="size-4" />}
             </Button>
@@ -341,7 +342,7 @@ function BagTagPreview({ mountain, hikerName }: { mountain: string; hikerName: s
   return (
     <div className="flex h-full min-w-0 flex-col md:col-start-2">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-600">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
           Bag tag preview
         </p>
         <Button
@@ -350,7 +351,7 @@ function BagTagPreview({ mountain, hikerName }: { mountain: string; hikerName: s
           size="sm"
           onClick={downloadBagTag}
           disabled={downloading || !mountain}
-          className="h-8 rounded-full px-3 text-xs font-semibold text-slate-700 hover:bg-white/60 hover:text-slate-950"
+          className="h-8 rounded-full px-3 text-xs font-semibold text-muted-foreground hover:bg-white/60 hover:text-foreground"
         >
           <Download className="size-3.5" />
           {downloading ? "Preparing…" : "Download PNG"}
@@ -397,40 +398,36 @@ function HikerDetailsCard() {
 
   return (
     <Card
-      className="w-full max-w-full gap-0 overflow-hidden border border-white/70 py-0 text-slate-950 shadow-[0_12px_28px_rgba(20,77,48,0.14)]"
-      style={{
-        background:
-          "linear-gradient(135deg, #f7fffb 0%, #ddf8f2 48%, #cdf3ef 72%, #bcebdc 100%)",
-      }}
+      className="w-full max-w-full gap-0 overflow-hidden border border-input bg-white py-0 text-foreground ring-0 shadow-[0_10px_25px_-5px_rgba(54,80,4,0.06)]"
     >
       <CardContent className="grid h-full min-w-0 max-w-full gap-8 p-5 md:grid-cols-2 lg:p-6">
         <div className="flex min-w-0 max-w-full flex-col justify-center gap-4">
           <div>
             <p className="text-lg font-semibold">Flex My Hike</p>
-            <p className="mt-1 text-xs text-slate-600">Choose a mountain and add your name.</p>
+            <p className="mt-1 text-xs text-muted-foreground">Choose a mountain and add your name.</p>
           </div>
 
           <div>
-            <label className="mb-2 block text-xs font-semibold text-slate-700" htmlFor="mountain-select">
+            <label className="mb-2 block text-xs font-semibold text-muted-foreground" htmlFor="mountain-select">
               Mountain
             </label>
             <Select value={mountain || null} onValueChange={(value) => { setMountain(value ?? ""); setGenerated(false); }}>
               <SelectTrigger
                 id="mountain-select"
                 aria-label="Select a mountain"
-                className="h-12 w-full min-w-0 max-w-full rounded-md border-white/80 bg-white/90 px-3 text-slate-900 shadow-sm hover:bg-white focus-visible:border-turquoise focus-visible:ring-turquoise/30 data-[size=default]:h-12"
+                className="h-12 w-full min-w-0 max-w-full rounded-md border-white/80 bg-white/90 px-3 text-foreground shadow-sm hover:bg-white focus-visible:border-moss-deep focus-visible:ring-moss-deep/30 data-[size=default]:h-12"
               >
                 <SelectValue placeholder="Choose a mountain" />
               </SelectTrigger>
               <SelectContent
                 align="start"
-                className="border-0 bg-white text-slate-900 ring-slate-900/10"
+                className="border border-border bg-white text-foreground ring-slate-900/10"
               >
                 {mountainOptions.map((option) => (
                   <SelectItem
                     key={option}
                     value={option}
-                    className="rounded-none py-2.5 pl-4 text-slate-800 focus:bg-emerald-100 focus:text-emerald-950"
+                    className="rounded-none py-2.5 pl-4 text-foreground focus:bg-moss/10 focus:text-moss-deep"
                   >
                     {option}
                   </SelectItem>
@@ -440,7 +437,7 @@ function HikerDetailsCard() {
           </div>
 
           <div>
-            <label className="mb-2 block text-xs font-semibold text-slate-700" htmlFor="hiker-name">
+            <label className="mb-2 block text-xs font-semibold text-muted-foreground" htmlFor="hiker-name">
               Hiker name
             </label>
             <Input
@@ -450,14 +447,14 @@ function HikerDetailsCard() {
               value={hikerName}
               onChange={(event) => { setHikerName(event.target.value); setGenerated(false); }}
               placeholder="Enter hiker name"
-              className="h-12 w-full min-w-0 max-w-full rounded-md border-white/80 bg-white/90 px-3 text-base text-slate-900 shadow-sm placeholder:text-slate-500 focus-visible:border-turquoise focus-visible:ring-turquoise/30 md:text-sm"
+              className="h-12 w-full min-w-0 max-w-full rounded-md border-white/80 bg-white/90 px-3 text-base text-foreground shadow-sm placeholder:text-muted-foreground focus-visible:border-moss-deep focus-visible:ring-moss-deep/30 md:text-sm"
             />
           </div>
 
           <Button
             type="button"
             onClick={() => setGenerated(true)}
-            className="h-12 w-full rounded-md bg-grass font-semibold text-white shadow-md shadow-green-950/15 transition-all duration-200 hover:-translate-y-0.5 hover:bg-grass-hover hover:shadow-lg hover:shadow-green-950/25 active:translate-y-0 active:scale-[0.98]"
+            className="h-12 w-full rounded-md bg-moss font-semibold text-white shadow-md shadow-moss-950/15 transition-all duration-200 hover:-translate-y-0.5 hover:bg-moss-hover hover:shadow-lg hover:shadow-moss-950/25 active:translate-y-0 active:scale-[0.98]"
           >
             {generated ? <><Sparkles className="size-4" /> Bag Tag Ready</> : "Generate Bag Tag"}
           </Button>
@@ -485,24 +482,17 @@ function HomeScreen({
   };
 
   return (
-    <div className="flex min-h-full min-w-0 flex-col bg-[#202020] text-white lg:h-full">
-      <main className="no-scrollbar mx-auto w-full min-w-0 max-w-[1600px] flex-1 overflow-hidden px-5 pb-10 pt-[max(1.25rem,env(safe-area-inset-top))] lg:overflow-y-auto lg:px-32 lg:pt-0 xl:px-40">
+    <div className="flex min-h-full min-w-0 flex-col bg-background text-foreground lg:h-full">
+      <main className="no-scrollbar mx-auto w-full min-w-0 site-page-shell flex-1 overflow-hidden px-5 pb-10 pt-[max(1.25rem,env(safe-area-inset-top))] lg:overflow-y-auto lg:px-32 lg:pt-0 xl:px-40">
         <header className="desktop-sticky-bar mb-5 flex w-full items-center justify-between lg:sticky lg:top-0 lg:z-40 lg:mb-8 lg:py-2">
           <Link
             href="/"
-            className="flex items-center gap-3 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-turquoise"
+            className="flex items-center gap-3 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-moss-deep"
           >
-            <Image
-              src="/assets/logo2.png"
-              alt="Ambangeg logo"
-              width={48}
-              height={48}
-              className="size-12 rounded-full object-contain"
-              priority
-            />
+            <SiteLogo />
             <div className="hidden xl:block">
               <p className="text-base font-semibold">Ambangeg</p>
-              <p className="text-xs text-zinc-500">Let&apos;s hike!</p>
+              <p className="text-xs text-muted-foreground">Let&apos;s hike!</p>
             </div>
           </Link>
           <div className="hidden xl:block xl:-translate-x-5 2xl:-translate-x-8">
@@ -516,7 +506,7 @@ function HomeScreen({
                 type="button"
                 variant="ghost"
                 disabled
-                className="h-10 rounded-full border border-white/15 bg-white/5 px-4 text-zinc-400"
+                className="h-10 rounded-full border border-border bg-moss-50 px-4 text-muted-foreground"
               >
                 Checking session…
               </Button>
@@ -531,9 +521,9 @@ function HomeScreen({
                   type="submit"
                   variant="ghost"
                   title={`Signed in as ${user.email ?? user.name ?? "a hiker"}`}
-                  className="h-10 rounded-full border border-white/15 bg-white/5 px-3 text-zinc-200 hover:bg-white/10 hover:text-white lg:px-4"
+                  className="h-10 rounded-full border border-border bg-moss-50 px-3 text-foreground hover:bg-moss-100 hover:text-foreground lg:px-4"
                 >
-                  <span className="flex size-6 items-center justify-center rounded-full bg-grass text-xs font-bold text-white">
+                  <span className="flex size-6 items-center justify-center rounded-full bg-moss text-xs font-bold text-white">
                     {(user.name ?? user.email ?? "H").charAt(0).toUpperCase()}
                   </span>
                   <span className="hidden sm:inline">Sign out</span>
@@ -542,7 +532,7 @@ function HomeScreen({
             ) : (
               <Link
                 href="/login"
-                className="inline-flex h-10 items-center justify-center rounded-full bg-grass px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-grass-hover"
+                className="inline-flex h-10 items-center justify-center rounded-full bg-moss px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-moss-hover"
               >
                 Log in or sign up
               </Link>
@@ -553,13 +543,13 @@ function HomeScreen({
         </header>
 
         {authError && (
-          <p role="alert" className="mb-5 rounded-xl border border-red-400/25 bg-red-400/10 px-4 py-3 text-sm text-red-200">
+          <p role="alert" className="mb-5 rounded-xl border border-red-400/25 bg-red-400/10 px-4 py-3 text-sm text-red-700">
             Google sign-in failed: {authError}
           </p>
         )}
 
         <div className="mb-4">
-          <p className="mb-2 hidden text-sm font-medium uppercase tracking-[0.2em] text-turquoise lg:block">Akyat na akyat ka na beh?</p>
+          <p className="mb-2 hidden text-sm font-medium uppercase tracking-[0.2em] text-moss-deep lg:block">Akyat na akyat ka na beh?</p>
           <h1 className="text-[28px] font-semibold tracking-[-0.04em] lg:text-5xl">Ano? Tra?</h1>
         </div>
 
@@ -571,7 +561,7 @@ function HomeScreen({
             <HikerDetailsCard />
           </div>
           <div className="mt-3 hidden items-center justify-between lg:mt-5 lg:flex">
-            <p className="text-sm font-medium text-zinc-400">Trail picks &amp; memes</p>
+            <p className="text-sm font-medium text-muted-foreground">Trail picks &amp; memes</p>
             <div className="flex gap-2">
               <IconButton label="Previous card" onClick={() => scrollCarousel(-1)}>
                 <ArrowLeft className="size-4" />
@@ -597,19 +587,19 @@ function HomeScreen({
         <section className="lg:mt-10">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-xl font-medium lg:text-2xl">Top offer</h2>
-            <Button variant="ghost" className="hidden text-turquoise hover:bg-turquoise/10 hover:text-turquoise lg:inline-flex">View all <ArrowRight /></Button>
+            <Button variant="ghost" className="hidden text-moss-deep hover:bg-moss/10 hover:text-moss-deep lg:inline-flex">View all <ArrowRight /></Button>
           </div>
           <div className="no-scrollbar -mx-5 flex gap-3 overflow-x-auto px-5 lg:mx-0 lg:grid lg:grid-cols-2 lg:gap-5 lg:px-0">
-            <Card className="min-w-[86%] gap-0 border-0 bg-[#3c3c3c] py-0 text-white shadow-none lg:min-w-0">
+            <Card className="min-w-[86%] gap-0 border border-border bg-white py-0 text-foreground shadow-none lg:min-w-0">
               <CardContent className="flex items-center gap-4 p-3">
                 <ShowcasePhoto src={showcasePhotos.trailGroup} alt="Hikers on a mountain trail" className="size-20 shrink-0 rounded-2xl" />
                 <div className="min-w-0">
                   <p className="truncate text-base font-medium">Adventure holidays</p>
-                  <p className="mt-1 flex items-center gap-1 text-xs text-zinc-400"><MapPin className="size-3 fill-zinc-300 text-zinc-300" />Ford Norway</p>
+                  <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground"><MapPin className="size-3 fill-zinc-500 text-muted-foreground" />Ford Norway</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="min-w-[72%] gap-0 border-0 bg-[#3c3c3c] py-0 text-white shadow-none lg:min-w-0">
+            <Card className="min-w-[72%] gap-0 border border-border bg-white py-0 text-foreground shadow-none lg:min-w-0">
               <CardContent className="flex items-center gap-4 p-3">
                 <ShowcasePhoto src={showcasePhotos.forestGroup} alt="Hikers in a forest clearing" className="size-20 shrink-0 rounded-2xl" />
                 <p className="text-base font-medium">Snowy escape</p>
@@ -628,10 +618,10 @@ function HomeScreen({
 function Stat({ icon: Icon, label, value }: { icon: typeof Clock3; label: string; value: string }) {
   return (
     <div className="flex min-w-0 items-center gap-2">
-      <Icon className="size-6 shrink-0 text-turquoise" />
+      <Icon className="size-6 shrink-0 text-moss-deep" />
       <div className="min-w-0 leading-tight">
-        <p className="text-[11px] text-zinc-400">{label}</p>
-        <p className="truncate text-sm font-medium text-zinc-100">{value}</p>
+        <p className="text-[11px] text-muted-foreground">{label}</p>
+        <p className="truncate text-sm font-medium text-foreground">{value}</p>
       </div>
     </div>
   );
@@ -641,14 +631,14 @@ function TripDetail({ trip, onBack }: { trip: (typeof trips)[number]; onBack: ()
   const [started, setStarted] = useState(false);
 
   return (
-    <div className="relative flex min-h-full min-w-0 flex-col bg-[#202020] text-white lg:h-full">
-      <main className="no-scrollbar mx-auto w-full min-w-0 max-w-[1600px] flex-1 px-5 pb-24 pt-[max(1.25rem,env(safe-area-inset-top))] lg:grid lg:grid-cols-[minmax(0,1.12fr)_minmax(320px,.88fr)] lg:content-start lg:gap-x-10 lg:overflow-y-auto lg:px-32 lg:pb-28 lg:pt-8 xl:px-40">
+    <div className="relative flex min-h-full min-w-0 flex-col bg-background text-foreground lg:h-full">
+      <main className="no-scrollbar mx-auto w-full min-w-0 site-page-shell flex-1 px-5 pb-24 pt-[max(1.25rem,env(safe-area-inset-top))] lg:grid lg:grid-cols-[minmax(0,1.12fr)_minmax(320px,.88fr)] lg:content-start lg:gap-x-10 lg:overflow-y-auto lg:px-32 lg:pb-28 lg:pt-8 xl:px-40">
         <header className="mb-5 flex items-center justify-between lg:col-span-2 lg:mb-8">
           <IconButton label="Back to trips" onClick={onBack}><ArrowLeft className="size-6" /></IconButton>
           <IconButton label="More options"><MoreVertical className="size-6" /></IconButton>
         </header>
 
-        <Card className="gap-0 overflow-hidden border-0 bg-[#3c3c3c] py-0 shadow-none lg:self-start">
+        <Card className="gap-0 overflow-hidden border border-border bg-white py-0 shadow-none lg:self-start">
           <div className="relative">
             <ShowcasePhoto
               src={trip.photo}
@@ -669,39 +659,39 @@ function TripDetail({ trip, onBack }: { trip: (typeof trips)[number]; onBack: ()
         <Tabs defaultValue="details" className="mt-7 lg:mt-0 lg:min-w-0">
           <div className="flex items-start justify-between gap-3">
             <TabsList variant="line" className="h-9 flex-1 justify-start gap-7 bg-transparent p-0">
-              <TabsTrigger value="details" className="h-9 flex-none px-0 text-sm text-turquoise after:bg-turquoise data-active:text-turquoise">Details</TabsTrigger>
-              <TabsTrigger value="route" className="h-9 flex-none px-0 text-sm text-turquoise after:bg-turquoise data-active:text-turquoise">Route list</TabsTrigger>
+              <TabsTrigger value="details" className="h-9 flex-none px-0 text-sm text-moss-deep after:bg-moss data-active:text-moss-deep">Details</TabsTrigger>
+              <TabsTrigger value="route" className="h-9 flex-none px-0 text-sm text-moss-deep after:bg-moss data-active:text-moss-deep">Route list</TabsTrigger>
             </TabsList>
             <div className="pt-1 text-right">
-              <div className="flex items-center justify-end gap-1 text-turquoise"><Binoculars className="mr-1 size-4" />{[1,2,3,4,5].map((dot) => <i key={dot} className="size-2.5 rounded-full bg-grass" />)}</div>
-              <p className="mt-1 text-[9px] text-zinc-400">1345 reviews</p>
+              <div className="flex items-center justify-end gap-1 text-moss-deep"><Binoculars className="mr-1 size-4" />{[1,2,3,4,5].map((dot) => <i key={dot} className="size-2.5 rounded-full bg-moss" />)}</div>
+              <p className="mt-1 text-[9px] text-muted-foreground">1345 reviews</p>
             </div>
           </div>
 
           <TabsContent value="details" className="mt-5">
             <h2 className="text-2xl font-medium tracking-tight">{trip.title}</h2>
-            <p className="mt-2 text-sm text-zinc-300">{trip.location}</p>
-            <p className="mt-5 text-[15px] leading-6 text-zinc-300">
-              <strong className="font-semibold text-white">We Norwegian walk—a lot.</strong><br />
+            <p className="mt-2 text-sm text-muted-foreground">{trip.location}</p>
+            <p className="mt-5 text-[15px] leading-6 text-muted-foreground">
+              <strong className="font-semibold text-foreground">We Norwegian walk—a lot.</strong><br />
               When the spring arrives and warm rays of sunlight finally hit the landscape, forcing the snow in the mountain to a silent retreat, people of all ages go outside and go trekking.
             </p>
           </TabsContent>
           <TabsContent value="route" className="mt-5 space-y-3">
             {["Skjeggedal trailhead", "Ringedalsvatnet viewpoint", "Trolltunga summit"].map((stop, index) => (
-              <div key={stop} className="flex items-center gap-3 rounded-2xl bg-[#303030] p-3">
-                <span className="flex size-8 items-center justify-center rounded-full bg-grass font-semibold text-white">{index + 1}</span>
-                <span className="text-sm text-zinc-200">{stop}</span>
+              <div key={stop} className="flex items-center gap-3 rounded-2xl bg-moss-50 p-3">
+                <span className="flex size-8 items-center justify-center rounded-full bg-moss font-semibold text-white">{index + 1}</span>
+                <span className="text-sm text-foreground">{stop}</span>
               </div>
             ))}
           </TabsContent>
         </Tabs>
       </main>
 
-      <div className="pointer-events-none fixed bottom-0 left-1/2 h-32 w-full max-w-[390px] -translate-x-1/2 bg-gradient-to-t from-[#202020] via-[#202020]/95 to-transparent lg:hidden" />
+      <div className="pointer-events-none fixed bottom-0 left-1/2 h-32 w-full max-w-[390px] -translate-x-1/2 bg-gradient-to-t from-background via-background/95 to-transparent lg:hidden" />
       <Button
         type="button"
         onClick={() => setStarted(true)}
-        className="fixed bottom-7 left-1/2 z-10 h-14 w-[68%] max-w-[270px] -translate-x-1/2 rounded-full bg-grass text-base font-semibold text-white shadow-[0_16px_35px_rgba(34,199,214,0.2)] hover:bg-grass-hover lg:absolute lg:bottom-10 lg:left-auto lg:right-10 lg:w-[340px] lg:max-w-none lg:translate-x-0"
+        className="fixed bottom-7 left-1/2 z-10 h-14 w-[68%] max-w-[270px] -translate-x-1/2 rounded-full bg-moss text-base font-semibold text-white shadow-[0_16px_35px_rgba(54,80,4,0.15)] hover:bg-moss-hover lg:absolute lg:bottom-10 lg:left-auto lg:right-10 lg:w-[340px] lg:max-w-none lg:translate-x-0"
       >
         {started ? <><Sparkles className="size-5" /> Trip started</> : <>Start Your Trip <ArrowRight className="ml-2 size-5" /></>}
       </Button>
@@ -734,8 +724,8 @@ export function HikingApp({
   };
 
   return (
-    <main className="min-h-dvh w-full min-w-0 overflow-x-hidden bg-[#202020]">
-      <section className="h-dvh min-h-0 w-full overflow-hidden bg-[#202020]">
+    <main className="min-h-dvh w-full min-w-0 overflow-x-hidden bg-background">
+      <section className="h-dvh min-h-0 w-full overflow-hidden bg-background">
         <div className="no-scrollbar h-full overflow-y-auto overscroll-contain">
           {screen === "home" ? (
             <HomeScreen onOpenTrip={openTrip} />

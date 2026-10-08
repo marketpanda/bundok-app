@@ -1,3 +1,4 @@
+import { SiteLogo } from "@/components/site-logo";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -58,22 +59,15 @@ export default async function MountainGuidePage({ params }: Props) {
   };
 
   return (
-    <main className="min-h-dvh bg-[#202020] text-white">
+    <main className="min-h-dvh bg-background text-foreground">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs).replace(/</g, "\\u003c") }} />
-      <div className="mx-auto w-full max-w-[1600px] px-5 pb-10 pt-[max(1.25rem,env(safe-area-inset-top))] lg:px-32 lg:pt-0 xl:px-40">
+      <div className="mx-auto w-full site-page-shell px-5 pb-10 pt-[max(1.25rem,env(safe-area-inset-top))] lg:px-32 lg:pt-0 xl:px-40">
         <header className="desktop-sticky-bar mb-8 flex items-center justify-between lg:sticky lg:top-0 lg:z-40 lg:py-2">
-          <Link href="/" className="flex items-center gap-3 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-turquoise">
-            <Image
-              src="/assets/logo2.png"
-              alt="Ambangeg logo"
-              width={48}
-              height={48}
-              className="size-12 rounded-full object-contain"
-              priority
-            />
+          <Link href="/" className="flex items-center gap-3 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-moss-deep">
+            <SiteLogo />
             <div className="hidden xl:block">
               <p className="text-base font-semibold">Ambangeg</p>
-              <p className="text-xs text-zinc-500">Let&apos;s hike!</p>
+              <p className="text-xs text-muted-foreground">Let&apos;s hike!</p>
             </div>
           </Link>
 
@@ -87,10 +81,10 @@ export default async function MountainGuidePage({ params }: Props) {
           </div>
         </header>
 
-        <nav aria-label="Breadcrumb" className="mb-6 flex flex-wrap items-center gap-2 text-xs text-zinc-400">
-          <Link href="/" className="hover:text-turquoise">Home</Link><span aria-hidden="true">/</span>
-          <Link href="/mountains" className="hover:text-turquoise">Mountains</Link><span aria-hidden="true">/</span>
-          <span aria-current="page" className="text-zinc-200">{guide.title}</span>
+        <nav aria-label="Breadcrumb" className="mb-6 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+          <Link href="/" className="hover:text-moss-deep">Home</Link><span aria-hidden="true">/</span>
+          <Link href="/mountains" className="hover:text-moss-deep">Mountains</Link><span aria-hidden="true">/</span>
+          <span aria-current="page" className="text-foreground">{guide.title}</span>
         </nav>
 
         <div className="desktop-sticky-bar mb-6 lg:sticky lg:top-16 lg:z-30 lg:-mx-2 lg:px-2 lg:py-3 xl:hidden">
@@ -102,18 +96,18 @@ export default async function MountainGuidePage({ params }: Props) {
             <div className="relative aspect-[16/9] overflow-hidden rounded-3xl"><Image src={photo.src} alt={photo.alt} fill priority sizes="(min-width: 1600px) 1280px, (min-width: 1280px) calc(100vw - 320px), (min-width: 1024px) calc(100vw - 256px), calc(100vw - 40px)" className="object-cover" /></div>
             <figcaption className="mt-3"><PhotoCredit photo={photo} caption /></figcaption>
           </figure>}
-          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#203e32] via-[#263432] to-[#202020] p-6 sm:p-10">
-            <MountainSnow aria-hidden="true" className="pointer-events-none absolute -right-8 -bottom-8 size-60 text-turquoise/5 sm:size-80" />
+          <div className="relative overflow-hidden rounded-3xl border border-border bg-white p-6 sm:p-10">
+            <MountainSnow aria-hidden="true" className="pointer-events-none absolute -right-8 -bottom-8 size-60 text-moss-deep/5 sm:size-80" />
             <div className="relative max-w-3xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-turquoise">Mountain guide</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-moss-deep">Mountain guide</p>
               <h1 className="mt-3 text-4xl font-semibold tracking-tight sm:text-6xl">{guide.title}</h1>
-              <p className="mt-4 flex items-center gap-2 text-sm text-zinc-300"><MapPin aria-hidden="true" className="size-4 text-turquoise" />{mountain.location}</p>
-              <p className="mt-6 max-w-2xl text-base leading-7 text-zinc-200 sm:text-lg">{guide.introduction}</p>
+              <p className="mt-4 flex items-center gap-2 text-sm text-muted-foreground"><MapPin aria-hidden="true" className="size-4 text-moss-deep" />{mountain.location}</p>
+              <p className="mt-6 max-w-2xl text-base leading-7 text-foreground sm:text-lg">{guide.introduction}</p>
             </div>
-            <dl className="relative mt-8 grid gap-5 border-t border-white/10 pt-6 sm:grid-cols-3">
-              <div><dt className="text-xs text-zinc-400">Elevation</dt><dd className="mt-1 font-semibold">{mountain.elevationMeters.toLocaleString("en-US")} m</dd></div>
-              <div><dt className="text-xs text-zinc-400">Time to plan for</dt><dd className="mt-1 text-sm leading-6">{guide.duration}</dd></div>
-              <div><dt className="text-xs text-zinc-400">Trail difficulty</dt><dd className="mt-1 text-sm leading-6">{guide.difficulty}</dd></div>
+            <dl className="relative mt-8 grid gap-5 border-t border-border pt-6 sm:grid-cols-3">
+              <div><dt className="text-xs text-muted-foreground">Elevation</dt><dd className="mt-1 font-semibold">{mountain.elevationMeters.toLocaleString("en-US")} m</dd></div>
+              <div><dt className="text-xs text-muted-foreground">Time to plan for</dt><dd className="mt-1 text-sm leading-6">{guide.duration}</dd></div>
+              <div><dt className="text-xs text-muted-foreground">Trail difficulty</dt><dd className="mt-1 text-sm leading-6">{guide.difficulty}</dd></div>
             </dl>
           </div>
 
@@ -122,42 +116,42 @@ export default async function MountainGuidePage({ params }: Props) {
               {guide.sections.map((section, index) => (
                 <section key={section.heading} id={`section-${index}`} aria-labelledby={`heading-${index}`} className="mb-9 scroll-mt-36 xl:scroll-mt-24">
                   <h2 id={`heading-${index}`} className="text-2xl font-semibold tracking-tight">{section.heading}</h2>
-                  {section.paragraphs.map((paragraph) => <p key={paragraph} className="mt-4 text-sm leading-7 text-zinc-300 sm:text-base">{paragraph}</p>)}
+                  {section.paragraphs.map((paragraph) => <p key={paragraph} className="mt-4 text-sm leading-7 text-muted-foreground sm:text-base">{paragraph}</p>)}
                   {index === 1 && detailPhoto && <figure className="mt-6">
                     <div className="relative aspect-[3/2] overflow-hidden rounded-2xl"><Image src={detailPhoto.src} alt={detailPhoto.alt} fill sizes="(min-width: 1024px) 720px, 100vw" className="object-cover" /></div>
                     <figcaption className="mt-2"><PhotoCredit photo={detailPhoto} caption /></figcaption>
                   </figure>}
                 </section>
               ))}
-              <section aria-labelledby="sources-heading" className="rounded-2xl border border-white/10 bg-[#292929] p-5">
+              <section aria-labelledby="sources-heading" className="rounded-2xl border border-border bg-white p-5">
                 <h2 id="sources-heading" className="text-lg font-semibold">Sources and planning updates</h2>
-                <p className="mt-3 text-sm leading-6 text-zinc-400">References reviewed on <time dateTime={guide.reviewedOn}>5 October 2026</time>. This is a planning overview; confirm current access, permits and fees with the park or local office before booking.</p>
+                <p className="mt-3 text-sm leading-6 text-muted-foreground">References reviewed on <time dateTime={guide.reviewedOn}>5 October 2026</time>. This is a planning overview; confirm current access, permits and fees with the park or local office before booking.</p>
                 <ul className="mt-4 space-y-3">
-                  {guide.sources.map((source) => <li key={source.url}><a href={source.url} className="inline-flex items-start gap-2 rounded text-sm leading-6 text-turquoise hover:underline focus-visible:outline-2 focus-visible:outline-turquoise">{source.label}<ArrowUpRight aria-hidden="true" className="mt-1 size-4 shrink-0" /></a></li>)}
+                  {guide.sources.map((source) => <li key={source.url}><a href={source.url} className="inline-flex items-start gap-2 rounded text-sm leading-6 text-moss-deep hover:underline focus-visible:outline-2 focus-visible:outline-moss-deep">{source.label}<ArrowUpRight aria-hidden="true" className="mt-1 size-4 shrink-0" /></a></li>)}
                 </ul>
               </section>
             </div>
             <aside className="space-y-5 lg:sticky lg:top-36 xl:top-24">
-              <nav aria-label="In this guide" className="rounded-2xl border border-white/10 bg-[#292929] p-5">
+              <nav aria-label="In this guide" className="rounded-2xl border border-border bg-white p-5">
                 <h2 className="text-sm font-semibold">In this guide</h2>
-                <ul className="mt-4 space-y-3">{guide.sections.map((section, index) => <li key={section.heading}><a href={`#section-${index}`} className="rounded text-sm leading-6 text-zinc-400 hover:text-turquoise focus-visible:outline-turquoise">{section.heading}</a></li>)}</ul>
+                <ul className="mt-4 space-y-3">{guide.sections.map((section, index) => <li key={section.heading}><a href={`#section-${index}`} className="rounded text-sm leading-6 text-muted-foreground hover:text-moss-deep focus-visible:outline-moss-deep">{section.heading}</a></li>)}</ul>
               </nav>
-              <section aria-labelledby="preparation-heading" className="rounded-2xl border border-turquoise/20 bg-turquoise/5 p-5">
-                <h2 id="preparation-heading" className="text-sm font-semibold text-turquoise">Before you go</h2>
-                <ul className="mt-4 list-disc space-y-3 pl-4 text-sm leading-6 text-zinc-300">{guide.preparation.map((item) => <li key={item}>{item}</li>)}</ul>
+              <section aria-labelledby="preparation-heading" className="rounded-2xl border border-moss/20 bg-moss/5 p-5">
+                <h2 id="preparation-heading" className="text-sm font-semibold text-moss-deep">Before you go</h2>
+                <ul className="mt-4 list-disc space-y-3 pl-4 text-sm leading-6 text-muted-foreground">{guide.preparation.map((item) => <li key={item}>{item}</li>)}</ul>
               </section>
             </aside>
           </div>
         </article>
 
-        {getMountainItineraries(slug).length > 0 && <section aria-labelledby="itineraries-heading" className="mt-8 rounded-2xl border border-white/10 p-5">
+        {getMountainItineraries(slug).length > 0 && <section aria-labelledby="itineraries-heading" className="mt-8 rounded-2xl border border-border p-5">
           <h2 id="itineraries-heading" className="text-xl font-semibold">Hike this mountain as part of an itinerary</h2>
-          <div className="mt-3 flex flex-wrap gap-3">{getMountainItineraries(slug).map((itinerary) => <Link key={itinerary.slug} href={`/mountains/#itinerary-${itinerary.slug}`} className="min-h-11 text-sm text-turquoise hover:underline">{itinerary.name}</Link>)}</div>
+          <div className="mt-3 flex flex-wrap gap-3">{getMountainItineraries(slug).map((itinerary) => <Link key={itinerary.slug} href={`/mountains/#itinerary-${itinerary.slug}`} className="min-h-11 text-sm text-moss-deep hover:underline">{itinerary.name}</Link>)}</div>
         </section>}
-        <section aria-labelledby="related-heading" className="mt-12 border-t border-white/10 pt-8">
+        <section aria-labelledby="related-heading" className="mt-12 border-t border-border pt-8">
           <h2 id="related-heading" className="text-2xl font-semibold">Explore more mountain guides</h2>
-          <div className="mt-5 grid gap-4 sm:grid-cols-2">{related.map((item) => <Link key={item.slug} href={`/mountains/${item.slug}`} className="rounded-2xl border border-white/10 bg-[#292929] p-5 transition-colors hover:border-turquoise/40 focus-visible:outline-2 focus-visible:outline-turquoise"><h3 className="font-semibold">{item.title}</h3><p className="mt-2 text-sm leading-6 text-zinc-400">{item.introduction}</p><span className="mt-4 inline-block text-sm text-turquoise">View mountain guide →</span></Link>)}</div>
-          <Link href="/mountains" className="mt-6 inline-flex items-center gap-2 rounded text-sm text-turquoise hover:underline focus-visible:outline-turquoise"><ArrowLeft aria-hidden="true" className="size-4" />Back to the mountain map</Link>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">{related.map((item) => <Link key={item.slug} href={`/mountains/${item.slug}`} className="rounded-2xl border border-border bg-white p-5 transition-colors hover:border-moss/40 focus-visible:outline-2 focus-visible:outline-moss-deep"><h3 className="font-semibold">{item.title}</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">{item.introduction}</p><span className="mt-4 inline-block text-sm text-moss-deep">View mountain guide →</span></Link>)}</div>
+          <Link href="/mountains" className="mt-6 inline-flex items-center gap-2 rounded text-sm text-moss-deep hover:underline focus-visible:outline-moss-deep"><ArrowLeft aria-hidden="true" className="size-4" />Back to the mountain map</Link>
         </section>
         <SiteFooter />
       </div>

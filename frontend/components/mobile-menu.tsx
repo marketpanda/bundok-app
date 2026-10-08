@@ -26,7 +26,7 @@ const navigation = [
   { href: "/contact-us", label: "Contact Us", icon: Contact },
 ] as const;
 
-export function MobileMenu() {
+export function MobileMenu({ light = true }: { light?: boolean }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const { user, signOutUser } = useAuth();
@@ -52,7 +52,7 @@ export function MobileMenu() {
         variant="ghost"
         size="icon"
         onClick={() => setOpen(true)}
-        className="size-10 rounded-xl bg-white/10 text-zinc-100 hover:bg-white/15 hover:text-white"
+        className={cn("size-10 rounded-xl", light ? "bg-moss-100 text-foreground hover:bg-zinc-200 hover:text-foreground" : "bg-white/10 text-zinc-100 hover:bg-white/15 hover:text-white")}
       >
         <Menu className="size-6" aria-hidden="true" />
       </Button>
@@ -76,7 +76,7 @@ export function MobileMenu() {
           aria-label="Mobile navigation"
           aria-hidden={!open}
           inert={!open}
-          className={`absolute inset-y-0 right-0 flex w-[min(86vw,360px)] flex-col border-l border-white/10 bg-[#262626] px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[max(1.25rem,env(safe-area-inset-top))] shadow-2xl transition-transform will-change-transform ${
+          className={`absolute inset-y-0 right-0 flex w-[min(86vw,360px)] flex-col border-l px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[max(1.25rem,env(safe-area-inset-top))] shadow-2xl transition-transform will-change-transform ${light ? "border-border bg-white text-foreground" : "border-white/10 bg-[#262626]"} ${
             open
               ? "translate-x-0 duration-300 ease-out"
               : "translate-x-full duration-200 ease-in"
@@ -84,9 +84,9 @@ export function MobileMenu() {
         >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-white">Menu</p>
+                <p className={cn("text-sm font-semibold", light ? "text-foreground" : "text-white")}>Menu</p>
                 {user && (
-                  <p className="mt-0.5 max-w-60 truncate text-xs text-zinc-400">
+                  <p className="mt-0.5 max-w-60 truncate text-xs text-muted-foreground">
                     {user.name ?? user.email}
                   </p>
                 )}
@@ -97,7 +97,7 @@ export function MobileMenu() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setOpen(false)}
-                className="size-10 rounded-xl bg-white/10 text-zinc-100 hover:bg-white/15 hover:text-white"
+                className={cn("size-10 rounded-xl", light ? "bg-moss-100 text-foreground hover:bg-zinc-200 hover:text-foreground" : "bg-white/10 text-zinc-100 hover:bg-white/15 hover:text-white")}
               >
                 <X className="size-5" aria-hidden="true" />
               </Button>
@@ -114,12 +114,13 @@ export function MobileMenu() {
                     aria-current={active ? "page" : undefined}
                     onClick={() => setOpen(false)}
                     className={cn(
-                      "flex min-h-12 items-center gap-3 rounded-xl px-3.5 text-sm font-medium text-zinc-200 transition-colors hover:bg-white/10 hover:text-turquoise focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-turquoise",
-                      active && "bg-white/10 text-turquoise",
+                      "flex min-h-12 items-center gap-3 rounded-xl px-3.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss-deep",
+                      light ? "text-foreground hover:bg-moss/10 hover:text-moss-deep" : "text-zinc-200 hover:bg-white/10 hover:text-moss-deep",
+                      active && (light ? "bg-moss/10 text-moss-deep" : "bg-white/10 text-moss-deep"),
                     )}
                   >
                     <Icon
-                      className={cn("size-5 text-zinc-400", active && "text-turquoise")}
+                      className={cn("size-5 text-muted-foreground", active && (light ? "text-moss-deep" : "text-moss-deep"))}
                       aria-hidden="true"
                     />
                     {label}
@@ -128,7 +129,7 @@ export function MobileMenu() {
               })}
             </nav>
 
-            <div className="mt-auto border-t border-white/10 pt-5">
+            <div className={cn("mt-auto border-t pt-5", light ? "border-border" : "border-white/10")}>
               {user ? (
                 <Button
                   type="button"
@@ -137,7 +138,7 @@ export function MobileMenu() {
                     setOpen(false);
                     void signOutUser();
                   }}
-                  className="h-12 w-full justify-start gap-3 rounded-xl px-3.5 text-zinc-300 hover:bg-white/10 hover:text-white"
+                  className={cn("h-12 w-full justify-start gap-3 rounded-xl px-3.5", light ? "text-muted-foreground hover:bg-moss-100 hover:text-foreground" : "text-zinc-300 hover:bg-white/10 hover:text-white")}
                 >
                   <LogOut className="size-5" aria-hidden="true" />
                   Sign out
@@ -146,7 +147,7 @@ export function MobileMenu() {
                 <Link
                   href="/login"
                   onClick={() => setOpen(false)}
-                  className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-grass px-4 text-sm font-semibold text-white transition-colors hover:bg-grass-hover"
+                  className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-moss px-4 text-sm font-semibold text-white transition-colors hover:bg-moss-hover"
                 >
                   <LogIn className="size-4" aria-hidden="true" />
                   Log in with Google
