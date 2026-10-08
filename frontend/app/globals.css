@@ -395,3 +395,71 @@
     opacity: 0.6;
   }
 }
+
+.climb-card-shine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-110%);
+  background: linear-gradient(115deg, transparent 30%, rgb(255 255 255 / 8%) 42%, rgb(255 255 255 / 45%) 50%, rgb(255 255 255 / 8%) 58%, transparent 70%);
+}
+
+@keyframes climb-card-shine {
+  0% { transform: translateX(-110%); opacity: 0; }
+  20%, 70% { opacity: 1; }
+  100% { transform: translateX(110%); opacity: 0; }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .climb-card:hover .climb-card-shine {
+    animation: climb-card-shine 450ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .climb-card:has(:focus-visible) .climb-card-shine,
+  .climb-card-shine.is-touch-highlight {
+    animation: climb-card-shine 450ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+}
+
+@property --climb-outline-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.climb-card-outline {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: 2;
+  padding: 1.5px;
+  pointer-events: none;
+  opacity: 0;
+  background: conic-gradient(from var(--climb-outline-angle), transparent 0deg 285deg, var(--moss-hover) 300deg, var(--moss) 315deg, #5a8607 330deg, #71a809 342deg, transparent 350deg 360deg);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+@keyframes climb-card-outline {
+  0% { --climb-outline-angle: -90deg; opacity: 0; }
+  10%, 85% { opacity: 0.65; }
+  100% { --climb-outline-angle: 270deg; opacity: 0; }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .climb-card:hover .climb-card-outline {
+    animation: climb-card-outline 1800ms ease-in-out both;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .climb-card:has(:focus-visible) .climb-card-outline,
+  .climb-card-outline.is-touch-highlight {
+    animation: climb-card-outline 1800ms ease-in-out both;
+  }
+}

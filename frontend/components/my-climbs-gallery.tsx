@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { ArrowLeft, ArrowRight, CalendarDays, Check, ChevronDown, Flag, MapPin, Mountain, Pencil, Pin, Plus, Search, Trash2, TrendingUp, X } from "lucide-react";
 import { useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useAuth } from "@/components/auth-provider";
 import { PhotoCredit } from "@/components/photo-credit";
 import type { MountainPhoto } from "@/data/mountain-photos";
 import { matchesDestinationSearch } from "@/data/destination-search";
@@ -11,6 +12,7 @@ import sampleClimbs from "@/data/sample-climbs.json";
 
 type MountainOption = Pick<MapMountain, "slug" | "name" | "kind" | "location" | "elevationMeters" | "aliases"> & { photo?: MountainPhoto };
 type Climb = { id: string; slug: string; climbedOn: string; finishedOn?: string; notes: string; pinned: boolean; summitNotReached: boolean };
+type LayoutOption = "circle" | "bagtag";
 type SortOption = "date-desc" | "date-asc" | "name-asc";
 const STORAGE_KEY = "ambangeg:my-climbs:v1";
 const LOCAL_PREVIEW_KEY = "ambangeg:my-climbs:local-preview:v1";
@@ -20,6 +22,7 @@ const CHANGE_EVENT = "ambangeg:my-climbs-change";
 const dateFormatter = new Intl.DateTimeFormat("en-PH", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 const numberFormatter = new Intl.NumberFormat("en-PH");
 const inputClass = "w-full rounded-xl border border-border bg-white px-4 py-3 text-base text-foreground outline-none placeholder:text-muted-foreground focus:border-moss-deep focus:ring-2 focus:ring-moss-deep/15 sm:text-sm";
+const bagTagMask = `url("data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 856"><defs><mask id="tag" maskUnits="userSpaceOnUse" x="0" y="0" width="540" height="856"><rect width="540" height="856" fill="white"/><rect x="220" y="32" width="100" height="24" rx="12" fill="black"/></mask></defs><rect width="540" height="856" fill="white" mask="url(#tag)"/></svg>')}")`;
 const buttonClass = "inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-moss px-5 text-sm font-semibold text-white shadow-sm shadow-moss-900/10 transition-colors hover:bg-moss-hover focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-moss-deep";
 
 function subscribe(callback: () => void) {
@@ -47,6 +50,10 @@ function formatDate(value: string) { return dateFormatter.format(new Date(value 
 function lastClimbDate(climb: Climb) { return climb.finishedOn ?? climb.climbedOn; }
 
 export function MyClimbsGallery({ mountains }: { mountains: MountainOption[] }) {
+  const { user } = useAuth();
+  const hikerName = user?.name?.trim().split(/\s+/)[0] || user?.email?.split("@")[0] || "Your name";
+  const [layout, setLayout] = useState<LayoutOption>("bagtag");
+  const [touchHighlight, setTouchHighlight] = useState<{ id: string; sequence: number } | null>(null);
   const saved = useSyncExternalStore(subscribe, snapshot, serverSnapshot);
   const catalogue = useMemo(() => new Map(mountains.map((mountain) => [mountain.slug, mountain])), [mountains]);
   const climbs = useMemo<Climb[]>(() => {
@@ -68,7 +75,6 @@ export function MyClimbsGallery({ mountains }: { mountains: MountainOption[] }) 
     } catch { return []; }
   }, [saved, catalogue]);
   const [sortBy, setSortBy] = useState<SortOption>("date-desc");
-  const [query, setQuery] = useState("");
   const [editingPins, setEditingPins] = useState(false);
   const [message, setMessage] = useState("");
   const [storageError, setStorageError] = useState("");
@@ -91,15 +97,12 @@ export function MyClimbsGallery({ mountains }: { mountains: MountainOption[] }) 
   const unfinishedCount = climbs.filter((climb) => climb.summitNotReached).length;
   const latest = [...climbs].sort((a, b) => lastClimbDate(b).localeCompare(lastClimbDate(a)))[0];
   const visibleClimbs = useMemo(() => {
-    return climbs.filter((climb) => {
-      const mountain = catalogue.get(climb.slug)!;
-      return matchesDestinationSearch([mountain.name, mountain.location, ...mountain.aliases], query);
-    }).sort((a, b) => {
+    return [...climbs].sort((a, b) => {
       if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
       if (sortBy === "name-asc") return catalogue.get(a.slug)!.name.localeCompare(catalogue.get(b.slug)!.name);
       return sortBy === "date-asc" ? lastClimbDate(a).localeCompare(lastClimbDate(b)) : lastClimbDate(b).localeCompare(lastClimbDate(a));
     });
-  }, [climbs, catalogue, query, sortBy]);
+  }, [climbs, catalogue, sortBy]);
   const matchingMountains = useMemo(() => {
 
     const matches = mountains.filter((mountain) => matchesDestinationSearch([mountain.name, mountain.location, ...mountain.aliases], mountainQuery));
@@ -157,7 +160,6 @@ export function MyClimbsGallery({ mountains }: { mountains: MountainOption[] }) 
     const entry: Climb = { id: editingId ?? crypto.randomUUID(), slug: selectedSlug, climbedOn, ...(isMultiDay ? { finishedOn } : {}), notes: notes.trim(), summitNotReached, pinned: climbs.find((climb) => climb.id === editingId)?.pinned ?? false };
     if (persist(editingId ? climbs.map((climb) => climb.id === editingId ? entry : climb) : [...climbs, entry])) {
       dialogRef.current?.close();
-      setQuery("");
       setMessage(selectedMountain.name + (editingId ? " updated." : " added to your climbs."));
     } else { setFormError("Could not save your climb. Enable browser storage and try again."); }
   }
@@ -180,43 +182,69 @@ export function MyClimbsGallery({ mountains }: { mountains: MountainOption[] }) 
         </div>
         <div className="relative mt-7 grid grid-cols-1 gap-5 border-t border-border pt-6 sm:grid-cols-2 sm:gap-8">
           <div><p className="text-xs text-muted-foreground">Places explored</p><p className="mt-2 flex items-baseline gap-2"><span className="text-3xl font-semibold tracking-tight">{uniqueSummits}</span><span className="text-xs text-muted-foreground">{climbs.length} logged{unfinishedCount > 0 ? " · " + unfinishedCount + " unfinished" : ""}</span></p></div>
-          <div className="sm:border-l sm:border-border sm:pl-6"><p className="text-xs text-muted-foreground">Latest climb</p><p className="mt-2 font-semibold">{latest ? catalogue.get(latest.slug)!.name : "The story starts with you"}</p><p className="mt-1 text-xs text-muted-foreground">{latest ? formatDate(lastClimbDate(latest)) : "Log your first mountain below"}</p></div>
+          <div className="sm:border-l sm:border-border sm:pl-6"><p className="text-xs text-muted-foreground">Last climb</p><p className="mt-2 font-semibold">{latest ? catalogue.get(latest.slug)!.name : "The story starts with you"}</p><p className="mt-1 text-xs text-muted-foreground">{latest ? formatDate(lastClimbDate(latest)) : "Log your first mountain below"}</p></div>
         </div>
       </div>
 
-      <div className="mb-5 flex items-center justify-between gap-3">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div><h2 id="climbs-heading" className="text-xl font-semibold tracking-tight sm:text-2xl">Your collection <span className="ml-1 text-sm font-normal text-muted-foreground">{climbs.length}</span></h2><p className="mt-1 text-xs text-muted-foreground sm:text-sm">{editingPins ? "Choose up to 3 favourites · " + pinnedCount + "/3 pinned" : "A collection of days worth remembering."}</p></div>
-        {climbs.length > 0 && <button type="button" onClick={() => setEditingPins(!editingPins)} aria-pressed={editingPins} className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-border px-4 text-xs font-medium text-foreground hover:bg-moss-50 focus-visible:outline-2 focus-visible:outline-moss-deep">{editingPins ? <Check className="size-4" aria-hidden="true" /> : <Pin className="size-4" aria-hidden="true" />}{editingPins ? "Done" : "Pin favourites"}</button>}
+        <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
+          {climbs.length > 0 && <button type="button" onClick={() => setEditingPins(!editingPins)} aria-pressed={editingPins} className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-border px-4 text-xs font-medium text-foreground hover:bg-moss-50 focus-visible:outline-2 focus-visible:outline-moss-deep">{editingPins ? <Check className="size-4" aria-hidden="true" /> : <Pin className="size-4" aria-hidden="true" />}{editingPins ? "Done" : "Pin favourites"}</button>}
+          <label className="relative">
+            <span className="sr-only">Collection layout</span>
+            <select value={layout} onChange={(event) => setLayout(event.target.value as LayoutOption)} className="min-h-11 appearance-none rounded-full border border-border bg-white py-2 pl-4 pr-9 text-xs font-medium text-foreground hover:bg-moss-50 focus-visible:outline-2 focus-visible:outline-moss-deep">
+              <option value="circle">Circle</option>
+              <option value="bagtag">Bagtag</option>
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+          </label>
+        </div>
       </div>
-      {climbs.length > 0 && <div className="mb-7 flex flex-col gap-3 sm:flex-row sm:justify-between">
-        <label className="relative block sm:w-72"><span className="sr-only">Search your climbs</span><Search className="pointer-events-none absolute left-4 top-3.5 size-4 text-muted-foreground" aria-hidden="true" /><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Find a mountain or place" className={inputClass + " pl-11"} /></label>
-        <label className="relative"><span className="sr-only">Sort climbs</span><select value={sortBy} onChange={(event) => setSortBy(event.target.value as SortOption)} className={inputClass + " appearance-none pr-10"}><option value="date-desc">Latest climbed</option><option value="date-asc">Oldest climbed</option><option value="name-asc">Name: A–Z</option></select><ChevronDown className="pointer-events-none absolute right-4 top-3.5 size-4 text-muted-foreground" aria-hidden="true" /></label>
+      {climbs.length > 0 && <div className="mb-7 flex justify-end">
+        <label className="relative"><span className="sr-only">Sort climbs</span><select value={sortBy} onChange={(event) => setSortBy(event.target.value as SortOption)} className={inputClass + " appearance-none pr-10"}><option value="date-desc">Latest climb</option><option value="date-asc">Oldest climbed</option><option value="name-asc">Name: A–Z</option></select><ChevronDown className="pointer-events-none absolute right-4 top-3.5 size-4 text-muted-foreground" aria-hidden="true" /></label>
       </div>}
       <p role="status" className="mb-3 text-sm text-moss-deep">{message}</p>
       {storageError && <p role="alert" className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">{storageError}</p>}
       {climbs.length === 0 ? <div className="flex flex-col items-center rounded-[28px] border border-dashed border-border bg-white px-6 py-14 text-center sm:py-20">
         <div className="mb-6 grid size-24 place-items-center rounded-full border border-border bg-moss/5"><Mountain className="size-10 text-moss-deep" strokeWidth={1.3} aria-hidden="true" /></div>
         <h3 className="text-xl font-semibold">Your first adventure is waiting</h3><p className="mt-3 max-w-sm text-sm leading-6 text-muted-foreground">Every trail has a story. Add a mountain or ridge and a date to start your own collection.</p><button type="button" onClick={() => openForm()} className={buttonClass + " mt-6"}><Plus className="size-4" aria-hidden="true" /> Log your first climb</button>
-      </div> : visibleClimbs.length === 0 ? <div className="rounded-2xl border border-border p-10 text-center"><Search className="mx-auto mb-3 size-6 text-muted-foreground" aria-hidden="true" /><h3 className="font-semibold">No climbs found</h3><p className="mt-2 text-sm text-muted-foreground">Try another mountain name or location.</p><button type="button" onClick={() => setQuery("")} className="mt-4 min-h-11 text-sm text-moss-deep">Clear search</button></div> : <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
+      </div> : <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
         {visibleClimbs.map((climb) => {
           const mountain = catalogue.get(climb.slug)!;
-          return <article key={climb.id} className="group min-w-0 rounded-xl border border-border bg-white p-4 text-center shadow-sm">
-            <div className="relative mx-auto aspect-square max-w-[205px]">
+          return <article key={climb.id} onPointerDown={(event) => {
+            if (event.pointerType === "touch" || event.pointerType === "pen") {
+              setTouchHighlight((previous) => ({ id: climb.id, sequence: (previous?.sequence ?? 0) + 1 }));
+            }
+          }} className={"climb-card group min-w-0 text-center " + (layout === "bagtag" ? "" : "rounded-xl border border-border bg-white p-4 shadow-sm")}>
+            <div className={"relative " + (layout === "bagtag" ? "aspect-[53.98/85.6] rounded-[18px] has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-4 has-[:focus-visible]:outline-moss-deep" : "mx-auto aspect-square max-w-[205px]")}>
+              {layout === "bagtag" ? <span className="block size-full drop-shadow-[0_3px_6px_rgba(7,26,17,0.12)]"><button type="button" onClick={() => openForm(climb)} aria-label={"Edit " + mountain.name + " climb from " + formatDate(climb.climbedOn)} className="relative block size-full overflow-hidden rounded-[18px] bg-[#183f2c] text-white transition motion-safe:hover:-translate-y-1 focus-visible:outline-none" style={{ maskImage: bagTagMask, WebkitMaskImage: bagTagMask, maskSize: "100% 100%", maskRepeat: "no-repeat" }}>
+                {mountain.photo ? <Image src={mountain.photo.src} alt={mountain.photo.alt} fill sizes="(min-width: 1280px) 190px, (min-width: 1024px) 21vw, (min-width: 640px) 29vw, 43vw" className="object-cover transition-transform duration-500 motion-safe:group-hover:scale-105" /> : <span className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-moss-500 to-moss-950"><Mountain className="size-16 text-white/50" strokeWidth={1} aria-hidden="true" /></span>}
+                <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/5 to-[#071a11]/95" />
+                <span className="absolute inset-x-0 bottom-0 flex flex-col items-center px-3 pb-5 pt-10 sm:pb-6">
+                  <span className="font-artistic block w-full break-words px-1 py-1 text-3xl font-semibold leading-[1.25] tracking-tight [text-shadow:0_1px_2px_rgba(0,0,0,.55)] sm:text-4xl">{hikerName}</span>
+                  <span aria-hidden="true" className="my-3 h-px w-10 bg-white/55" />
+                  <span className="line-clamp-3 text-sm font-semibold leading-tight sm:text-base">{mountain.name}</span>
+                </span>
+                <span key={touchHighlight?.id === climb.id ? touchHighlight.sequence : 0} aria-hidden="true" className={"climb-card-shine" + (touchHighlight?.id === climb.id ? " is-touch-highlight" : "")} />
+                  <span key={"outline-" + (touchHighlight?.id === climb.id ? touchHighlight.sequence : 0)} aria-hidden="true" className={"climb-card-outline" + (touchHighlight?.id === climb.id ? " is-touch-highlight" : "")} />
+              </button></span> :
               <button type="button" onClick={() => openForm(climb)} aria-label={"Edit " + mountain.name + " climb from " + formatDate(climb.climbedOn)} className={"relative size-full rounded-full bg-white p-1.5 shadow-[0_6px_24px_rgba(54,80,4,0.08)] ring-1 transition motion-safe:hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-moss-deep " + (climb.summitNotReached ? "ring-amber-300 hover:ring-amber-400" : climb.pinned ? "ring-moss/60" : "ring-border hover:ring-moss/60")}>
                 <span className="relative flex size-full items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-moss-50 to-moss-100">
                   {mountain.photo ? <Image src={mountain.photo.src} alt={mountain.photo.alt} fill sizes="(min-width: 1280px) 190px, (min-width: 1024px) 21vw, (min-width: 640px) 29vw, 43vw" className="object-cover transition-transform duration-500 motion-safe:group-hover:scale-105" /> : <Mountain className="size-16 text-moss-deep" strokeWidth={1} aria-hidden="true" />}
+                  <span key={touchHighlight?.id === climb.id ? touchHighlight.sequence : 0} aria-hidden="true" className={"climb-card-shine" + (touchHighlight?.id === climb.id ? " is-touch-highlight" : "")} />
+                  <span key={"outline-" + (touchHighlight?.id === climb.id ? touchHighlight.sequence : 0)} aria-hidden="true" className={"climb-card-outline" + (touchHighlight?.id === climb.id ? " is-touch-highlight" : "")} />
                   <span className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"><Pencil className="size-5 text-white" aria-hidden="true" /></span>
                 </span>
-              </button>
-              {(editingPins || climb.pinned) && <button type="button" disabled={!editingPins || (!climb.pinned && pinnedCount >= 3)} onClick={() => togglePin(climb)} aria-pressed={climb.pinned} aria-label={(climb.pinned ? "Unpin " : "Pin ") + mountain.name} title={!climb.pinned && pinnedCount >= 3 ? "Unpin a favourite to choose another" : "Pin favourite"} className={"absolute -right-1 -top-1 grid size-11 place-items-center rounded-full border shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss-deep " + (climb.pinned ? "border-moss bg-moss text-white" : "border-border bg-white text-muted-foreground disabled:opacity-35")}><Pin className="size-4" fill={climb.pinned ? "currentColor" : "none"} aria-hidden="true" /></button>}
+              </button>}
+              {(editingPins || climb.pinned) && <button type="button" disabled={!editingPins || (!climb.pinned && pinnedCount >= 3)} onClick={() => togglePin(climb)} aria-pressed={climb.pinned} aria-label={(climb.pinned ? "Unpin " : "Pin ") + mountain.name} title={!climb.pinned && pinnedCount >= 3 ? "Unpin a favourite to choose another" : "Pin favourite"} className="absolute -right-1 -top-4 grid size-11 place-items-center bg-transparent text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss-deep disabled:opacity-35"><Pin className="size-6 rotate-[25deg]" stroke="var(--moss-deep)" strokeWidth={1.5} fill={climb.pinned ? "currentColor" : "none"} aria-hidden="true" /></button>}
             </div>
-            <h3 className="mt-4 text-sm font-semibold tracking-tight sm:text-base">{mountain.name}</h3>
+            <h3 className={layout === "bagtag" ? "sr-only" : "mt-4 text-sm font-semibold tracking-tight sm:text-base"}>{mountain.name}</h3>
             {climb.summitNotReached && <p className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-medium text-amber-800" title={mountain.kind === "ridge" ? "Hike not finished" : "Summit not reached"}><Flag className="size-3" aria-hidden="true" /> Unfinished</p>}<p className="mt-1 text-xs leading-5 text-muted-foreground">{mountain.kind === "ridge" ? "Ridge · " : ""}{mountain.location}{mountain.elevationMeters ? " · " + numberFormatter.format(mountain.elevationMeters) + " m" : ""}</p><p className="mt-2 flex flex-wrap items-center justify-center gap-1 text-[11px] text-muted-foreground"><CalendarDays className="size-3.5" aria-hidden="true" /><time dateTime={climb.climbedOn}>{formatDate(climb.climbedOn)}</time>{climb.finishedOn && <><span aria-hidden="true">–</span><time dateTime={climb.finishedOn}>{formatDate(climb.finishedOn)}</time></>}</p>
             {climb.notes && <p className="mt-2 line-clamp-2 text-xs leading-5 text-muted-foreground">{climb.notes}</p>}
             {mountain.photo && <details className="mt-2 text-[10px] text-muted-foreground"><summary className="cursor-pointer hover:text-muted-foreground">Photo credit</summary><PhotoCredit photo={mountain.photo} light /></details>}
           </article>;
         })}
-        {!query && <button type="button" onClick={() => openForm()} className="group flex flex-col items-center self-start rounded-xl border border-dashed border-border bg-white p-4 text-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-moss-deep"><span className="flex aspect-square w-full max-w-[205px] flex-col items-center justify-center gap-3 rounded-full border border-dashed border-border bg-moss-50/50 transition-colors group-hover:border-moss/60 group-hover:bg-moss/5"><Plus className="size-7 text-moss-deep" strokeWidth={1.5} aria-hidden="true" /><span className="text-xs text-muted-foreground">Another adventure</span></span><span className="mt-4 text-sm font-semibold text-moss-deep">Add a climb</span></button>}
+        {<button type="button" onClick={() => openForm()} className={"group flex flex-col items-center self-start text-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-moss-deep " + (layout === "bagtag" ? "" : "rounded-xl border border-dashed border-border bg-white p-4")}><span className={"flex w-full flex-col items-center justify-center gap-3 border border-dashed border-border bg-moss-50/50 transition-colors group-hover:border-moss/60 group-hover:bg-moss/5 " + (layout === "bagtag" ? "aspect-[53.98/85.6] rounded-[18px]" : "aspect-square max-w-[205px] rounded-full")}><Plus className="size-7 text-moss-deep" strokeWidth={1.5} aria-hidden="true" /><span className="text-xs text-muted-foreground">Another adventure</span></span><span className="mt-4 text-sm font-semibold text-moss-deep">Add a climb</span></button>}
       </div>}
       <p className="mt-8 text-center text-xs leading-5 text-muted-foreground">Your journal is saved in this browser. It won’t sync across devices yet.</p>
 
