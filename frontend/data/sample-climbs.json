@@ -4,83 +4,95 @@
     "slug": "mount-pulag",
     "climbedOn": "2026-09-14",
     "notes": "Sunrise above the sea of clouds. Worth the early start.",
-    "pinned": true
+    "pinned": true,
+    "summitNotReached": false
   },
   {
     "id": "demo-climb-02",
     "slug": "mount-apo",
     "climbedOn": "2026-08-30",
     "notes": "Three days on the trail and a summit I’ll never forget.",
-    "pinned": true
+    "pinned": true,
+    "summitNotReached": false
   },
   {
     "id": "demo-climb-03",
     "slug": "mount-guiting-guiting",
     "climbedOn": "2026-08-08",
-    "notes": "A challenging ridge adventure with the best trail crew.",
-    "pinned": true
+    "notes": "Turned back before the summit as the weather changed. A mountain to return to.",
+    "pinned": true,
+    "summitNotReached": true
   },
   {
     "id": "demo-climb-04",
     "slug": "mount-ulap",
     "climbedOn": "2026-07-19",
     "notes": "Pine forests, cool air, and a picnic with friends.",
-    "pinned": false
+    "pinned": false,
+    "summitNotReached": false
   },
   {
     "id": "demo-climb-05",
     "slug": "mount-daraitan",
     "climbedOn": "2026-06-21",
     "notes": "Limestone views and a refreshing stop at Tinipak River.",
-    "pinned": false
+    "pinned": false,
+    "summitNotReached": false
   },
   {
     "id": "demo-climb-06",
     "slug": "mount-batulao",
     "climbedOn": "2026-05-17",
     "notes": "Rolling ridges and golden afternoon light.",
-    "pinned": false
+    "pinned": false,
+    "summitNotReached": false
   },
   {
     "id": "demo-climb-07",
     "slug": "mount-pinatubo",
     "climbedOn": "2026-04-12",
     "notes": "A dusty ride, a quiet walk, and that incredible crater lake.",
-    "pinned": false
+    "pinned": false,
+    "summitNotReached": false
   },
   {
     "id": "demo-climb-08",
     "slug": "mount-arayat",
     "climbedOn": "2026-03-22",
     "notes": "A forest climb with sweeping views of Central Luzon.",
-    "pinned": false
+    "pinned": false,
+    "summitNotReached": false
   },
   {
     "id": "demo-climb-09",
     "slug": "mount-kabunian",
     "climbedOn": "2026-02-15",
     "notes": "Long stairways and beautiful Bakun mountain views.",
-    "pinned": false
+    "pinned": false,
+    "summitNotReached": false
   },
   {
     "id": "demo-climb-10",
     "slug": "mount-talamitam",
     "climbedOn": "2026-01-25",
     "notes": "An easy weekend escape across grassy slopes.",
-    "pinned": false
+    "pinned": false,
+    "summitNotReached": false
   },
   {
     "id": "demo-climb-11",
     "slug": "mount-pamitinan",
     "climbedOn": "2025-12-14",
     "notes": "A short but rocky climb with a rewarding view.",
-    "pinned": false
+    "pinned": false,
+    "summitNotReached": false
   },
   {
     "id": "demo-climb-12",
     "slug": "mount-makiling",
     "climbedOn": "2025-11-09",
     "notes": "A misty forest trail and muddy boots all the way home.",
-    "pinned": false
+    "pinned": false,
+    "summitNotReached": false
   }
 ]
