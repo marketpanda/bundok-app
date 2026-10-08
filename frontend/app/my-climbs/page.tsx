@@ -6,6 +6,8 @@ import { ExploreMenu } from "@/components/explore-menu";
 import { DesktopNavigation } from "@/components/desktop-navigation";
 import { MobileMenu } from "@/components/mobile-menu";
 import { MyClimbsGallery } from "@/components/my-climbs-gallery";
+import { mapMountains } from "@/data/map-mountains";
+import { getMountainPhoto, mountainPhotos } from "@/data/mountain-photos";
 import { SiteFooter } from "@/components/site-footer";
 
 export const metadata: Metadata = {
@@ -55,7 +57,7 @@ export default function MyClimbsPage() {
           <ExploreMenu active="my-climbs" />
         </div>
 
-        <MyClimbsGallery />
+        <MyClimbsGallery mountains={mapMountains.map(({ slug, name, location, elevationMeters, aliases }) => ({ slug, name, location, elevationMeters, aliases, photo: getMountainPhoto(slug) ?? mountainPhotos[slug.replace(/^mount-/, "")] }))} />
 
         <SiteFooter />
       </div>
