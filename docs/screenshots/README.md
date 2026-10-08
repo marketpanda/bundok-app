@@ -2,10 +2,12 @@
 
 Desktop views use a 1440 × 1000 viewport; mobile views use 390 × 844.
 Page captures show the full page. Destination picker and multi-day form captures
-show the viewport so the modal matches what a user sees.
+show the viewport so the modal matches what a user sees. The homepage scroll
+shell is expanded only for capture so memes and hiking guides are included.
 
 The My Climbs gallery uses the 12 local preview entries, including one unfinished
-climb. The form examples show Paminahawa Ridge and the multi-day date inputs.
+climb, captured in the default Bagtag layout and the optional Circle layout.
+About Us is included at both viewport sizes. The form examples show Paminahawa Ridge and the multi-day date inputs.
 The mountain explorer captures focus on Mount Ulap with the region zoom control.
 
 To regenerate against a running preview:

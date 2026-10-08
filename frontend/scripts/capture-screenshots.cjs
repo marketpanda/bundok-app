@@ -2,7 +2,6 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const path = require("node:path");
-const { chromium } = require(process.argv[2] || "playwright");
 const output = path.resolve(__dirname, "../../docs/screenshots");
 const catalogueTotal = require("../data/national-mountains.json").length;
 const origin = process.env.SCREENSHOT_ORIGIN || "http://localhost:4173";
@@ -27,8 +26,8 @@ async function ready(page) {
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), "Page overflows horizontally");
 }
 
-(async () => {
-  const browser = await chromium.launch({ channel: "chrome", headless: true, args: ["--enable-webgl", "--ignore-certificate-errors"] });
+async function captureScreenshots(chromium, launchOptions = {}) {
+  const browser = await chromium.launch({ channel: "chrome", headless: true, args: ["--enable-webgl", "--ignore-certificate-errors"], ...launchOptions });
   try {
     await fs.mkdir(output, { recursive: true });
     for (const mobile of [false, true]) {
@@ -37,7 +36,15 @@ async function ready(page) {
       page.setDefaultTimeout(20000);
       page.setDefaultNavigationTimeout(30000);
       console.log(mobile ? "Mobile capture" : "Desktop capture");
-      const capture = async (filename) => { await ready(page); await page.screenshot({ path: path.join(output, filename), fullPage: !filename.includes("climb-destination") && !filename.includes("climb-multi-day") }); console.log(filename); };
+      const capture = async (filename) => {
+        // Expand the homepage scroll shell only while capturing its full content.
+        const homeStyle = filename.includes("home") ? await page.addStyleTag({ content: "main > section.h-dvh { height: auto; overflow: visible; } main > section.h-dvh > .h-full { height: auto; overflow: visible; }" }) : null;
+        try {
+          await ready(page);
+          await page.screenshot({ path: path.join(output, filename), fullPage: !filename.includes("climb-destination") && !filename.includes("climb-multi-day") });
+          console.log(filename);
+        } finally { await homeStyle?.evaluate((element) => element.remove()); }
+      };
       await page.goto(`${origin}/`, { waitUntil: "networkidle" });
       await capture(mobile ? "mobile-home-390w.png" : "desktop-home-flex.png");
       console.log("Opening mountains");
@@ -76,7 +83,10 @@ async function ready(page) {
       await capture(mobile ? "mobile-pulag-guide-390w.png" : "desktop-pulag-guide.png");
       await page.goto(`${origin}/my-climbs/`, { waitUntil: "networkidle" });
       await capture(mobile ? "mobile-my-climbs-390w.png" : "desktop-my-climbs-complete.png");
-      await page.getByRole("button", { name: "Add a climb", exact: true }).click();
+      await page.getByRole("combobox", { name: "Collection layout" }).selectOption("circle");
+      await capture(mobile ? "mobile-my-climbs-circle-390w.png" : "desktop-my-climbs-circle.png");
+      await page.getByRole("combobox", { name: "Collection layout" }).selectOption("bagtag");
+      await page.getByRole("button", { name: "Add a climb", exact: true }).first().click();
       await page.locator("#climb-mountain").fill("Paminahawa");
       await page.getByRole("button", { name: /Paminahawa Ridge/ }).click();
       await capture(mobile ? "mobile-climb-destination.png" : "desktop-climb-destination.png");
@@ -86,6 +96,8 @@ async function ready(page) {
       await page.locator("#climb-finished-date").fill("2026-09-02");
       await capture(mobile ? "mobile-climb-multi-day.png" : "desktop-climb-multi-day.png");
       await page.getByRole("button", { name: "Close climb form" }).click();
+      await page.goto(`${origin}/about-us/`, { waitUntil: "networkidle" });
+      await capture(mobile ? "mobile-about-us-390w.png" : "desktop-about-us.png");
       await context.close();
     }
     for (const [source, target] of [["mobile-home-390w.png", "mobile-home-flex-contained.png"], ["mobile-mountains-390w.png", "mobile-mountains.png"], ["mobile-pulag-guide-390w.png", "mobile-pulag-guide.png"], ["mobile-my-climbs-390w.png", "mobile-my-climbs-complete.png"]]) {
@@ -93,4 +105,11 @@ async function ready(page) {
     }
     console.log("Screenshots and browser checks completed.");
   } finally { await browser.close(); }
-})().catch((error) => { console.error(error); process.exitCode = 1; });
+}
+
+module.exports = { captureScreenshots };
+
+if (require.main === module) {
+  const { chromium } = require(process.argv[2] || "playwright");
+  captureScreenshots(chromium).catch((error) => { console.error(error); process.exitCode = 1; });
+}

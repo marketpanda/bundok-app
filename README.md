@@ -2,11 +2,11 @@
 
 Ambangeg is a responsive Philippine hiking discovery app. Explore mountains on an interactive map, compare trails and difficulty, read mountain guides, create personalized bag tags, and keep a gallery of your climbs.
 
-The Mountains explorer connects map pins to mountain cards: selecting either focuses the map and highlights the matching mountain. Desktop shows the map and list side by side; mobile uses a collapsible bottom sheet that keeps the selected peak visible above the list.
+The Mountains explorer connects map pins to mountain cards: selecting either focuses the map and highlights the matching mountain. Desktop keeps search and filters in the right column beside the map; mobile moves them into the draggable bottom sheet.
 
 ## Preview
 
-The home screen keeps the full-width **Flex My Hike** creator above the trail cards. Its live bag-tag preview sits beside the form on larger screens and stacks below it on mobile.
+The home screen keeps the full-width **Flex My Hike** creator above three shareable hiking memes and featured article guides. Its live bag-tag preview sits beside the form on larger screens and stacks below it on mobile. Guide cards use an edge-to-edge image across one-third of the card.
 
 ### Desktop
 
@@ -48,7 +48,7 @@ The first dedicated guides cover **Mount Pulag**, **Mount Apo** and **Mount Guit
 
 ### My Climbs
 
-The My Climbs collection keeps up to three pinned mountains at the front of the same responsive grid. Pin choices are stored locally in the browser until a database-backed profile is connected.
+My Climbs defaults to photo bagtags, with a Circle / Bagtag selector beside **Pin favourites**. Bagtags show the hiker’s first name, a transparent punched hole and climb details below the image. White angled pins keep up to three favourites at the front of the grid. Hover or touch triggers a reflective sweep and a thin green stroke around the card. Pin choices are stored locally in the browser until a database-backed profile is connected.
 
 #### Desktop
 
@@ -57,6 +57,12 @@ The My Climbs collection keeps up to three pinned mountains at the front of the 
 #### Mobile
 
 <img src="docs/screenshots/mobile-my-climbs-390w.png" alt="Ambangeg mobile My Climbs page with every mountain photo loaded and cards fully contained" width="390" />
+
+### About Us
+
+A Taglish article shares the love of hiking, trail friendships and a little summit humor. **About Us** appears before **Contact Us** in desktop and mobile navigation.
+
+![Ambangeg About Us article](docs/screenshots/desktop-about-us.png)
 
 ## Features
 
@@ -70,11 +76,12 @@ The My Climbs collection keeps up to three pinned mountains at the front of the 
 - Static hiking guides for Pulag, Apo and Guiting-Guiting
 - Per-guide titles, descriptions, canonical URLs and breadcrumb structured data
 - Personalized mountain bag tags with a downloadable PNG
-- Browseable trail cards and category tabs
+- Hiking meme cards with Facebook, native image sharing and clipboard fallback
+- Featured article guides with edge-to-edge photography
 - Real hiking photography with proportional image cropping
 - Interactive trip-detail views for each featured trail
 - Sortable My Climbs gallery with up to three locally persisted pinned mountains
-- Compact mobile header and desktop navigation
+- Compact mobile header and desktop navigation with About Us and Contact Us
 - Custom Ambangeg branding and favicon
 
 ## Built with
