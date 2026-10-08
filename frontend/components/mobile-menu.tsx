@@ -6,7 +6,7 @@ import {
   Contact,
   LogIn,
   LogOut,
-  Map,
+  Info,
   Menu,
   Mountain,
   UserRound,
@@ -19,10 +19,10 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const navigation = [
-  { href: "/", label: "Discover", icon: Map },
   { href: "/mountains", label: "Mountains", icon: Mountain },
   { href: "/my-climbs", label: "My Climbs", icon: Mountain },
   { href: "/profile", label: "Profile", icon: UserRound },
+  { href: "/about-us", label: "About Us", icon: Info },
   { href: "/contact-us", label: "Contact Us", icon: Contact },
 ] as const;
 

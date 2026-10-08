@@ -8,9 +8,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const links = [
-  { href: "/", label: "Discover" },
-  { href: "/#activity", label: "Activity" },
   { href: "/profile", label: "Profile" },
+  { href: "/about-us", label: "About Us" },
   { href: "/contact-us", label: "Contact Us" },
 ] as const;
 
@@ -22,9 +21,7 @@ export function DesktopNavigation({ light = true }: { light?: boolean }) {
     <div className="hidden items-center gap-2 lg:flex">
       <nav className="flex items-center gap-1" aria-label="Desktop navigation">
         {links.map(({ href, label }) => {
-          const active =
-            (href === "/" && pathname === "/") ||
-            (href !== "/" && !href.includes("#") && pathname === href);
+          const active = pathname === href;
 
           return (
             <Link
