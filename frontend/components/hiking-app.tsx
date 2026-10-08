@@ -17,7 +17,7 @@ import {
   Sparkles,
   Star,
 } from "lucide-react";
-import { Fragment, useRef, useState, useSyncExternalStore } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 
 import { useAuth } from "@/components/auth-provider";
 import { DesktopNavigation } from "@/components/desktop-navigation";
@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import { getMountainPhoto } from "@/data/mountain-photos";
 
 const showcasePhotos = {
   trailGroup: "/assets/hike_20260902_172653-1190.jpg",
@@ -85,6 +86,11 @@ const trips = [
   { title: "Hiking to Troll", location: "Ford Norway", photo: showcasePhotos.forestGroup },
   { title: "Forest escape", location: "Lofoten", photo: showcasePhotos.mountainCoffee },
   { title: "Rocky peaks", location: "Jotunheimen", photo: showcasePhotos.mountainRoad },
+];
+
+const featuredGuides = [
+  { slug: "mount-pulag", title: "Mount Pulag", description: "Compare trails and prepare for your climb." },
+  { slug: "mount-apo", title: "Mount Apo", description: "Plan your route and get ready for the summit." },
 ];
 
 const mountainOptions = [
@@ -145,11 +151,11 @@ function TripCard({
       className="group h-full w-[78%] max-w-[78%] basis-[78%] shrink-0 snap-center text-left md:w-[82%] md:max-w-[82%] md:basis-[82%] lg:w-[calc((100%_-_2.5rem)/3)] lg:max-w-[calc((100%_-_2.5rem)/3)] lg:basis-[calc((100%_-_2.5rem)/3)]"
       aria-label={`Open ${title}`}
     >
-      <Card className="h-full gap-0 overflow-hidden border border-border bg-white py-0 shadow-sm transition-transform duration-300 group-hover:-translate-y-1">
+      <Card className="h-full gap-0 overflow-hidden rounded-[20px] border border-border bg-white py-0 ring-0 shadow-sm transition-transform duration-300 group-hover:-translate-y-1">
         <ShowcasePhoto
           src={photo}
           alt={`${title} in ${location}`}
-          className="aspect-[1.4/1] w-full rounded-t-[20px]"
+          className="aspect-[1.4/1] w-full"
         />
         <CardContent className="min-h-24 space-y-1 px-4 py-3">
           <p className="text-[15px] font-medium text-foreground">{title}</p>
@@ -163,16 +169,20 @@ function TripCard({
   );
 }
 
-const sampleMemeText = "Ung bigla kang na-add sa gc kahit nagtatanong ka lang";
+const carouselMemes = [
+  { src: "/assets/meme-poker-face.png", alt: "Doodled poker face surrounded by group-chat and hiking symbols", text: "Ung bigla kang na-add sa gc kahit nagtatanong ka lang" },
+  { src: "/assets/meme-chill-hike.png", alt: "Doodled exhausted hiker catching their breath at the trail start", text: "Sabi nila chill hike lang. Bakit hingal na ako sa jump-off?" },
+  { src: "/assets/meme-recovery-leave.png", alt: "Doodled tired hiker slumped in a chair with coffee after a climb", text: "Nag-hike para mag-unwind. Umuwi na kailangan ng recovery leave." },
+];
 
-function MemeCard() {
+function MemeCard({ src, alt, text, priority = false }: { src: string; alt: string; text: string; priority?: boolean }) {
   const [shared, setShared] = useState(false);
 
-  const getMemeUrl = () => new URL("/assets/meme-poker-face.png", window.location.origin).href;
+  const getMemeUrl = () => new URL(src, window.location.origin).href;
 
   const copyMemeLink = async (memeUrl: string) => {
     try {
-      await navigator.clipboard.writeText(`${sampleMemeText}\n${memeUrl}`);
+      await navigator.clipboard.writeText(`${text}\n${memeUrl}`);
       setShared(true);
     } catch {
       window.open(memeUrl, "_blank", "noopener,noreferrer");
@@ -186,19 +196,20 @@ function MemeCard() {
       const response = await fetch(memeUrl);
       if (!response.ok) throw new Error("Could not load the meme image.");
 
-      const memeFile = new File([await response.blob()], "ambangeg-poker-face.png", {
-        type: "image/png",
+      const blob = await response.blob();
+      const memeFile = new File([blob], src.split("/").pop() ?? "ambangeg-meme.png", {
+        type: blob.type,
       });
       const canShareImage = navigator.canShare?.({ files: [memeFile] }) ?? false;
 
       if (navigator.share && canShareImage) {
         await navigator.share({
           title: "Ambangeg meme",
-          text: sampleMemeText,
+          text: text,
           files: [memeFile],
         });
       } else if (navigator.share) {
-        await navigator.share({ title: "Ambangeg meme", text: sampleMemeText, url: memeUrl });
+        await navigator.share({ title: "Ambangeg meme", text: text, url: memeUrl });
       } else {
         await copyMemeLink(memeUrl);
       }
@@ -214,25 +225,25 @@ function MemeCard() {
   const shareOnFacebook = () => {
     const shareUrl = new URL("https://www.facebook.com/sharer/sharer.php");
     shareUrl.searchParams.set("u", getMemeUrl());
-    shareUrl.searchParams.set("quote", sampleMemeText);
+    shareUrl.searchParams.set("quote", text);
     window.open(shareUrl.href, "facebook-share", "popup,width=680,height=560,noopener,noreferrer");
   };
 
   return (
     <article className="h-full w-[78%] max-w-[78%] basis-[78%] shrink-0 snap-center md:w-[82%] md:max-w-[82%] md:basis-[82%] lg:w-[calc((100%_-_2.5rem)/3)] lg:max-w-[calc((100%_-_2.5rem)/3)] lg:basis-[calc((100%_-_2.5rem)/3)]">
-      <Card className="h-full gap-0 overflow-hidden border border-border bg-white py-0 text-foreground shadow-sm transition-transform duration-300 hover:-translate-y-1">
+      <Card className="h-full gap-0 overflow-hidden rounded-[20px] border border-border bg-white py-0 text-foreground ring-0 shadow-sm transition-transform duration-300 hover:-translate-y-1">
         <div className="relative aspect-[1.4/1] w-full overflow-hidden">
           <Image
-            src="/assets/meme-poker-face.png"
-            alt="Doodled poker face surrounded by group-chat and hiking symbols"
+            src={src}
+            alt={alt}
             fill
             sizes="(min-width: 1024px) 24vw, 78vw"
             className="object-cover"
-            priority
+            priority={priority}
           />
         </div>
         <CardContent className="flex min-h-24 items-start justify-between gap-3 px-4 py-3">
-          <p className="text-sm font-semibold leading-5 text-foreground">{sampleMemeText}</p>
+          <p className="text-sm font-semibold leading-5 text-foreground">{text}</p>
           <div className="flex shrink-0 gap-2">
             <Button
               type="button"
@@ -573,38 +584,33 @@ function HomeScreen({
           </div>
           <div
             ref={carouselRef}
-            className="no-scrollbar -mx-5 mt-3 flex snap-x snap-mandatory items-stretch gap-3 overflow-x-auto px-5 pb-1 lg:mx-0 lg:gap-5 lg:px-0"
+            className="no-scrollbar -mx-5 mt-3 flex snap-x snap-mandatory items-stretch gap-3 overflow-x-auto px-5 py-1 lg:mx-0 lg:gap-5 lg:px-0"
           >
-            <MemeCard />
-            {trips.map((trip) => (
-              <Fragment key={trip.title}>
-                <TripCard {...trip} onOpen={() => onOpenTrip(trip)} />
-              </Fragment>
-            ))}
+            {carouselMemes.map((meme, index) => <MemeCard key={meme.src} {...meme} priority={index === 0} />)}
+            {trips.slice(2).map((trip) => <TripCard key={trip.title} {...trip} onOpen={() => onOpenTrip(trip)} />)}
           </div>
         </div>
 
-        <section className="lg:mt-10">
+        <section className="lg:mt-10" aria-labelledby="featured-guides-heading">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-medium lg:text-2xl">Top offer</h2>
-            <Button variant="ghost" className="hidden text-moss-deep hover:bg-moss/10 hover:text-moss-deep lg:inline-flex">View all <ArrowRight /></Button>
+            <h2 id="featured-guides-heading" className="text-xl font-medium lg:text-2xl">Hiking guides</h2>
+            <Link href="/mountains" className="inline-flex min-h-11 items-center gap-2 rounded text-sm font-medium text-moss-deep hover:underline focus-visible:outline-2 focus-visible:outline-moss-deep">Explore mountains <ArrowRight className="size-4" aria-hidden="true" /></Link>
           </div>
           <div className="no-scrollbar -mx-5 flex gap-3 overflow-x-auto px-5 lg:mx-0 lg:grid lg:grid-cols-2 lg:gap-5 lg:px-0">
-            <Card className="min-w-[86%] gap-0 border border-border bg-white py-0 text-foreground shadow-none lg:min-w-0">
-              <CardContent className="flex items-center gap-4 p-3">
-                <ShowcasePhoto src={showcasePhotos.trailGroup} alt="Hikers on a mountain trail" className="size-20 shrink-0 rounded-2xl" />
-                <div className="min-w-0">
-                  <p className="truncate text-base font-medium">Adventure holidays</p>
-                  <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground"><MapPin className="size-3 fill-zinc-500 text-muted-foreground" />Ford Norway</p>
+            {featuredGuides.map((guide) => {
+              const photo = getMountainPhoto(guide.slug)!;
+              return <Link key={guide.slug} href={"/mountains/" + guide.slug} className="group grid min-h-40 min-w-[86%] grid-cols-[1fr_2fr] overflow-hidden rounded-xl border border-border bg-white text-foreground transition-colors hover:border-moss/50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-moss-deep lg:min-w-0">
+                <div className="relative min-h-full overflow-hidden bg-moss-100">
+                  <Image src={photo.src} alt={photo.alt} fill sizes="(min-width: 1024px) 16vw, 29vw" className="object-cover transition-transform duration-500 motion-safe:group-hover:scale-105" />
                 </div>
-              </CardContent>
-            </Card>
-            <Card className="min-w-[72%] gap-0 border border-border bg-white py-0 text-foreground shadow-none lg:min-w-0">
-              <CardContent className="flex items-center gap-4 p-3">
-                <ShowcasePhoto src={showcasePhotos.forestGroup} alt="Hikers in a forest clearing" className="size-20 shrink-0 rounded-2xl" />
-                <p className="text-base font-medium">Snowy escape</p>
-              </CardContent>
-            </Card>
+                <div className="flex min-w-0 flex-col justify-center p-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-moss-deep">Hiking guide</p>
+                  <h3 className="mt-1 text-base font-semibold">{guide.title}</h3>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">{guide.description}</p>
+                  <span className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-moss-deep">Read guide <ArrowRight className="size-3.5" aria-hidden="true" /></span>
+                </div>
+              </Link>;
+            })}
           </div>
         </section>
 
