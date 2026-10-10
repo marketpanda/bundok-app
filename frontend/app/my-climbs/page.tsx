@@ -6,6 +6,7 @@ import { ExploreMenu } from "@/components/explore-menu";
 import { DesktopNavigation } from "@/components/desktop-navigation";
 import { MobileMenu } from "@/components/mobile-menu";
 import { MyClimbsGallery } from "@/components/my-climbs-gallery";
+import { hikeItineraries, resolveHikeTarget } from "@/data/hike-itineraries";
 import { mapMountains } from "@/data/map-mountains";
 import { getMountainPhoto, mountainPhotos } from "@/data/mountain-photos";
 import { SiteFooter } from "@/components/site-footer";
@@ -38,19 +39,9 @@ export default function MyClimbsPage() {
           </div>
         </header>
 
-        <div className="mb-5 lg:mb-6">
-          <p className="mb-2 hidden text-sm font-medium uppercase tracking-[0.2em] text-moss-deep lg:block">Your hiking journey</p>
-          <h1 className="text-[28px] font-semibold tracking-[-0.04em] lg:text-5xl">My Climbs</h1>
-          <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground lg:text-base">
-            A growing collection of peaks, paths, and days worth remembering.
-          </p>
-        </div>
-
-        <div className="desktop-sticky-bar lg:sticky lg:top-16 lg:z-30 lg:-mx-2 lg:px-2 lg:py-3 xl:hidden">
+        <MyClimbsGallery groups={hikeItineraries.filter(group => group.membershipStatus === "complete" && group.targets.length > 0).map(group => ({ slug: group.slug, name: group.name, location: group.location, aliases: group.aliases ?? [], photo: getMountainPhoto(group.slug), members: group.targets.map(target => ({ key: target.kind === "mountain-point" ? `${target.mountainSlug}:${target.pointSlug}` : target.mountainSlug, mountainSlug: target.mountainSlug, pointSlug: target.kind === "mountain-point" ? target.pointSlug : null, name: resolveHikeTarget(target).name, reached: true })) }))} mountains={mapMountains.map(({ slug, name, kind, location, elevationMeters, aliases }) => ({ slug, name, kind, location, elevationMeters, aliases, photo: getMountainPhoto(slug) ?? mountainPhotos[slug.replace(/^mount-/, "")] }))}>
           <ExploreMenu active="my-climbs" light />
-        </div>
-
-        <MyClimbsGallery mountains={mapMountains.map(({ slug, name, kind, location, elevationMeters, aliases }) => ({ slug, name, kind, location, elevationMeters, aliases, photo: getMountainPhoto(slug) ?? mountainPhotos[slug.replace(/^mount-/, "")] }))} />
+        </MyClimbsGallery>
 
         <SiteFooter className="border-border" />
       </div>

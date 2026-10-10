@@ -1,0 +1,198 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- Standalone browser integration check. */
+const assert = require("node:assert/strict");
+const path = require("node:path");
+const fs = require("node:fs");
+const { chromium } = require(process.argv[2] || "playwright");
+const origin = process.env.SCREENSHOT_ORIGIN || "http://localhost:3000";
+const clientId = "6i5r49d8r1puoke97kl1nj0qnu";
+const api = "https://2x47fd2ckf.execute-api.ap-southeast-2.amazonaws.com";
+const localKey = "ambangeg:my-climbs:local-preview:v1";
+const subject = "11111111-1111-4111-8111-111111111111";
+const secondSubject = "22222222-2222-4222-8222-222222222222";
+const localClimb = { id: "local-only", slug: "mount-pulag", climbedOn: "2026-09-02", notes: "Local memory", pinned: true, summitNotReached: false, photos: [] };
+const jwt = payload => `${Buffer.from(JSON.stringify({ alg: "RS256", typ: "JWT" })).toString("base64url")}.${Buffer.from(JSON.stringify(payload)).toString("base64url")}.synthetic-test-signature`;
+
+async function check() {
+  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const context = await browser.newContext();
+  let activeSubject = subject;
+  const journals = new Map([[subject, []], [secondSubject, []]]);
+  const requests = [];
+  let rejectWrite = false;
+  let rejectPhotoWrite = false;
+  const photoFile = path.resolve(__dirname, "../public/images/mountains/climb-default-pulag.jpg");
+  try {
+    await context.addInitScript(({ clientId, subject, token, idToken, localKey, localClimb }) => {
+      if (sessionStorage.getItem("fixture-initialized")) return;
+      const prefix = `CognitoIdentityServiceProvider.${clientId}`;
+      localStorage.setItem(`${prefix}.LastAuthUser`, subject);
+      localStorage.setItem(`${prefix}.${subject}.accessToken`, token);
+      localStorage.setItem(`${prefix}.${subject}.idToken`, idToken);
+      localStorage.setItem(`${prefix}.${subject}.clockDrift`, "0");
+      localStorage.setItem(localKey, JSON.stringify([localClimb]));
+      sessionStorage.setItem("fixture-initialized", "true");
+    }, { clientId, subject, token: jwt({ sub: subject, username: subject, client_id: clientId, token_use: "access", iat: Math.floor(Date.now()/1000), exp: Math.floor(Date.now()/1000)+3600 }), idToken: jwt({ sub: subject, "cognito:username": subject, name: "Test Hiker", aud: clientId, token_use: "id", iat: Math.floor(Date.now()/1000), exp: Math.floor(Date.now()/1000)+3600 }), localKey, localClimb });
+    await context.route("https://cognito-idp.ap-southeast-2.amazonaws.com/**", route => route.fulfill({ contentType: "application/x-amz-json-1.1", body: JSON.stringify({ Username: activeSubject, UserAttributes: [{ Name: "name", Value: "Test Hiker" }] }) }));
+    await context.route(`${api}/**`, async route => {
+      const request = route.request();
+      const method = request.method();
+      const path = new URL(request.url()).pathname;
+      const headers = { "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Headers": "authorization,content-type", "Access-Control-Allow-Methods": "GET,POST,PATCH,DELETE,PUT,OPTIONS" };
+      if (method === "OPTIONS") return route.fulfill({ status: 204, headers });
+      const token = request.headers().authorization?.split(" ")[1];
+      const claims = token && JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString());
+      assert.equal(claims.token_use, "access");
+      const owner = claims.sub;
+      assert(journals.has(owner), "Request must use its signed-in account's access token");
+      const body = request.postDataJSON();
+      requests.push({ method, path, body, owner });
+      if (rejectWrite && method !== "GET") return route.fulfill({ status: 500, headers, json: { error: "Test save failed." } });
+      const climbs = journals.get(owner);
+      let result;
+      let status = 200;
+      if (path.endsWith("/photo")) {
+        const climb = climbs.find(climb => path === `/me/climbs/${climb.id}/photo`);
+        assert(climb);
+        if (method === "PUT" && rejectPhotoWrite) return route.fulfill({ status: 500, headers, json: { error: "Test photo upload failed." } });
+        if (method === "PUT") { assert(body.photo.startsWith("data:image/jpeg;base64,")); climb.photos = [`https://photos.test.invalid/${crypto.randomUUID()}.jpg?temporary=1`]; }
+        else { assert.equal(method, "DELETE"); climb.photos = []; }
+        result = climb;
+      } else if (method === "GET") result = { climbs, nextPage: null };
+      else if (path.endsWith("/pins")) {
+        for (const climb of climbs) climb.pinned = body.climbIds.includes(climb.id);
+        result = { pinnedIds: body.climbIds };
+      } else if (method === "POST") {
+        assert(!("photos" in body) && !("id" in body) && !("pinned" in body));
+        result = { ...body, id: crypto.randomUUID(), pinned: false };
+        climbs.push(result); status = 201;
+      } else if (method === "PATCH") {
+        result = climbs.find(climb => path.endsWith(climb.id));
+        assert(result); Object.assign(result, body);
+      } else if (method === "DELETE") {
+        const index = climbs.findIndex(climb => path.endsWith(climb.id));
+        assert(index >= 0); climbs.splice(index, 1); status = 204;
+      }
+      return route.fulfill({ status, headers, ...(status === 204 ? {} : { json: result }) });
+    });
+    await context.route("https://photos.test.invalid/**", route => route.fulfill({ contentType: "image/jpeg", body: fs.readFileSync(photoFile) }));
+    const page = await context.newPage();
+    const errors = [];
+    page.on("pageerror", error => errors.push(error.message));
+    await page.goto(`${origin}/my-climbs/`);
+    await page.getByText("Your journal is saved to your account and available across devices.", { exact: true }).waitFor();
+    await page.getByRole("button", { name: "Import saved climbs", exact: true }).waitFor();
+    assert.equal(await page.locator("article.climb-card").count(), 0, "Local data must not silently appear as account data");
+    page.on("dialog", dialog => dialog.accept());
+    await page.getByRole("button", { name: "Import saved climbs", exact: true }).click();
+    await page.getByText(/^1 climbs imported/).waitFor();
+    assert.equal(journals.get(subject).length, 1);
+    assert.equal(await page.evaluate(key => localStorage.getItem(key), localKey), JSON.stringify([localClimb]));
+    await page.getByRole("button", { name: "Import saved climbs", exact: true }).click();
+    await page.getByText(/^0 climbs imported/).waitFor();
+    assert.equal(journals.get(subject).length, 1, "Repeated import must skip matching climbs");
+    journals.get(subject).push({ ...journals.get(subject)[0], id: crypto.randomUUID(), notes: "Another same-date hike" });
+    await page.reload();
+    await page.waitForFunction(() => document.querySelectorAll("article.climb-card").length === 2);
+    const article = page.locator("article.climb-card").first();
+    await article.getByRole("button", { name: /^Edit / }).click();
+    await page.getByLabel("Multi-day hike", { exact: true }).check();
+    await page.locator("#climb-finished-date").fill("2026-09-04");
+    assert.equal(await page.locator("#climb-photo").count(), 1);
+    await page.locator("#climb-photo").setInputFiles(photoFile);
+    await page.waitForFunction(() => document.querySelector("dialog img")?.getAttribute("src")?.startsWith("data:image/jpeg;base64,"));
+    await page.locator("#climb-notes").fill("Updated account memory");
+    await page.getByRole("button", { name: "Save changes", exact: true }).click();
+    await page.locator("dialog").waitFor({ state: "hidden" });
+    assert.equal(journals.get(subject)[0].notes, "Updated account memory");
+    assert.equal(journals.get(subject)[0].finishedOn, "2026-09-04", "Multi-day edits must allow another climb on the same start date");
+    assert.equal(journals.get(subject)[1].notes, "Another same-date hike", "Editing must preserve the other climb");
+    journals.get(subject).splice(1, 1);
+    const firstPhoto = journals.get(subject)[0].photos[0];
+    assert(firstPhoto.startsWith("https://photos.test.invalid/"));
+    await page.reload();
+    await article.waitFor();
+    await article.getByRole("button", { name: /^Edit / }).click();
+    assert.equal(await page.locator("#climb-notes").inputValue(), "Updated account memory");
+    assert.equal(await page.locator("#climb-finished-date").inputValue(), "2026-09-04");
+    assert.equal(await page.locator("dialog img").getAttribute("src"), firstPhoto);
+    await page.locator("#climb-photo").setInputFiles(photoFile);
+    await page.waitForFunction(() => document.querySelector("dialog img")?.getAttribute("src")?.startsWith("data:image/jpeg;base64,"));
+    await page.getByRole("button", { name: "Save changes", exact: true }).click();
+    await page.locator("dialog").waitFor({ state: "hidden" });
+    assert.notEqual(journals.get(subject)[0].photos[0], firstPhoto);
+    await article.getByRole("button", { name: /^Edit / }).click();
+    await page.getByRole("button", { name: "Remove photo", exact: true }).click();
+    await page.getByRole("button", { name: "Save changes", exact: true }).click();
+    await page.locator("dialog").waitFor({ state: "hidden" });
+    assert.equal(journals.get(subject)[0].photos.length, 0);
+    await article.getByRole("button", { name: /^Edit / }).click();
+    rejectWrite = true;
+    await page.locator("#climb-notes").fill("Should not replace saved data");
+    const writesBefore = requests.filter(request => request.method === "PATCH").length;
+    await page.getByRole("button", { name: "Save changes", exact: true }).click();
+    await page.getByText("Test save failed. Close this form and reload your journal before retrying.").waitFor();
+    assert.equal(journals.get(subject)[0].notes, "Updated account memory");
+    assert.equal(requests.filter(request => request.method === "PATCH").length, writesBefore+1, "Failed writes must not retry automatically");
+    rejectWrite = false;
+    await page.getByRole("button", { name: "Close climb form" }).click();
+    await page.getByRole("button", { name: "Reload journal" }).click();
+    await page.getByRole("button", { name: "Import saved climbs", exact: true }).waitFor();
+    await article.getByRole("button", { name: /^Edit / }).click();
+    await page.getByRole("button", { name: "Remove climb", exact: true }).click();
+    await page.getByRole("button", { name: "Yes, remove climb", exact: true }).click();
+    await page.locator("dialog").waitFor({ state: "hidden" });
+    assert.equal(journals.get(subject).length, 0);
+    await page.getByRole("button", { name: "Log your first climb", exact: true }).click();
+    await page.locator("#climb-mountain").fill("Pulag");
+    await page.getByRole("button", { name: /^Mount Pulag Benguet/ }).click();
+    await page.locator("dialog").getByRole("button", { name: "Next", exact: true }).click();
+    await page.locator("#climb-date").fill("2026-09-03");
+    await page.locator("#climb-notes").fill("Created account climb");
+    await page.locator("#climb-photo").setInputFiles(photoFile);
+    await page.waitForFunction(() => document.querySelector("dialog img")?.getAttribute("src")?.startsWith("data:image/jpeg;base64,"));
+    rejectPhotoWrite = true;
+    await page.getByRole("button", { name: "Save climb", exact: true }).click();
+    await page.locator("dialog").getByText("Climb details were saved, but the photo change could not be confirmed. You can retry the photo or reload your journal to check it.").waitFor();
+    assert.equal(journals.get(subject).length, 1);
+    const savedId = journals.get(subject)[0].id;
+    const createsBeforeRetry = requests.filter(request => request.method === "POST").length;
+    rejectPhotoWrite = false;
+    await page.getByRole("button", { name: "Save changes", exact: true }).click();
+    await page.locator("dialog").waitFor({ state: "hidden" });
+    assert.equal(journals.get(subject).length, 1);
+    assert.equal(journals.get(subject)[0].id, savedId);
+    assert.equal(requests.filter(request => request.method === "POST").length, createsBeforeRetry);
+    assert.equal(journals.get(subject)[0].photos.length, 1);
+    assert.equal(journals.get(subject).length, 1);
+    await page.getByRole("button", { name: "Pin favourites", exact: true }).click();
+    await article.getByRole("button", { name: /^Pin / }).click();
+    await article.getByRole("button", { name: /^Unpin / }).waitFor();
+    assert.equal(journals.get(subject)[0].pinned, true);
+    activeSubject = secondSubject;
+    await page.evaluate(({ clientId, subject, token, idToken }) => {
+      const prefix = `CognitoIdentityServiceProvider.${clientId}`;
+      localStorage.setItem(`${prefix}.LastAuthUser`, subject);
+      localStorage.setItem(`${prefix}.${subject}.accessToken`, token);
+      localStorage.setItem(`${prefix}.${subject}.idToken`, idToken);
+      localStorage.setItem(`${prefix}.${subject}.clockDrift`, "0");
+    }, { clientId, subject: secondSubject, token: jwt({ sub: secondSubject, username: secondSubject, client_id: clientId, token_use: "access", iat: Math.floor(Date.now()/1000), exp: Math.floor(Date.now()/1000)+3600 }), idToken: jwt({ sub: secondSubject, "cognito:username": secondSubject, aud: clientId, token_use: "id", iat: Math.floor(Date.now()/1000), exp: Math.floor(Date.now()/1000)+3600 }) });
+    await page.reload();
+    await page.getByRole("button", { name: "Import saved climbs", exact: true }).waitFor();
+    assert.equal(requests.at(-1).owner, secondSubject);
+    assert.equal(await page.locator("article.climb-card").count(), 0);
+    assert.equal(journals.get(subject).length, 1, "Switching accounts must preserve the first account's journal");
+    await page.evaluate(clientId => {
+      const prefix = `CognitoIdentityServiceProvider.${clientId}`;
+      for (const key of Object.keys(localStorage)) if (key.startsWith(prefix)) localStorage.removeItem(key);
+    }, clientId);
+    await page.reload();
+    await page.getByRole("button", { name: "Sign in with Google", exact: true }).last().waitFor();
+    await page.getByRole("heading", { name: "Sign in to view your climbs" }).waitFor();
+    assert.equal(await page.locator("article.climb-card").count(), 0, "Signed-out users must not see local or account climbs");
+    assert.equal(await page.getByRole("button", { name: "Add a climb", exact: true }).count(), 0);
+    assert.equal(await page.evaluate(key => localStorage.getItem(key), localKey), JSON.stringify([localClimb]), "Sign-out must keep local records for later import");
+    assert.equal(errors.length, 0, errors.join("\n"));
+    console.log("PASS: access-token requests, explicit/repeated import, local preservation, create/edit/reload/delete/pins, failure recovery and account switching/sign-out, photo upload/reload/replace/remove and partial-save retry (mock API and synthetic sessions).");
+  } finally { await browser.close(); }
+}
+check().catch(error => { console.error(error); process.exitCode = 1; });

@@ -1,5 +1,7 @@
 # Mountain photo credits
 
+The optional climb-photo fallback is [“Mt. Pulag Sunset” by Francis Gimenez](https://www.flickr.com/photos/46095151@N04/6992109548), licensed under [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/), found through [Openverse](https://openverse.org/image/97b3c3d5-a5e4-4cc8-b996-3c6fbeb7e17a). It is served locally as `/images/mountains/climb-default-pulag.jpg` and cropped in the display around the central sun and clouds. Source and retrieval metadata are in `data/climb-default-photo.ts`. This fallback is downloaded separately from the Commons importer below.
+
 Photos are downloaded from Wikimedia Commons and served locally. Each image retains its own listed license; the image license does not apply to unrelated application code. Display crops and resized versions of ShareAlike photos are provided under the same listed license. Photographer names, source pages, and license links appear alongside the photos in the site.
 
 Cawag uses a Zambales ridge view photographed near Mount Tapulao as a regional illustration, not a photograph of the Hexa/Hepta route. Kayapa uses a regional mountain landscape, not a photograph identifying all four peaks. Other itinerary photos identify an individual destination or the actual KXC trail.

@@ -28,6 +28,28 @@ The mountain directory links to these guides from its introduction, map results 
 
 The Google client secret belongs only in Cognito's identity-provider configuration. Never place it in a `NEXT_PUBLIC_` variable or commit it to this repository.
 
+## My Climbs account storage
+
+The climbs API is deployed at `https://2x47fd2ckf.execute-api.ap-southeast-2.amazonaws.com`. Set `NEXT_PUBLIC_CLIMBS_API_URL` to that base URL in the frontend build environment. It is configured locally in `.env.local` and `.env.production.local`; Next.js embeds it during the build. Neon connection strings belong only in the database package and AWS Parameter Store.
+
+Signed-in users load, create, edit, delete and pin their own climbs through the API using the Cognito access token. Signed-out users see a sign-in screen with no climb cards or journal controls. Existing browser records remain stored for import after sign-in. Local records are never uploaded automatically: **Import saved climbs** asks for confirmation, keeps original local records/photos, and skips matching account records when repeated. Choose account pins using **Pin favourites** after import. Account climbs support one photo: choose JPG/PNG/WebP up to 15 MB; the browser compresses it and the API validates/re-encodes it before saving to private S3. Neon stores the object key. Edit a climb to replace/remove its photo. Climb deletion also queues its objects for cleanup. Saved local photos are included in confirmed imports; original records remain in the browser.
+
+To check the live connection before publishing:
+
+Verified group itineraries appear in the climb destination picker. Their members
+start selected; unchecking a destination leaves it unmarked as reached. A group
+is one journal entry, and multiple points on one mountain count as one mountain
+in Places explored. Checking Multi-day hike suggests the next day when it is not
+in the future; the finish date remains editable and manual choices are preserved.
+
+1. Restart `npm run dev` from `frontend` so it loads the new environment settings.
+2. Open `http://localhost:3000/my-climbs/` and sign in with Google.
+3. Add a test climb with a photo, refresh the page, replace/remove the photo, edit its notes, pin it, then remove it. Confirm changes survive a refresh.
+4. If you have existing browser records, choose **Import saved climbs** only when you want them copied into this signed-in account.
+5. After live testing succeeds, rebuild with `npm run build` and publish `out/` through the existing static-site deployment process. The live website uses its old build until publication.
+
+The mock browser integration regression check is `node scripts/check-climbs-api.cjs PATH_TO_PLAYWRIGHT`. It covers access-token use, account create/edit/delete/pins, reloads, failed writes, explicit/repeated import, account switching, signed-out local preservation, photo upload/reload/replacement/removal and failed-photo retry without duplicate climbs. Synthetic sessions in this check do not verify live Cognito JWT authorization or the Lambda-to-Neon connection.
+
 ## Contact form email setup
 
 The contact form posts to an Amazon API Gateway HTTP API. A Lambda function validates the request and sends the message through Amazon SES; AWS credentials are never exposed to the browser.

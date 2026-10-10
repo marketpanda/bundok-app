@@ -15,6 +15,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { configureAmplifyAuth } from "@/lib/amplify-auth";
 
 export type AppUser = {
+  subject: string;
   name?: string;
   email?: string;
 };
@@ -53,6 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const currentUser = await getCurrentUser();
       const loginId = currentUser.signInDetails?.loginId;
       let nextUser: AppUser = {
+        subject: currentUser.userId,
         name:
           emailUsername(loginId) ||
           (!isProviderGeneratedUsername(currentUser.username)
@@ -73,6 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .join(" ");
 
         nextUser = {
+          subject: currentUser.userId,
           name:
             stringClaim(claims?.name) ||
             claimFullName ||
@@ -91,6 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .filter(Boolean)
           .join(" ");
         nextUser = {
+          subject: currentUser.userId,
           name:
             attributes.name ||
             fullName ||
