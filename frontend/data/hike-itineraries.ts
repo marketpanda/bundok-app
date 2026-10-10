@@ -13,6 +13,9 @@ export type MountainPoint = {
   name: string;
   kind: "peak" | "viewpoint" | "rock-formation" | "other";
   elevationMeters?: number;
+  /** Individually mapped destination [longitude, latitude]. */
+  coordinates?: [number, number];
+  sources?: Source[];
 };
 
 export type HikeTarget =
@@ -76,10 +79,10 @@ export const itineraryMountains: MountainReference[] = [
 ];
 
 export const mountainPoints: MountainPoint[] = [
-  { slug: "tko", mountainSlug: "mount-arayat", name: "TKO", kind: "viewpoint" },
-  { slug: "pinnacle", mountainSlug: "mount-arayat", name: "Pinnacle", kind: "rock-formation" },
-  { slug: "south-peak", mountainSlug: "mount-arayat", name: "South Peak", kind: "peak" },
-  { slug: "north-peak", mountainSlug: "mount-arayat", name: "North Peak", kind: "peak" },
+  { slug: "tko", mountainSlug: "mount-arayat", name: "TKO", kind: "viewpoint", coordinates: [120.7489497, 15.2025543], sources: [{ label: "OpenStreetMap TKO Summit", url: "https://www.openstreetmap.org/node/5421817021" }] },
+  { slug: "pinnacle", mountainSlug: "mount-arayat", name: "Pinnacle", kind: "rock-formation", coordinates: [120.746871, 15.1963942], sources: [{ label: "OpenStreetMap Pinnacle Peak", url: "https://www.openstreetmap.org/node/6512272489" }] },
+  { slug: "south-peak", mountainSlug: "mount-arayat", name: "South Peak", kind: "peak", coordinates: [120.7434961, 15.1965737], sources: [{ label: "OpenStreetMap South Peak", url: "https://www.openstreetmap.org/node/319588221" }] },
+  { slug: "north-peak", mountainSlug: "mount-arayat", name: "North Peak", kind: "peak", coordinates: [120.7427214, 15.2051885], sources: [{ label: "OpenStreetMap North Peak", url: "https://www.openstreetmap.org/node/332019471" }] },
 ];
 
 const targets = (...slugs: string[]): HikeTarget[] => slugs.map((mountainSlug) => ({ kind: "mountain", mountainSlug }));

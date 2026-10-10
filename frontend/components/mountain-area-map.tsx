@@ -9,13 +9,14 @@ import { useEffect, useRef, useState } from "react";
 import { getMountainArea, mountainAreas, mountainAreaColors, mountainAreaProvinces, type MountainAreaId } from "@/data/mountain-areas";
 import { MapAreaTooltip } from "@/components/map-area-tooltip";
 import { hikeItineraries } from "@/data/hike-itineraries";
+import { getItineraryMapMountains, getItineraryHighlightFeatures, playMountainHighlightSequence, type MountainGroupHighlight } from "@/lib/map-group-highlight";
 import { mapMountains, mountainDifficultyLabel } from "@/data/map-mountains";
 import { readMapCamera, writeMapCamera } from "@/lib/map-url";
 
 import { primaryMapMountains, getVisibleSecondaryMountains, mountainMapFeatures, getMountainMapLayer } from "@/data/mountain-map-layers";
 
 const mountainLayerIds = ["mountain", "secondary-mountain"].flatMap((prefix) => ["clusters", "cluster-count", "points", "labels"].map((suffix) => `${prefix}-${suffix}`));
-const clickableMountainLayers = ["mountain", "secondary-mountain"].flatMap((prefix) => ["clusters", "points", "labels"].map((suffix) => `${prefix}-${suffix}`));
+const clickableMountainLayers = [...["mountain", "secondary-mountain"].flatMap((prefix) => ["clusters", "points", "labels"].map((suffix) => `${prefix}-${suffix}`)), "group-member-points", "group-member-labels"];
 const areaColorExpression: import("maplibre-gl").ExpressionSpecification = ["match", ["get", "areaId"], mountainAreas[0].id, mountainAreaColors[mountainAreas[0].id], ...mountainAreas.slice(1).flatMap((area) => [area.id, mountainAreaColors[area.id]]), "#64748b"];
 const clusterColorExpression: import("maplibre-gl").ExpressionSpecification = ["case", ["==", ["get", "regionMin"], ["get", "regionMax"]], ["match", ["get", "regionMin"], 0, mountainAreaColors[mountainAreas[0].id], ...mountainAreas.slice(1).flatMap((area, index) => [index + 1, mountainAreaColors[area.id]]), "#64748b"], "#64748b"];
 
@@ -32,13 +33,14 @@ const cameraAnimation = {
   easing: (progress: number) => progress * progress * (3 - 2 * progress),
 };
 
-export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMountains, listOpen, sheetHeight, onMapInteraction, onSelect, onSelectMountain, counts }: {
+export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMountains, listOpen, sheetHeight, onMapInteraction, onClearSelection, onSelect, onSelectMountain, counts }: {
   selectedArea: MountainAreaId | "all";
   selectedMountain: { name: string; slug?: string } | null;
   revealAllMountains: boolean;
   listOpen: boolean;
   sheetHeight: number;
   onMapInteraction: (clearSelection?: boolean) => void;
+  onClearSelection: () => void;
   onSelect: (area: MountainAreaId) => void;
   onSelectMountain: (name: string, area: MountainAreaId | undefined, slug?: string) => void;
   counts: Record<MountainAreaId, number>;
@@ -64,6 +66,14 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
     let map: MapLibreMap | undefined;
     let observer: ResizeObserver | undefined;
     let popup: import("maplibre-gl").Popup | undefined;
+    let clearOnPopupClose: (() => void) | undefined;
+    const removePopup = () => {
+      // Programmatic replacement must not clear the newly selected destination.
+      if (clearOnPopupClose) popup?.off("close", clearOnPopupClose);
+      popup?.remove();
+      popup = undefined;
+      clearOnPopupClose = undefined;
+    };
     let regionClicksEnabled = true;
     const restoreCamera = () => {
       const camera = readMapCamera(new URL(window.location.href));
@@ -108,7 +118,7 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
         zoomToRegion.current = (areaId) => {
           const bounds = regionBounds[areaId];
           if (!map || !bounds) return;
-          popup?.remove();
+          removePopup();
           setAreaTooltip(null);
           onSelect(areaId);
           const mobile = window.matchMedia("(max-width: 1023px)").matches;
@@ -119,7 +129,7 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
           });
         };
         showSelectedPopup.current = (mountain) => {
-          popup?.remove();
+          removePopup();
           if (!map || !mountain) return;
           const content = document.createElement("div");
           const name = document.createElement("strong"); name.textContent = mountain.name;
@@ -130,6 +140,22 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
             note.textContent = "Hike itinerary - approximate area, not a route";
             note.className = "mountain-peak-note";
             content.append(note);
+            const itinerary = hikeItineraries.find((entry) => entry.slug === mountain.slug);
+            const mountainTargets = itinerary?.targets.length ?? 0;
+            if (itinerary && !getItineraryMapMountains(itinerary).length) {
+              const coverage = document.createElement("p");
+              coverage.textContent = "Highlighting the group area; individual destination locations are unavailable.";
+              coverage.className = "mountain-peak-note";
+              content.append(coverage);
+            } else if (itinerary && mountainTargets) {
+              const mapped = getItineraryMapMountains(itinerary).length;
+              if (mapped < mountainTargets) {
+                const coverage = document.createElement("p");
+                coverage.textContent = "Showing " + mapped + " of " + mountainTargets + " destinations; other map locations are unavailable.";
+                coverage.className = "mountain-peak-note";
+                content.append(coverage);
+              }
+            }
           } else {
             const rating = document.createElement("p"); rating.textContent = mountainDifficultyLabel(mountain);
             const source = document.createElement("a");
@@ -140,8 +166,14 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
             layer.textContent = getMountainMapLayer(mountain.slug) === "secondary" ? "Secondary map layer" : "Primary map layer";
             content.append(layer, rating, source);
           }
-          popup = new maplibre.Popup({ offset: mountain.itinerary ? 48 : 16, anchor: "bottom", className: "mountain-peak-popup" })
+          popup = new maplibre.Popup({ offset: mountain.itinerary ? 48 : 16, anchor: "bottom", className: "mountain-peak-popup", closeOnClick: false })
             .setLngLat(mountain.coordinates).setDOMContent(content).addTo(map);
+          clearOnPopupClose = () => {
+            popup = undefined;
+            clearOnPopupClose = undefined;
+            onClearSelection();
+          };
+          popup.on("close", clearOnPopupClose);
         };
         map.addControl(new maplibre.NavigationControl({ showCompass: false }), "top-left");
         const peakElements: HTMLButtonElement[] = [];
@@ -159,7 +191,10 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
           for (const layer of mountainLayerIds) {
             if (map.getLayer(layer)) map.setLayoutProperty(layer, "visibility", visible ? "visible" : "none");
           }
-          if (!visible) popup?.remove();
+          if (!visible && popup) {
+            removePopup();
+            onClearSelection();
+          }
         };
         // Eight itinerary markers remain DOM buttons; thousands of peaks use
         // clustered WebGL layers below to avoid thousands of DOM elements.
@@ -198,15 +233,17 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
         map.on("resize", updatePeakVisibility);
         map.on("movestart", () => setAreaTooltip(null));
         map.on("click", (event) => {
-          if (!map || !window.matchMedia("(max-width: 1023px)").matches) return;
+          if (!map) return;
           if (map.getLayer("mountain-points") && map.queryRenderedFeatures(event.point, { layers: clickableMountainLayers }).length) {
             onMapInteraction();
             return;
           }
           // Region clicks have their own bounds animation on every screen size.
-          if (map.getLayer("climbing-area-fill") && map.queryRenderedFeatures(event.point, { layers: ["climbing-area-fill"] }).length) return;
+          if (regionClicksEnabled && map.getLayer("climbing-area-fill") && map.queryRenderedFeatures(event.point, { layers: ["climbing-area-fill"] }).length) return;
           onMapInteraction(true);
-          map.easeTo({ ...cameraAnimation, center: event.lngLat, offset: [0, -map.getContainer().clientHeight * 0.4 / 2] });
+          if (window.matchMedia("(max-width: 1023px)").matches) {
+            map.easeTo({ ...cameraAnimation, center: event.lngLat, offset: [0, -map.getContainer().clientHeight * 0.4 / 2] });
+          }
         });
         map.on("load", () => {
           if (!map || cancelled) return;
@@ -216,7 +253,7 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
           const sourceId = `${prefix}-source`;
           map.addSource(sourceId, {
             type: "geojson",
-            attribution: '<a href="https://www.geonames.org/">GeoNames</a> (CC BY 4.0) · <a href="https://github.com/j4ckofalltrades/phl-mountains">Philippine mountains</a>',
+            attribution: '<a href="https://www.geonames.org/">GeoNames</a> (CC BY 4.0) · <a href="https://github.com/j4ckofalltrades/phl-mountains">Philippine mountains</a> · <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors (ODbL)',
             cluster: true,
             clusterProperties: { regionMin: ["min", ["get", "regionIndex"]], regionMax: ["max", ["get", "regionIndex"]] },
             clusterMaxZoom: 10,
@@ -237,8 +274,25 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
             } catch { /* The map may have been removed while the worker replied. */ }
           });
           }
+          // Unclustered members remain visible independently of the reveal-all toggle.
+          map.addSource("group-members", { type: "geojson", data: mountainMapFeatures([]) });
+          map.addLayer({
+            id: "group-member-points", type: "circle", source: "group-members",
+            paint: { "circle-color": ["get", "color"], "circle-radius": 7, "circle-stroke-color": "#ffffff", "circle-stroke-width": 1.5, "circle-color-transition": { duration: 0 }, "circle-radius-transition": { duration: 0 } },
+          });
+          map.addLayer({
+            id: "group-member-labels", type: "symbol", source: "group-members", filter: ["has", "order"],
+            layout: { "text-field": ["concat", ["to-string", ["get", "order"]], ". ", ["get", "name"]], "text-font": textFont, "text-size": 12, "text-variable-anchor": ["top", "bottom", "left", "right"], "text-radial-offset": 1.5 },
+            paint: { "text-color": "#20332e", "text-halo-color": "#ffffff", "text-halo-width": 2 },
+          });
           const selectPeak = (event: import("maplibre-gl").MapLayerMouseEvent) => {
-            const mountain = mapMountains.find((entry) => entry.slug === event.features?.[0]?.properties?.slug);
+            const slug = event.features?.[0]?.properties?.slug;
+            if (typeof slug === "string" && slug.includes(":")) {
+              const point = hikeItineraries.flatMap(getItineraryMapMountains).find(entry => entry.slug === slug);
+              if (point) showSelectedPopup.current?.({ ...point, itinerary: false });
+              return;
+            }
+            const mountain = mapMountains.find((entry) => entry.slug === slug) ?? hikeItineraries.find((entry) => entry.slug === slug);
             if (!map || !mountain) return;
             onSelectMountain(mountain.name, getMountainArea(mountain), mountain.slug);
           };
@@ -246,6 +300,8 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
             map.on("click", `${prefix}-points`, selectPeak);
             map.on("click", `${prefix}-labels`, selectPeak);
           }
+          map.on("click", "group-member-points", selectPeak);
+          map.on("click", "group-member-labels", selectPeak);
           for (const layer of clickableMountainLayers) {
             map.on("mouseenter", layer, () => { if (map) map.getCanvas().style.cursor = "pointer"; });
             map.on("mouseleave", layer, () => { if (map) map.getCanvas().style.cursor = ""; });
@@ -367,7 +423,7 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
       window.clearTimeout(timeout);
       observer?.disconnect();
       window.removeEventListener("popstate", restoreCamera);
-      popup?.remove();
+      removePopup();
       if (map?.isStyleLoaded()) {
         const center = map.getCenter();
         rememberMapCamera({ center: [center.lng, center.lat], zoom: map.getZoom(), bearing: map.getBearing(), pitch: map.getPitch() });
@@ -379,7 +435,7 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
       markers.clear();
       peaks.clear();
     };
-  }, [onSelect, onSelectMountain, onMapInteraction, attempt]);
+  }, [onSelect, onSelectMountain, onMapInteraction, onClearSelection, attempt]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -402,11 +458,14 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
     }
     const mountain = mapEntries.find((item) => selectedMountain.slug ? item.slug === selectedMountain.slug : item.name.toLowerCase().replace(/^mt\.\s*/, "mount ") === selectedMountain.name);
     if (!mountain) return;
+    showSelectedPopup.current?.(null);
     for (const layer of ["mountain-points", "secondary-mountain-points"]) {
       if (!map.getLayer(layer)) continue;
       map.setPaintProperty(layer, "circle-radius", ["case", ["==", ["get", "slug"], mountain.slug], 10, 7]);
       map.setPaintProperty(layer, "circle-stroke-color", ["case", ["==", ["get", "slug"], mountain.slug], "#38bdf8", "#ffffff"]);
     }
+    const itinerary = mountain.itinerary ? hikeItineraries.find((entry) => entry.slug === mountain.slug) : undefined;
+    const members = itinerary ? getItineraryMapMountains(itinerary) : [];
     const openPopup = () => showSelectedPopup.current?.(mountain);
     const focusMountain = () => {
       // Wait for the focus animation so low-zoom visibility cannot close the popup.
@@ -418,6 +477,18 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
       // Center in the exposed map above the sheet (or its collapsed 56px bar).
       const coveredHeight = mobile ? (listOpen ? height * sheetHeight : 56) : 0;
       const resetZoom = map.cameraForBounds(countryBounds, { padding: countryPadding })?.zoom ?? map.getMinZoom();
+      if (members.length) {
+        const coordinates = [mountain.coordinates, ...members.map((member) => member.coordinates)];
+        map.fitBounds([
+          [Math.min(...coordinates.map(([lng]) => lng)), Math.min(...coordinates.map(([, lat]) => lat))],
+          [Math.max(...coordinates.map(([lng]) => lng)), Math.max(...coordinates.map(([, lat]) => lat))],
+        ], {
+          ...cameraAnimation,
+          padding: { top: Math.min(100, (height - coveredHeight) * 0.25), bottom: coveredHeight + Math.min(40, (height - coveredHeight) * 0.15), left: 40, right: 40 },
+          maxZoom: itinerary?.category === "multi-point" ? 15 : 11, linear: true, bearing: 0, pitch: 0,
+        });
+        return;
+      }
       map.easeTo({
         ...cameraAnimation,
         center: mountain.coordinates,
@@ -436,6 +507,48 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
       map.off("moveend", openPopup);
     };
   }, [selectedMountain, listOpen, sheetHeight, status]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || status !== "ready") return;
+    const source = map.getSource("group-members") as GeoJSONSource | undefined;
+    if (!source) return;
+    const itinerary = hikeItineraries.find((entry) => selectedMountain?.slug
+      ? entry.slug === selectedMountain.slug
+      : entry.name.toLowerCase().replace(/^mt\.\s*/, "mount ") === selectedMountain?.name);
+    const features = itinerary ? getItineraryHighlightFeatures(itinerary) : mountainMapFeatures([]);
+    source.setData(features);
+    if (!features.features.length) return;
+    const highlightSlugs = features.features.map((feature) => String(feature.properties?.slug));
+
+    let previousFlashWhite: boolean | undefined;
+    const highlight = ({ pulses, flashWhite }: MountainGroupHighlight) => {
+      if (mapRef.current !== map || !map.getLayer("group-member-points")) return;
+      if (flashWhite !== previousFlashWhite) {
+        map.setPaintProperty("group-member-points", "circle-color", flashWhite ? "#ffffff" : ["get", "color"]);
+        previousFlashWhite = flashWhite;
+      }
+      map.setPaintProperty("group-member-points", "circle-radius", pulses.length
+        ? ["match", ["get", "slug"], pulses[0].slug, pulses[0].radius, ...pulses.slice(1).flatMap(({ slug, radius }) => [slug, radius]), 7]
+        : 7);
+    };
+    let cancelSequence: (() => void) | undefined;
+    const start = () => {
+      cancelSequence?.();
+      // Reduced-motion users keep a steady highlight for every member.
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        cancelSequence = playMountainHighlightSequence(highlightSlugs, highlight);
+      }
+    };
+    highlight({ pulses: [], flashWhite: false });
+    if (map.isMoving()) map.once("moveend", start);
+    else start();
+    return () => {
+      map.off("moveend", start);
+      cancelSequence?.();
+      if (mapRef.current === map) source.setData(mountainMapFeatures([]));
+    };
+  }, [selectedMountain, status]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -469,7 +582,7 @@ export function MountainAreaMap({ selectedArea, selectedMountain, revealAllMount
       <div ref={container} style={{ position: "absolute", inset: 0 }} role="region" aria-label="Interactive map of Philippine climbing areas" aria-busy={status === "loading"} />
       {areaTooltip && <MapAreaTooltip key={areaTooltip.text} {...areaTooltip} />}
       <div className="pointer-events-none absolute right-4 top-4 z-10 flex flex-col items-end gap-2">
-        <button type="button" onClick={() => mapRef.current?.fitBounds(countryBounds, { ...cameraAnimation, padding: countryPadding, linear: true, bearing: 0, pitch: 0 })} className="pointer-events-auto min-h-11 rounded-xl border border-border bg-white/95 px-3 text-xs text-foreground shadow-sm focus-visible:outline-2 focus-visible:outline-moss-deep">Reset view ({relativeZoom > 0 ? "+" : ""}{relativeZoom})</button>
+        <button type="button" onClick={() => { onClearSelection(); mapRef.current?.fitBounds(countryBounds, { ...cameraAnimation, padding: countryPadding, linear: true, bearing: 0, pitch: 0 }); }} className="pointer-events-auto min-h-11 rounded-xl border border-border bg-white/95 px-3 text-xs text-foreground shadow-sm focus-visible:outline-2 focus-visible:outline-moss-deep">Reset view ({relativeZoom > 0 ? "+" : ""}{relativeZoom})</button>
         {status === "ready" && zoom >= 6 && selectedArea !== "all" && <button type="button" onClick={() => zoomToRegion.current?.(selectedArea)} className="pointer-events-auto min-h-11 rounded-xl border border-border bg-white/95 px-3 text-xs text-foreground shadow-sm focus-visible:outline-2 focus-visible:outline-moss-deep">Zoom to region</button>}
       </div>
       {status === "loading" && <div role="progressbar" aria-label="Loading map" className="pointer-events-none absolute inset-x-0 top-0 z-20 h-1.5 overflow-hidden bg-moss/15">

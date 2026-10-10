@@ -113,7 +113,7 @@ function ItineraryCard({ itinerary, onSelect, selected = false, anchor = false }
       <div className="p-4">
       {anchor && photo && <div className="mb-4"><PhotoCredit photo={photo} caption /></div>}
       <p className="text-xs font-semibold uppercase tracking-wider text-moss-deep">{itinerary.category === "multi-point" ? "Mountain circuit" : itinerary.category === "cross-country" ? "Cross-country traverse" : "Mountain combination"}</p>
-      <h3 className="mt-2 text-xl font-semibold">{itinerary.name}</h3>
+      <h3 className="mt-2 text-xl font-semibold">{anchor ? itinerary.name : <button type="button" onClick={onSelect} aria-label={`Show ${itinerary.name} on map`} className="cursor-pointer rounded text-left underline-offset-4 transition-colors hover:text-moss-deep hover:underline focus-visible:underline focus-visible:outline-2 focus-visible:outline-moss-deep">{itinerary.name}</button>}</h3>
       <p className="mt-1 text-xs text-muted-foreground">{itinerary.location}</p>
       <p className="mt-3 text-sm leading-6 text-muted-foreground">{itinerary.summary}</p>
       <p className="mt-3 text-xs text-moss-deep">{itinerary.targets.length ? `${itinerary.targets.length} destinations` : "Mountain membership pending verification"} · {itinerary.hikeStyle === "multi-hike-trip" ? "Separate hikes in one trip" : "Linked route"}</p>
@@ -143,11 +143,12 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
   const [draggingSheet, setDraggingSheet] = useState(false);
   const sheet = useRef<HTMLDivElement>(null);
   const sheetDrag = useRef<{ startY: number; startRatio: number; moved: boolean; ratio: number } | null>(null);
+  const clearMountainSelection = useCallback(() => setSelectedMountain(null), []);
   const onMapInteraction = useCallback((clearSelection = false) => {
+    if (clearSelection) setSelectedMountain(null);
     if (!window.matchMedia("(max-width: 1023px)").matches) return;
     setListOpen(true);
     setSheetHeight(0.4);
-    if (clearSelection) setSelectedMountain(null);
   }, []);
   const selectedCard = useRef<HTMLElement | null>(null);
   const results = useRef<HTMLDivElement | null>(null);
@@ -260,7 +261,7 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
 
         <div className="overflow-hidden rounded-3xl border border-border bg-white">
           <div className="relative grid h-[85svh] min-h-[620px] max-h-[850px] lg:h-auto lg:min-h-0 lg:max-h-none lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.85fr)] xl:grid-cols-[minmax(0,1.25fr)_minmax(340px,1fr)]">
-            <MountainAreaMap revealAllMountains={revealAllMountains} selectedArea={selectedArea} selectedMountain={selectedMountain} listOpen={listOpen} sheetHeight={sheetHeight} onMapInteraction={onMapInteraction} onSelect={selectArea} onSelectMountain={selectMountain} counts={mapCounts} />
+            <MountainAreaMap revealAllMountains={revealAllMountains} selectedArea={selectedArea} selectedMountain={selectedMountain} listOpen={listOpen} sheetHeight={sheetHeight} onMapInteraction={onMapInteraction} onClearSelection={clearMountainSelection} onSelect={selectArea} onSelectMountain={selectMountain} counts={mapCounts} />
             <div ref={sheet} id="mountain-area-results" style={{ "--sheet-height": listOpen ? `${sheetHeight * 100}%` : "56px" } as CSSProperties} className={cn("absolute inset-x-0 bottom-0 z-20 flex h-[var(--sheet-height)] min-h-14 min-w-0 flex-col overflow-hidden rounded-t-3xl border-t border-border bg-white shadow-[0_-8px_30px_rgba(54,80,4,0.08)] lg:static lg:z-auto lg:h-[600px] lg:rounded-none lg:border-l lg:border-t-0 lg:shadow-none", !draggingSheet && "transition-[height] duration-300 motion-reduce:transition-none")}>
               <button type="button" aria-label="Adjust mountain panel height" aria-expanded={listOpen} aria-controls="mountain-list-content" onClick={() => {
                 if (sheetDrag.current?.moved) { sheetDrag.current = null; return; }
@@ -310,39 +311,40 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
                 setListOpen(true);
                 setSheetHeight((height) => Math.max(height, 2 / 3));
               }} className={cn("min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain lg:flex lg:overflow-hidden", listOpen ? "flex" : "hidden")}>
-              <div className="grid shrink-0 gap-3 border-b border-border px-4 pb-4 sm:px-5 lg:gap-4 lg:p-5">
+              <div className="grid shrink-0 gap-3 border-b border-border px-4 pb-4 sm:px-5 lg:gap-2 lg:px-4 lg:py-3">
                 <div>
                   <label htmlFor="mountain-search" className="text-xs font-medium text-muted-foreground">Find a mountain, area or trail</label>
-                  <div className="relative mt-2">
+                  <div className="relative mt-2 lg:mt-1">
                     <Search aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-moss-deep" />
-                    <Input id="mountain-search" value={query} onChange={(event) => { setQuery(event.target.value); setListLimit(60); }} placeholder="Try Pulag, Rizal or Akiki" className="h-11 rounded-xl border-border bg-white pl-10 pr-11 text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-moss-deep/60" />
-                    {query && <button type="button" onClick={() => setQuery("")} aria-label="Clear search" className="absolute right-0 top-0 flex size-11 items-center justify-center rounded-xl text-muted-foreground hover:text-foreground focus-visible:outline-moss-deep"><X className="size-4" /></button>}
+                    <Input id="mountain-search" value={query} onChange={(event) => { setQuery(event.target.value); setListLimit(60); }} placeholder="Try Pulag, Rizal or Akiki" className="h-11 lg:h-9 rounded-xl border-border bg-white pl-10 pr-11 text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-moss-deep/60" />
+                    {query && <button type="button" onClick={() => setQuery("")} aria-label="Clear search" className="absolute right-0 top-0 flex size-11 items-center justify-center rounded-xl text-muted-foreground hover:text-foreground lg:size-9 focus-visible:outline-moss-deep"><X className="size-4" /></button>}
                   </div>
                 </div>
                 <fieldset className="min-w-0">
-                  <legend className="mb-2 text-xs font-medium text-muted-foreground">Difficulty</legend>
+                  <legend className="mb-2 text-xs font-medium text-muted-foreground lg:mb-1">Difficulty</legend>
                   <div className="grid grid-cols-4 gap-1.5">
                     {difficultyBands.map((band) => (
-                      <button key={band.value} type="button" onClick={() => setDifficultyBand(band.value)} aria-pressed={difficultyBand === band.value} className={cn("min-h-11 rounded-xl border border-border px-2 py-2 text-xs transition-colors hover:border-moss/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss-deep sm:px-4", difficultyBand === band.value ? "border-moss bg-moss text-white" : "text-muted-foreground")}>
+                      <button key={band.value} type="button" onClick={() => setDifficultyBand(band.value)} aria-pressed={difficultyBand === band.value} className={cn("min-h-11 rounded-xl border border-border px-2 py-2 text-xs transition-colors hover:border-moss/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss-deep sm:px-4 lg:min-h-8 lg:py-1", difficultyBand === band.value ? "border-moss bg-moss text-white" : "text-muted-foreground")}>
                         {band.label}<span className="ml-1 hidden text-[10px] opacity-70 sm:inline">{band.range}</span>
                       </button>
                     ))}
                   </div>
                 </fieldset>
               </div>
-              <div className="shrink-0 space-y-2 border-b border-border px-4 py-3 lg:space-y-4 lg:p-5">
-                <div className="flex items-center justify-between gap-3">
+              <div className="shrink-0 space-y-2 border-b border-border px-4 py-3">
+                <div className={cn("flex items-center justify-between gap-3", !hasFilters && "lg:sr-only")}>
                   <label htmlFor="mountain-area" className="text-xs font-medium text-muted-foreground">Your climbing area</label>
                   {hasFilters && <button type="button" onClick={resetFilters} className="min-h-8 rounded text-xs text-moss-deep hover:underline focus-visible:outline-moss-deep">Reset filters</button>}
                 </div>
-                <div className="relative">
-                <select id="mountain-area" value={selectedArea} onChange={(event) => { setSelectedArea(event.target.value as MountainAreaId | "all"); setListLimit(60); }} className="h-11 w-full appearance-none rounded-xl border border-border bg-white pl-3 pr-10 text-sm text-foreground focus-visible:outline-2 focus-visible:outline-moss-deep">
+                <div className="lg:flex lg:flex-wrap lg:items-center lg:gap-x-3 lg:gap-y-2">
+                <div className="relative lg:min-w-[140px] lg:flex-1">
+                <select id="mountain-area" value={selectedArea} onChange={(event) => { setSelectedArea(event.target.value as MountainAreaId | "all"); setListLimit(60); }} className="h-11 lg:h-9 w-full appearance-none rounded-xl border border-border bg-white pl-3 pr-10 text-sm text-foreground focus-visible:outline-2 focus-visible:outline-moss-deep">
                   <option value="all">All climbing areas</option>
                   {mountainAreas.map((item) => <option key={item.id} value={item.id}>{item.name} ({counts[item.id]})</option>)}
                 </select>
                 <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                 </div>
-                <div className="flex items-center justify-end gap-1">
+                <div className="mt-2 flex items-center justify-end gap-1 lg:mt-0 lg:shrink-0">
                     <button type="button" role="switch" aria-checked={revealAllMountains} onClick={() => setRevealAllMountains((visible) => !visible)} className="flex min-h-9 items-center gap-2 rounded text-xs focus-visible:outline-2 focus-visible:outline-moss-deep">
                       <span aria-hidden="true" className={cn("flex h-6 w-11 shrink-0 items-center rounded-full p-0.5 transition-colors", revealAllMountains ? "bg-moss" : "bg-zinc-300")}>
                         <span className={cn("size-5 rounded-full bg-white shadow-sm transition-transform", revealAllMountains ? "translate-x-5" : "translate-x-0")} />
@@ -354,18 +356,19 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
                       <span id="map-visibility-help" role="tooltip" className="pointer-events-none absolute right-0 top-full z-20 mt-2 hidden w-64 rounded-lg border border-border bg-white p-3 text-xs leading-5 text-foreground shadow-lg group-hover:block group-focus-within:block">The map shows 800 priority mountains to reduce clutter. Reveal all mountains, or select any mountain in the list to show it.</span>
                     </span>
                 </div>
+                </div>
                 <div role="status" aria-live="polite" aria-atomic="true">
-                  <h3 className="text-xl font-semibold">{area?.name ?? "Across the Philippines"}</h3>
+                  <h3 className="text-xl font-semibold lg:text-lg">{area?.name ?? "Across the Philippines"}</h3>
                   <p className="mt-1 text-xs leading-5 text-muted-foreground">{area?.detail ?? "Find a familiar favorite or somewhere new"} · {resultCount} {resultCount === 1 ? "entry" : "entries"} · {routeCount} trails</p>
                 </div>
               </div>
               <div ref={results} className="mountain-results shrink-0 space-y-3 p-4 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:overscroll-contain" tabIndex={0} aria-label="Mountains in selected area">
-                {resultCount ? <>{filteredItineraries.map((itinerary) => <section key={itinerary.slug} ref={selectedMountain?.name === mountainNameKey(itinerary.name) ? selectedCard : undefined}><ItineraryCard itinerary={itinerary} selected={selectedMountain?.name === mountainNameKey(itinerary.name)} onSelect={() => selectMountain(itinerary.name, getMountainArea(itinerary))} /></section>)}{filteredMountains.map((mountain) => (
+                {resultCount ? <>{filteredItineraries.map((itinerary) => <section key={itinerary.slug} ref={selectedMountain?.name === mountainNameKey(itinerary.name) ? selectedCard : undefined}><ItineraryCard itinerary={itinerary} selected={selectedMountain?.name === mountainNameKey(itinerary.name)} onSelect={() => selectMountain(itinerary.name, getMountainArea(itinerary), itinerary.slug)} /></section>)}{filteredMountains.map((mountain) => (
                   <article key={mountain.slug} onClick={(event) => selectCard(event, mountain)} ref={(selectedMountain?.slug ? selectedMountain.slug === mountain.slug : selectedMountain?.name === mountainNameKey(mountain.name)) ? selectedCard : undefined} className={cn("cursor-pointer rounded-2xl border bg-white p-4 transition-[border-color,box-shadow] duration-300", (selectedMountain?.slug ? selectedMountain.slug === mountain.slug : selectedMountain?.name === mountainNameKey(mountain.name)) ? "border-moss/50 shadow-[0_0_16px_rgba(54,80,4,0.10)]" : "border-border")}>
                     <div className="flex items-start gap-3">
                       <div className="relative size-16 shrink-0 overflow-hidden rounded-xl"><Image src={mountain.image} alt="" fill sizes="64px" className="object-cover" /></div>
                       <div className="min-w-0 flex-1">
-                        <h4 className="text-base font-semibold"><button type="button" onClick={() => selectMountain(mountain.name, getMountainArea(mountain), mountain.slug)} className="rounded text-left transition-colors hover:text-moss-deep focus-visible:outline-2 focus-visible:outline-moss-deep" aria-label={`Show ${mountain.name} on map`}>{mountain.name}</button></h4>
+                        <h4 className="text-base font-semibold"><button type="button" onClick={() => selectMountain(mountain.name, getMountainArea(mountain), mountain.slug)} className="cursor-pointer rounded text-left underline-offset-4 transition-colors hover:text-moss-deep hover:underline focus-visible:underline focus-visible:outline-2 focus-visible:outline-moss-deep" aria-label={`Show ${mountain.name} on map`}>{mountain.name}</button></h4>
                         <p className="mt-1 text-xs leading-5 text-muted-foreground">{mountain.location}</p>
                         <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs">
                           <span className="text-moss-deep">{mountain.elevationMeters.toLocaleString("en-US")} m</span>
@@ -390,7 +393,7 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
                 ))}
                 {visibleMapMountains.map((mountain) => (
                   <article key={mountain.slug} onClick={(event) => selectCard(event, mountain)} ref={selectedMountain?.slug === mountain.slug ? selectedCard : undefined} className={cn("cursor-pointer rounded-2xl border bg-white p-4 transition-[border-color,box-shadow] duration-300", selectedMountain?.slug === mountain.slug ? "border-moss/50 shadow-[0_0_16px_rgba(54,80,4,0.10)]" : "border-border")}>
-                    <h4 className="flex items-center gap-2 text-base font-semibold"><MountainSnow aria-hidden="true" className="size-4 shrink-0 text-moss-deep" /><button type="button" onClick={() => selectMountain(mountain.name, getMountainArea(mountain), mountain.slug)} className="rounded text-left transition-colors hover:text-moss-deep focus-visible:outline-2 focus-visible:outline-moss-deep" aria-label={`Show ${mountain.name} on map`}>{mountain.name}</button></h4>
+                    <h4 className="flex items-center gap-2 text-base font-semibold"><MountainSnow aria-hidden="true" className="size-4 shrink-0 text-moss-deep" /><button type="button" onClick={() => selectMountain(mountain.name, getMountainArea(mountain), mountain.slug)} className="cursor-pointer rounded text-left underline-offset-4 transition-colors hover:text-moss-deep hover:underline focus-visible:underline focus-visible:outline-2 focus-visible:outline-moss-deep" aria-label={`Show ${mountain.name} on map`}>{mountain.name}</button></h4>
                     <p className="mt-2 text-xs leading-5 text-muted-foreground">{mountain.kind === "ridge" ? "Ridge · " : ""}{mountain.location}</p>
                     {mountain.coordinateType === "jump-off" && <p className="mt-1 text-xs text-muted-foreground">Map pin marks the jump-off.</p>}
                     {getMountainMapLayer(mountain.slug) === "secondary" && <p className="mt-2 text-xs text-violet-300">Secondary map layer{!revealAllMountains ? (selectedMountain?.slug === mountain.slug ? " · Visible while selected" : " · Select to reveal on map") : " · Visible on map"}</p>}
@@ -418,7 +421,7 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
                   <button type="button" onClick={resetFilters} className="mt-4 min-h-11 rounded-xl border border-moss/30 px-4 text-sm text-moss-deep focus-visible:outline-moss-deep">Show all mountains</button>
                 </div>}
               </div>
-              <p className="hidden shrink-0 border-t border-border px-5 py-3 text-[11px] leading-5 text-muted-foreground lg:block">Ratings describe published routes and do not confirm current access. Unrated peaks appear under All. Coordinates: GeoNames and the Philippine mountains dataset.</p>
+              <p className="hidden shrink-0 border-t border-border px-4 py-2 text-[11px] leading-4 text-muted-foreground lg:block">Ratings describe published routes and do not confirm current access. Unrated peaks appear under All. Coordinates: GeoNames, Philippine mountains dataset and OpenStreetMap.</p>
               </div>
             </div>
           </div>
@@ -434,7 +437,7 @@ export function MountainDirectory({ mountains }: { mountains: Mountain[] }) {
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {mountains.filter((mountain) => mountain.slug === "mount-ulap").map((mountain) => <MountainCard key={mountain.slug} mountain={mountain} />)}
           {hikeItineraries.map((itinerary) => <ItineraryCard key={itinerary.slug} itinerary={itinerary} anchor onSelect={() => {
-            selectMountain(itinerary.name, getMountainArea(itinerary));
+            selectMountain(itinerary.name, getMountainArea(itinerary), itinerary.slug);
             document.querySelector(".mountain-area-map")?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start" });
           }} />)}
           {mountains.filter((mountain) => mountain.slug !== "mount-ulap").map((mountain) => <MountainCard key={mountain.slug} mountain={mountain} />)}

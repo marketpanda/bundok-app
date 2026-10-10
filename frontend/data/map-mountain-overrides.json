@@ -549,5 +549,106 @@
         "url": "https://www.peakbagger.com/climber/ascent.aspx?aid=2984486"
       }
     ]
+  },
+  {
+    "name": "Mount Naulaw",
+    "location": "Subic, Zambales",
+    "coordinates": [
+      120.1436,
+      14.8325
+    ],
+    "elevationMeters": 530,
+    "aliases": [
+      "Mt. Naulaw",
+      "Mt Naulaw"
+    ],
+    "sources": [
+      {
+        "label": "OpenStreetMap peak location",
+        "url": "https://www.openstreetmap.org/node/5277218421"
+      },
+      {
+        "label": "Mapcarta location reference",
+        "url": "https://mapcarta.com/N5277218421"
+      }
+    ]
+  },
+  {
+    "name": "Mount Tugew",
+    "location": "Alang Salacsac, Kayapa, Nueva Vizcaya",
+    "coordinates": [
+      120.841,
+      16.2637
+    ],
+    "elevationMeters": 1470,
+    "aliases": [
+      "Mt. Tugew",
+      "Mt Tugew"
+    ],
+    "sources": [
+      {
+        "label": "OpenStreetMap peak location",
+        "url": "https://www.openstreetmap.org/node/5262944928"
+      },
+      {
+        "label": "Mapcarta location reference",
+        "url": "https://mapcarta.com/N5262944928"
+      }
+    ]
+  },
+  {
+    "name": "Mount Cabo",
+    "coordinates": [
+      120.8425525,
+      16.2543999
+    ],
+    "aliases": [
+      "Mt. Cabo",
+      "Mt Cabo"
+    ],
+    "location": "Alang Salacsac, Kayapa, Nueva Vizcaya",
+    "sources": [
+      {
+        "label": "Google Maps place coordinates supplied by user",
+        "url": "https://www.google.com/maps/place/Mt+Cabo/data=!4m5!3m4!1s0x33910100459f8341:0x7c9c0138bc1201b3!8m2!3d16.2543999!4d120.8425525"
+      }
+    ]
+  },
+  {
+    "name": "Mount Kabuan",
+    "coordinates": [
+      120.8411651,
+      16.2495897
+    ],
+    "aliases": [
+      "Mt. Kabuan",
+      "Mt Kabuan"
+    ],
+    "location": "Alang Salacsac, Kayapa, Nueva Vizcaya",
+    "sources": [
+      {
+        "label": "Google Maps place coordinates supplied by user",
+        "url": "https://www.google.com/maps/place/Mt.+Kabuan/data=!4m5!3m4!1s0x339101005179669b:0x24987e9efa6a8afd!8m2!3d16.2495897!4d120.8411651"
+      }
+    ]
+  },
+  {
+    "name": "Mount Sadjatan",
+    "location": "Alang Salacsac, Kayapa, Nueva Vizcaya",
+    "coordinates": [
+      120.8387007,
+      16.2421883
+    ],
+    "aliases": [
+      "Mt. Sadjatan",
+      "Mt Sadjatan",
+      "Mt. Kabuan II"
+    ],
+    "sources": [
+      {
+        "label": "Google Maps place coordinates supplied by user",
+        "url": "https://www.google.com/maps/place/Mt.+Sadjatan/data=!4m5!3m4!1s0x3391010dc132d491:0xef9ca86843d65f94!8m2!3d16.2421883!4d120.8387007"
+      }
+    ]
   }
 ]
