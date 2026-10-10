@@ -1,0 +1,382 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Description": "Ambangeg Cognito-protected climbs API with Lambda, Prisma, Neon and SSM Parameter Store. No EC2 or RDS.",
+  "Parameters": {
+    "CognitoUserPoolId": {
+      "Type": "String",
+      "AllowedPattern": "[a-z]{2}-[a-z]+-[0-9]_[A-Za-z0-9]+",
+      "Description": "Existing user pool in this stack region"
+    },
+    "CognitoClientId": {
+      "Type": "String",
+      "AllowedPattern": "[a-z0-9]+",
+      "Description": "Existing browser app client ID"
+    },
+    "DatabaseParameterName": {
+      "Type": "String",
+      "Default": "/ambangeg/dev/DATABASE_URL",
+      "AllowedPattern": "/[A-Za-z0-9_./-]+",
+      "Description": "Existing Standard SecureString containing the restricted pooled Neon URL"
+    },
+    "AllowedOrigins": {
+      "Type": "CommaDelimitedList",
+      "Default": "https://ambangeg.com,https://www.ambangeg.com,http://localhost:3000"
+    },
+    "ReservedConcurrency": {
+      "Type": "Number",
+      "Default": 0,
+      "MinValue": 0,
+      "Description": "0 leaves concurrency unreserved; select a small positive cap if account quota supports reservations"
+    }
+  },
+  "Conditions": {
+    "LimitConcurrency": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "ReservedConcurrency"
+            },
+            0
+          ]
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "ClimbsApi": {
+      "Type": "AWS::Serverless::HttpApi",
+      "Properties": {
+        "CorsConfiguration": {
+          "AllowOrigins": {
+            "Ref": "AllowedOrigins"
+          },
+          "AllowHeaders": [
+            "Authorization",
+            "Content-Type"
+          ],
+          "AllowMethods": [
+            "GET",
+            "POST",
+            "PATCH",
+            "PUT",
+            "DELETE",
+            "OPTIONS"
+          ],
+          "MaxAge": 300
+        },
+        "DefaultRouteSettings": {
+          "ThrottlingBurstLimit": 5,
+          "ThrottlingRateLimit": 2
+        },
+        "Auth": {
+          "DefaultAuthorizer": "CognitoJwt",
+          "Authorizers": {
+            "CognitoJwt": {
+              "IdentitySource": "$request.header.Authorization",
+              "JwtConfiguration": {
+                "issuer": {
+                  "Fn::Sub": "https://cognito-idp.${AWS::Region}.${AWS::URLSuffix}/${CognitoUserPoolId}"
+                },
+                "audience": [
+                  {
+                    "Ref": "CognitoClientId"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "ClimbsFunction": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "CodeUri": "../dist/",
+        "Handler": "handler.handler",
+        "Runtime": "nodejs22.x",
+        "Architectures": [
+          "arm64"
+        ],
+        "MemorySize": 512,
+        "Timeout": 25,
+        "ReservedConcurrentExecutions": {
+          "Fn::If": [
+            "LimitConcurrency",
+            {
+              "Ref": "ReservedConcurrency"
+            },
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "DATABASE_PARAMETER_NAME": {
+              "Ref": "DatabaseParameterName"
+            },
+            "COGNITO_ISSUER": {
+              "Fn::Sub": "https://cognito-idp.${AWS::Region}.${AWS::URLSuffix}/${CognitoUserPoolId}"
+            },
+            "COGNITO_CLIENT_ID": {
+              "Ref": "CognitoClientId"
+            },
+            "PHOTO_BUCKET_NAME": {
+              "Ref": "ClimbPhotosBucket"
+            }
+          }
+        },
+        "Policies": [
+          {
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "ssm:GetParameter"
+                ],
+                "Resource": {
+                  "Fn::Sub": "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter${DatabaseParameterName}"
+                }
+              },
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "s3:GetObject",
+                  "s3:PutObject",
+                  "s3:DeleteObject"
+                ],
+                "Resource": {
+                  "Fn::Sub": "${ClimbPhotosBucket.Arn}/climbs/*"
+                }
+              }
+            ]
+          }
+        ],
+        "Events": {
+          "Route0": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "ClimbsApi"
+              },
+              "Method": "GET",
+              "Path": "/me",
+              "PayloadFormatVersion": "2.0"
+            }
+          },
+          "Route1": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "ClimbsApi"
+              },
+              "Method": "PATCH",
+              "Path": "/me",
+              "PayloadFormatVersion": "2.0"
+            }
+          },
+          "Route2": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "ClimbsApi"
+              },
+              "Method": "GET",
+              "Path": "/me/climbs",
+              "PayloadFormatVersion": "2.0"
+            }
+          },
+          "Route3": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "ClimbsApi"
+              },
+              "Method": "POST",
+              "Path": "/me/climbs",
+              "PayloadFormatVersion": "2.0"
+            }
+          },
+          "Route4": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "ClimbsApi"
+              },
+              "Method": "GET",
+              "Path": "/me/climbs/{id}",
+              "PayloadFormatVersion": "2.0"
+            }
+          },
+          "Route5": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "ClimbsApi"
+              },
+              "Method": "PATCH",
+              "Path": "/me/climbs/{id}",
+              "PayloadFormatVersion": "2.0"
+            }
+          },
+          "Route6": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "ClimbsApi"
+              },
+              "Method": "DELETE",
+              "Path": "/me/climbs/{id}",
+              "PayloadFormatVersion": "2.0"
+            }
+          },
+          "Route7": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "ClimbsApi"
+              },
+              "Method": "PUT",
+              "Path": "/me/climbs/pins",
+              "PayloadFormatVersion": "2.0"
+            }
+          },
+          "Route8": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "ClimbsApi"
+              },
+              "Method": "PUT",
+              "Path": "/me/climbs/{id}/photo",
+              "PayloadFormatVersion": "2.0"
+            }
+          },
+          "Route9": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "ClimbsApi"
+              },
+              "Method": "DELETE",
+              "Path": "/me/climbs/{id}/photo",
+              "PayloadFormatVersion": "2.0"
+            }
+          },
+          "PhotoCleanup": {
+            "Type": "Schedule",
+            "Properties": {
+              "Schedule": "rate(1 hour)",
+              "Input": "{\"maintenance\": \"photo-cleanup\"}",
+              "Enabled": true
+            }
+          }
+        }
+      }
+    },
+    "ClimbsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Sub": "/aws/lambda/${ClimbsFunction}"
+        },
+        "RetentionInDays": 14
+      }
+    },
+    "ClimbPhotosBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "IgnorePublicAcls": true,
+          "BlockPublicPolicy": true,
+          "RestrictPublicBuckets": true
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "BucketOwnerEnforced"
+            }
+          ]
+        },
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "Id": "AbortIncompleteUploads",
+              "Status": "Enabled",
+              "AbortIncompleteMultipartUpload": {
+                "DaysAfterInitiation": 1
+              }
+            }
+          ]
+        }
+      }
+    },
+    "ClimbPhotosBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "ClimbPhotosBucket"
+        },
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Deny",
+              "Principal": "*",
+              "Action": "s3:*",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ClimbPhotosBucket",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Sub": "${ClimbPhotosBucket.Arn}/*"
+                }
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ClimbsApiUrl": {
+      "Description": "Public API base URL; frontend never needs the database URL",
+      "Value": {
+        "Fn::Sub": "https://${ClimbsApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}"
+      }
+    },
+    "ClimbsFunctionName": {
+      "Value": {
+        "Ref": "ClimbsFunction"
+      }
+    },
+    "ClimbPhotosBucketName": {
+      "Description": "Private bucket for account climb photos",
+      "Value": {
+        "Ref": "ClimbPhotosBucket"
+      }
+    }
+  }
+}

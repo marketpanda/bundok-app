@@ -1,0 +1,11 @@
+.env*
+!.env.example
+*.pem
+seed.sql
+database-init.zip
+node_modules/
+generated/
+.npm-cache/
+dist/
+.aws-sam/
+samconfig.toml

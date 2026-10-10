@@ -1,0 +1,171 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["ambangeg"]
+}
+
+enum ClimbVisibility {
+  PUBLIC
+  PRIVATE
+
+  @@map("climb_visibility")
+  @@schema("ambangeg")
+}
+
+model User {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  cognitoIssuer    String   @map("cognito_issuer")
+  cognitoSubject   String   @map("cognito_subject")
+  displayName      String   @map("display_name")
+  username         String?  @unique(map: "users_username_key")
+  avatarStorageKey String?  @map("avatar_storage_key")
+  bio              String?
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  climbs           Climb[]
+
+  @@unique([cognitoIssuer, cognitoSubject], map: "users_cognito_issuer_cognito_subject_key")
+  @@map("users")
+  @@schema("ambangeg")
+}
+
+model Mountain {
+  id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug           String          @unique(map: "mountains_slug_key")
+  name           String
+  location       String
+  kind           String          @default("mountain")
+  elevationM     Int?            @map("elevation_m")
+  latitude       Float?
+  longitude      Float?
+  coordinateType String          @default("summit") @map("coordinate_type")
+  difficulty     Int?            @db.SmallInt
+  aliases        Json            @default("[]")
+  sources        Json            @default("[]")
+  itineraryTargets ItineraryTarget[]
+  climbTargets ClimbTarget[]
+  trails         MountainTrail[]
+  climbs         Climb[]
+
+  @@map("mountains")
+  @@schema("ambangeg")
+}
+
+model MountainTrail {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  mountainId    String   @map("mountain_id") @db.Uuid
+  name          String
+  difficulty    Int?     @db.SmallInt
+  difficultyMax Int?     @map("difficulty_max") @db.SmallInt
+  duration      String?
+  source        Json?
+  mountain      Mountain @relation(fields: [mountainId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  climbs        Climb[]
+
+  @@unique([mountainId, name], map: "mountain_trails_mountain_id_name_key")
+  @@unique([id, mountainId], map: "mountain_trails_id_mountain_id_key")
+  @@map("mountain_trails")
+  @@schema("ambangeg")
+}
+
+model Climb {
+  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId           String          @map("user_id") @db.Uuid
+  mountainId       String?         @map("mountain_id") @db.Uuid
+  trailId          String?         @map("trail_id") @db.Uuid
+  climbedOn        DateTime        @map("climbed_on") @db.Date
+  finishedOn       DateTime?       @map("finished_on") @db.Date
+  notes            String          @default("")
+  summitNotReached Boolean         @default(false) @map("summit_not_reached")
+  visibility       ClimbVisibility @default(PRIVATE)
+  pinSlot          Int?            @map("pin_slot") @db.SmallInt
+  createdAt        DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime        @default(now()) @map("updated_at") @db.Timestamptz(6)
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  mountain         Mountain?       @relation(fields: [mountainId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  trail            MountainTrail?  @relation(fields: [trailId, mountainId], references: [id, mountainId], onDelete: NoAction, onUpdate: NoAction)
+  itineraryId      String?         @map("itinerary_id") @db.Uuid
+  itinerary        HikeItinerary?  @relation(fields: [itineraryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  targets          ClimbTarget[]
+  photos           ClimbPhoto[]
+
+  @@unique([userId, pinSlot], map: "climbs_user_id_pin_slot_key")
+  @@index([userId, climbedOn(sort: Desc), id], map: "climbs_user_date")
+  @@index([userId, mountainId], map: "climbs_user_mountain")
+  @@index([trailId, mountainId], map: "climbs_trail")
+  @@index([mountainId, climbedOn(sort: Desc)], map: "climbs_mountain_date")
+  @@map("climbs")
+  @@schema("ambangeg")
+}
+
+model ClimbPhoto {
+  id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  climbId             String   @map("climb_id") @db.Uuid
+  storageKey          String   @unique(map: "climb_photos_storage_key_key") @map("storage_key")
+  thumbnailStorageKey String?  @map("thumbnail_storage_key")
+  caption             String?
+  isCover             Boolean  @default(false) @map("is_cover")
+  sortOrder           Int      @default(0) @map("sort_order")
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  climb               Climb    @relation(fields: [climbId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  // Cover uniqueness, CHECK constraints and timestamp triggers live in migration.sql.
+  @@index([climbId, sortOrder, id], map: "photos_climb_order")
+  @@map("climb_photos")
+  @@schema("ambangeg")
+}
+
+model PhotoDeletion {
+  storageKey String   @id @map("storage_key")
+  notBefore  DateTime @default(now()) @map("not_before") @db.Timestamptz(6)
+
+  @@index([notBefore], map: "photo_deletions_due")
+  @@map("photo_deletions")
+  @@schema("ambangeg")
+}
+
+model HikeItinerary {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug String @unique
+  name String
+  location String
+  category String
+  membershipStatus String @map("membership_status")
+  targets ItineraryTarget[]
+  climbs Climb[]
+  @@map("hike_itineraries")
+  @@schema("ambangeg")
+}
+model ItineraryTarget {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  itineraryId String @map("itinerary_id") @db.Uuid
+  mountainId String @map("mountain_id") @db.Uuid
+  targetKey String @map("target_key")
+  pointSlug String? @map("point_slug")
+  name String
+  sortOrder Int @map("sort_order")
+  itinerary HikeItinerary @relation(fields:[itineraryId], references:[id], onDelete:Cascade, onUpdate:NoAction)
+  mountain Mountain @relation(fields:[mountainId], references:[id], onDelete:NoAction, onUpdate:NoAction)
+  @@unique([itineraryId,targetKey])
+  @@map("itinerary_targets")
+  @@schema("ambangeg")
+}
+model ClimbTarget {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  climbId String @map("climb_id") @db.Uuid
+  mountainId String @map("mountain_id") @db.Uuid
+  targetKey String @map("target_key")
+  pointSlug String? @map("point_slug")
+  name String
+  reached Boolean @default(true)
+  sortOrder Int @map("sort_order")
+  climb Climb @relation(fields:[climbId], references:[id], onDelete:Cascade, onUpdate:NoAction)
+  mountain Mountain @relation(fields:[mountainId], references:[id], onDelete:NoAction, onUpdate:NoAction)
+  @@unique([climbId,targetKey])
+  @@map("climb_targets")
+  @@schema("ambangeg")
+}
