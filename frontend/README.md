@@ -14,6 +14,16 @@ Published guides are defined in `data/mountain-guides.ts` and rendered by `app/m
 
 The mountain directory links to these guides from its introduction, map results and prominent cards. Card selection continues to focus the map; the guide link opens the full page. Canonical guide URLs use `https://ambangeg.com`; update `siteUrl` in the guide page if the production domain changes.
 
+## Search engine discovery
+
+`app/robots.ts` and `app/sitemap.ts` generate `out/robots.txt` and
+`out/sitemap.xml` during the static build. Robots allows crawling and links to
+`https://ambangeg.com/sitemap.xml`. The sitemap lists public pages and published
+guides from `data/mountain-guides.ts`; account pages and unpublished catalogue
+entries are omitted. Update its public path list when adding public pages.
+Publish the full `out/` directory for these files to become available on the live
+domain, then submit the sitemap URL in Google Search Console.
+
 ## Google sign-in setup
 
 1. In Amazon Cognito, create a user pool and an app client **without a client secret** (this is a browser app).
